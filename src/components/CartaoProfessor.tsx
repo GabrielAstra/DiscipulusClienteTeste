@@ -1,15 +1,25 @@
-import React from 'react';
-import { Star, Clock, CheckCircle, Globe, MapPin, Award, Users } from 'lucide-react';
-import { Professor } from '@/model/professor';
-import Link from 'next/link';
+import React from "react";
+import {
+  Star,
+  Clock,
+  CheckCircle,
+  Globe,
+  MapPin,
+  Award,
+  Users,
+} from "lucide-react";
+import { Professor } from "@/model/professor";
+import Link from "next/link";
 
 interface PropriedadesCartaoProfessor {
   professor: Professor;
 }
 
-export default function CartaoProfessor({ professor }: PropriedadesCartaoProfessor) {
+export default function CartaoProfessor({
+  professor,
+}: PropriedadesCartaoProfessor) {
   return (
-    <div className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-indigo-100 transition-all duration-300 transform hover:-translate-y-1">
+    <div className="relative group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-indigo-100 transition-all duration-300 transform hover:-translate-y-1">
       <div className="relative p-6 pb-4">
         <div className="flex items-start justify-between">
           <div className="relative">
@@ -26,18 +36,20 @@ export default function CartaoProfessor({ professor }: PropriedadesCartaoProfess
               </div>
             )}
           </div>
-          
+
           <div className="text-right">
             <div className="flex items-center justify-end space-x-1 mb-1">
               <Star className="w-4 h-4 text-amber-400 fill-current" />
-              <span className="text-lg font-bold text-gray-900">{professor.avaliacao}</span>
+              <span className="text-lg font-bold text-gray-900">
+                {professor.avaliacao}
+              </span>
             </div>
             <div className="text-sm text-gray-500">
               {professor.numeroAvaliacoes} avaliações
             </div>
           </div>
         </div>
-        
+
         <div className="mt-4">
           <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors">
             {professor.nome}
@@ -55,9 +67,9 @@ export default function CartaoProfessor({ professor }: PropriedadesCartaoProfess
             <span
               key={materia}
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                indice === 0 
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white' 
-                  : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                indice === 0
+                  ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
+                  : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
               }`}
             >
               {materia}
@@ -75,9 +87,11 @@ export default function CartaoProfessor({ professor }: PropriedadesCartaoProfess
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center text-gray-600">
             <Globe className="w-4 h-4 mr-2" />
-            <span>{professor.idiomas.slice(0, 2).join(', ')}</span>
+            <span>{professor.idiomas.slice(0, 2).join(", ")}</span>
             {professor.idiomas.length > 2 && (
-              <span className="ml-1 text-gray-400">+{professor.idiomas.length - 2}</span>
+              <span className="ml-1 text-gray-400">
+                +{professor.idiomas.length - 2}
+              </span>
             )}
           </div>
           <div className="flex items-center text-gray-600">
@@ -87,7 +101,9 @@ export default function CartaoProfessor({ professor }: PropriedadesCartaoProfess
         </div>
 
         <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-          {professor.biografia.length > 100 ? `${professor.biografia.substring(0, 100)}...` : professor.biografia}
+          {professor.biografia.length > 100
+            ? `${professor.biografia.substring(0, 100)}...`
+            : professor.biografia}
         </p>
       </div>
 
@@ -95,14 +111,14 @@ export default function CartaoProfessor({ professor }: PropriedadesCartaoProfess
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-baseline space-x-1">
-              <span className="text-2xl font-bold text-gray-900">R${professor.valorHora}</span>
+              <span className="text-2xl font-bold text-gray-900">
+                R${professor.valorHora}
+              </span>
               <span className="text-sm text-gray-500">/hora</span>
             </div>
-            <div className="text-xs text-gray-500 mt-0.5">
-              A partir de
-            </div>
+            <div className="text-xs text-gray-500 mt-0.5">A partir de</div>
           </div>
-          
+
           <Link
             href={`/teacher/${professor.id}`}
             className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
@@ -112,12 +128,12 @@ export default function CartaoProfessor({ professor }: PropriedadesCartaoProfess
         </div>
       </div>
 
-      {/* <div className="absolute top-4 left-4">
+      <div className="absolute top-4 left-4">
         <div className="flex items-center space-x-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
           <span className="text-xs font-medium text-gray-700">Online</span>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 }

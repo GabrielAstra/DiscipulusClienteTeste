@@ -1,12 +1,12 @@
-'use client';
-import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, Paperclip, Smile } from 'lucide-react';
-import { Professor } from '@/model/professor';
+"use client";
+import React, { useState, useRef, useEffect } from "react";
+import { X, Send, Paperclip, Smile } from "lucide-react";
+import { Professor } from "@/model/professor";
 
 interface Mensagem {
   id: string;
   texto: string;
-  remetente: 'usuario' | 'professor';
+  remetente: "usuario" | "professor";
   timestamp: Date;
 }
 
@@ -16,21 +16,25 @@ interface PropriedadesModalChat {
   aoFechar: () => void;
 }
 
-export default function ModalChat({ professor, aberto, aoFechar }: PropriedadesModalChat) {
+export default function ModalChat({
+  professor,
+  aberto,
+  aoFechar,
+}: PropriedadesModalChat) {
   const [mensagens, setMensagens] = useState<Mensagem[]>([
     {
-      id: '1',
+      id: "1",
       texto: `Olá! Sou ${professor.nome}. Como posso ajudá-lo hoje?`,
-      remetente: 'professor',
-      timestamp: new Date(Date.now() - 5 * 60 * 1000)
-    }
+      remetente: "professor",
+      timestamp: new Date(Date.now() - 5 * 60 * 1000),
+    },
   ]);
-  const [novaMensagem, setNovaMensagem] = useState('');
+  const [novaMensagem, setNovaMensagem] = useState("");
   const [digitando, setDigitando] = useState(false);
   const refFinalMensagens = useRef<HTMLDivElement>(null);
 
   const rolarParaBaixo = () => {
-    refFinalMensagens.current?.scrollIntoView({ behavior: 'smooth' });
+    refFinalMensagens.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -43,44 +47,45 @@ export default function ModalChat({ professor, aberto, aoFechar }: PropriedadesM
     const mensagemUsuario: Mensagem = {
       id: Date.now().toString(),
       texto: novaMensagem,
-      remetente: 'usuario',
-      timestamp: new Date()
+      remetente: "usuario",
+      timestamp: new Date(),
     };
 
-    setMensagens(prev => [...prev, mensagemUsuario]);
-    setNovaMensagem('');
+    setMensagens((prev) => [...prev, mensagemUsuario]);
+    setNovaMensagem("");
     setDigitando(true);
 
     setTimeout(() => {
       const respostaProfessor: Mensagem = {
         id: (Date.now() + 1).toString(),
-        texto: 'Obrigado pela sua mensagem! Vou responder em breve. Enquanto isso, que tal agendar uma aula para discutirmos melhor?',
-        remetente: 'professor',
-        timestamp: new Date()
+        texto:
+          "Obrigado pela sua mensagem! Vou responder em breve. Enquanto isso, que tal agendar uma aula para discutirmos melhor?",
+        remetente: "professor",
+        timestamp: new Date(),
       };
-      setMensagens(prev => [...prev, respostaProfessor]);
+      setMensagens((prev) => [...prev, respostaProfessor]);
       setDigitando(false);
     }, 2000);
   };
 
   const lidarComTeclaPressionada = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       lidarComEnviarMensagem();
     }
   };
 
   const formatarHorario = (data: Date) => {
-    return data.toLocaleTimeString('pt-BR', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return data.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   if (!aberto) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl w-full max-w-md h-[600px] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
@@ -109,30 +114,46 @@ export default function ModalChat({ professor, aberto, aoFechar }: PropriedadesM
           {mensagens.map((mensagem) => (
             <div
               key={mensagem.id}
-              className={`flex ${mensagem.remetente === 'usuario' ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${
+                mensagem.remetente === "usuario"
+                  ? "justify-end"
+                  : "justify-start"
+              }`}
             >
-              <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                mensagem.remetente === 'usuario'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-900'
-              }`}>
+              <div
+                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                  mensagem.remetente === "usuario"
+                    ? "bg-indigo-600 text-white"
+                    : "bg-gray-100 text-gray-900"
+                }`}
+              >
                 <p className="text-sm">{mensagem.texto}</p>
-                <p className={`text-xs mt-1 ${
-                  mensagem.remetente === 'usuario' ? 'text-indigo-200' : 'text-gray-500'
-                }`}>
+                <p
+                  className={`text-xs mt-1 ${
+                    mensagem.remetente === "usuario"
+                      ? "text-indigo-200"
+                      : "text-gray-500"
+                  }`}
+                >
                   {formatarHorario(mensagem.timestamp)}
                 </p>
               </div>
             </div>
           ))}
-          
+
           {digitando && (
             <div className="flex justify-start">
               <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-2xl">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.1s" }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -164,7 +185,7 @@ export default function ModalChat({ professor, aberto, aoFechar }: PropriedadesM
                 placeholder="Digite sua mensagem..."
                 className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
                 rows={1}
-                style={{ minHeight: '44px', maxHeight: '100px' }}
+                style={{ minHeight: "44px", maxHeight: "100px" }}
               />
               <button className="absolute right-2 top-2 p-2 text-gray-400 hover:text-gray-600 transition-colors">
                 <Smile className="w-5 h-5" />
