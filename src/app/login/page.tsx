@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUsuario } from "../context/UsuarioContext";
 import { Usuario } from "@/model/usuario";
+import { loginUsuario } from "@/service/api";
+import { jwtDecode } from "jwt-decode";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,23 +16,43 @@ export default function LoginPage() {
   const [carregando, setCarregando] = useState(false);
   const navegar = useRouter();
   const { lidarComLogin } = useUsuario();
+  interface JwtPayload {
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;
+        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
+        papel: "Professor" | "Aluno";
+        [key: string]: any;
+      }
 
   const lidarComEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
     setCarregando(true);
 
-    setTimeout(() => {
+    try {
+      const resposta = await loginUsuario({ email, password: senha });
+
+      
+      const decoded = jwtDecode<JwtPayload>(resposta.token);
+
       const usuario: Usuario = {
-        id: "1",
-        nome: "João Silva",
-        email: email,
-        papel: "estudante",
+        id: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
+        nome: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+        email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
+        papel: decoded["papel"],
+        role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
       };
       lidarComLogin(usuario);
-      setCarregando(false);
+
+      localStorage.setItem("token", resposta.token);
+
       navegar.push("/catalog");
-    }, 1000);
+    } catch (erro: any) {
+      alert(erro.message);
+    } finally {
+      setCarregando(false);
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

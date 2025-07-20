@@ -49,7 +49,7 @@ export default function Cabecalho({ usuario, aoFazerLogout }: PropriedadesCabeca
                   >
                     Minhas Aulas
                   </Link>
-                  {usuario.papel === 'professor' && (
+                  {usuario.papel === 'Professor' && (
                     <Link
                       href="/teacher-dashboard"
                       className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${

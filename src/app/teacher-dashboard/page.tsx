@@ -1,4 +1,5 @@
 "use client";
+import { listarHabilidades, Habilidade } from "@/service/api";
 
 import {
   Calendar,
@@ -10,7 +11,7 @@ import {
   User,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface PerfilProfessor {
   id: string;
@@ -52,7 +53,8 @@ export default function PainelProfessor() {
   const [mostrarModalSaque, setMostrarModalSaque] = useState(false);
   const [valorSaque, setValorSaque] = useState("");
   const [metodoSaque, setMetodoSaque] = useState("pix");
-
+  const [filtroMateria, setFiltroMateria] = useState("");
+  
   const [perfil, setPerfil] = useState<PerfilProfessor>({
     id: "1",
     nome: "Sarah Johnson",
@@ -61,7 +63,7 @@ export default function PainelProfessor() {
       "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400",
     biografia:
       "Professora apaixonada por matemática e física com doutorado em Matemática Aplicada. Especializo-me em tornar conceitos complexos acessíveis e envolventes para estudantes de todos os níveis.",
-    materias: ["Matemática", "Física", "Cálculo"],
+    materias: [],
     valorHora: 45,
     experiencia: "8 anos",
     idiomas: ["Português", "Inglês"],
@@ -76,6 +78,7 @@ export default function PainelProfessor() {
   });
 
   const [dadosCarteira] = useState<DadosCarteira>({
+    
     saldo: 1250.5,
     ganhosTotal: 8750.0,
     pagamentosPendentes: 320.0,
@@ -112,6 +115,13 @@ export default function PainelProfessor() {
     setEditando(false);
     console.log("Perfil salvo:", perfil);
   };
+  const [habilidadesDisponiveis, setHabilidadesDisponiveis] = useState<Habilidade[]>([]);
+
+  useEffect(() => {
+    if (editando) {
+      listarHabilidades().then(setHabilidadesDisponiveis);
+    }
+  }, [editando]);
 
   const lidarComSaque = () => {
     const valor = parseFloat(valorSaque);
@@ -133,7 +143,9 @@ export default function PainelProfessor() {
   const formatarData = (dataString: string) => {
     return new Date(dataString).toLocaleDateString("pt-BR");
   };
-
+  const habilidadesFiltradas = habilidadesDisponiveis.filter(hab =>
+    hab.nomeHabilidade.toLowerCase().includes(filtroMateria.toLowerCase())
+  );
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -389,34 +401,97 @@ export default function PainelProfessor() {
             <div className="grid md:grid-cols-2 gap-8">
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Matérias
+                  Matérias (Habilidades)
                 </h3>
                 {editando ? (
-                  <input
-                    type="text"
-                    value={perfil.materias.join(", ")}
-                    onChange={(e) =>
-                      setPerfil({
-                        ...perfil,
-                        materias: e.target.value.split(", "),
-                      })
-                    }
-                    placeholder="Matemática, Física, Química"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Pesquisar matérias..."
+                        value={filtroMateria}
+                        onChange={(e) => setFiltroMateria(e.target.value)}
+                        className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                      />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      {habilidadesFiltradas.length > 0 ? (
+                        <div className="space-y-3">
+                          {habilidadesFiltradas.map((hab) => (
+                            <label 
+                              key={hab.habilidadeID} 
+                              className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg transition-colors cursor-pointer"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={perfil.materias.includes(hab.nomeHabilidade)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setPerfil({
+                                      ...perfil,
+                                      materias: [...perfil.materias, hab.nomeHabilidade],
+                                    });
+                                  } else {
+                                    setPerfil({
+                                      ...perfil,
+                                      materias: perfil.materias.filter(
+                                        (m) => m !== hab.nomeHabilidade
+                                      ),
+                                    });
+                                  }
+                                }}
+                                className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2"
+                              />
+                              <span className="text-sm text-gray-700 font-medium">
+                                {hab.nomeHabilidade}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <p className="text-gray-500 text-sm">
+                            Nenhuma matéria encontrada para "{filtroMateria}"
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    {filtroMateria && (
+                      <p className="text-xs text-gray-500">
+                        Mostrando {habilidadesFiltradas.length} de {habilidadesDisponiveis.length} matérias
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-500">
+                      Selecione as matérias que você ensina
+                    </p>
+                  </div>
                 ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {perfil.materias.map((materia) => (
-                      <span
-                        key={materia}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
-                      >
-                        {materia}
-                      </span>
-                    ))}
+                  <div className="space-y-4">
+                    {perfil.materias.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {perfil.materias.map((materia) => (
+                          <span
+                            key={materia}
+                            className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 border border-indigo-200"
+                          >
+                            {materia}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-sm italic">
+                        Nenhuma matéria selecionada
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
+
 
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">

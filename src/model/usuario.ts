@@ -3,5 +3,6 @@ export interface Usuario {
   nome: string;
   email: string;
   avatar?: string;
-  papel: "estudante" | "professor";
+  papel: "Aluno" | "Professor";
+  role: string;
 }

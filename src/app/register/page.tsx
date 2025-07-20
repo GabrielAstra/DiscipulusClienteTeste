@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, UserCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
+import { cadastrarUsuario } from "@/service/api";
+import { jwtDecode } from "jwt-decode";
 interface PropriedadesCadastrar {
   aoFazerLogin: (usuario: any) => void;
 }
@@ -20,29 +21,59 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const navegar = useRouter();
+    interface JwtPayload {
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;
+        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
+        papel: "Professor" | "Aluno";
+        [key: string]: any;
+      }
+
 
   const lidarComEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (dadosFormulario.senha !== dadosFormulario.confirmarSenha) {
-      alert('As senhas não coincidem');
+      alert("As senhas não coincidem");
       return;
     }
 
     setCarregando(true);
 
-    setTimeout(() => {
-      const usuario = {
-        id: '1',
+    try {
+      const tipoUsuario = dadosFormulario.papel === "professor" ? 1 : 2;
+
+      const resposta = await cadastrarUsuario({
         nome: dadosFormulario.nome,
         email: dadosFormulario.email,
-        papel: dadosFormulario.papel
+        senha: dadosFormulario.senha,
+        tipoUsuario,
+      });
+
+      // Salva token
+      localStorage.setItem("token", resposta.token);
+
+      // Decodifica token
+      const decoded = jwtDecode<JwtPayload>(resposta.token);
+
+      const usuario = {
+        id: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
+        nome: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+        email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
+        papel: decoded["papel"],
+        role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
       };
+
       aoFazerLogin(usuario);
+      navegar.push("/catalog");
+
+    } catch (erro: any) {
+      alert(erro.message || "Erro ao cadastrar");
+    } finally {
       setCarregando(false);
-      navegar.push('/catalog');
-    }, 1000);
+    }
   };
+
 
   const lidarComMudancaInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setDadosFormulario({
