@@ -8,6 +8,7 @@ import { useUsuario } from "../context/UsuarioContext";
 import { Usuario } from "@/model/usuario";
 import { loginUsuario } from "@/service/api";
 import { jwtDecode } from "jwt-decode";
+import { useToast } from "@/app/context/ToastContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -16,6 +17,8 @@ export default function LoginPage() {
   const [carregando, setCarregando] = useState(false);
   const navegar = useRouter();
   const { lidarComLogin } = useUsuario();
+  const { showError, showSuccess } = useToast();
+
   interface JwtPayload {
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;
@@ -44,10 +47,11 @@ export default function LoginPage() {
       lidarComLogin(usuario);
 
       localStorage.setItem("token", resposta.token);
-
+      showSuccess(`Bem-vindo(a), ${usuario.nome}!`, "Login realizado com sucesso");
+      
       navegar.push("/catalog");
     } catch (erro: any) {
-      alert(erro.message);
+      showError(erro.message || "Erro ao fazer login");
     } finally {
       setCarregando(false);
     }

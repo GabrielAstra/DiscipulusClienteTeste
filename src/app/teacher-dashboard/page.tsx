@@ -401,7 +401,7 @@ export default function PainelProfessor() {
             <div className="grid md:grid-cols-2 gap-8">
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Matérias (Habilidades)
+                  Matérias
                 </h3>
                 {editando ? (
                   <div className="space-y-3">
