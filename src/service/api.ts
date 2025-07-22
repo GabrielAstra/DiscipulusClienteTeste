@@ -29,7 +29,7 @@ export async function loginUsuario(payload: LoginPayload): Promise<LoginResponse
 
 export interface CadastroResponse {
   token: string;
-  mensagem: string;
+  message: string;
   email: string;
 }
 
@@ -37,7 +37,8 @@ export interface UsuarioCadastro {
   nome: string;
   email: string;
   senha: string;
-  tipoUsuario: number; // 1 = professor, 2 = estudante
+  cpf: string;
+  tipoUsuario: number; 
 }
 
 export async function cadastrarUsuario(dados: UsuarioCadastro): Promise<CadastroResponse> {

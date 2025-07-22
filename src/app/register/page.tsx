@@ -5,21 +5,37 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { cadastrarUsuario } from "@/service/api";
 import { jwtDecode } from "jwt-decode";
+import { useUsuario } from "@/app/context/UsuarioContext";
+import { useToast } from "@/app/context/ToastContext";
 interface PropriedadesCadastrar {
   aoFazerLogin: (usuario: any) => void;
 }
+const formatarCPF = (value: string) => {
+  const v = value.replace(/\D/g, '');
+
+  let cpfFormatado = v;
+  if (v.length > 3) cpfFormatado = v.slice(0, 3) + '.' + v.slice(3);
+  if (v.length > 6) cpfFormatado = cpfFormatado.slice(0, 7) + '.' + cpfFormatado.slice(7);
+  if (v.length > 9) cpfFormatado = cpfFormatado.slice(0, 11) + '-' + cpfFormatado.slice(11, 13);
+
+  return cpfFormatado.slice(0, 14); 
+};
 
 export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
+  debugger;
   const [dadosFormulario, setDadosFormulario] = useState({
     nome: '',
     email: '',
     senha: '',
+    cpf: '',
     confirmarSenha: '',
     papel: 'estudante'
   });
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
+  const { lidarComLogin } = useUsuario();
+  const { showError, showSuccess } = useToast();
   const navegar = useRouter();
     interface JwtPayload {
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
@@ -47,13 +63,12 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
         nome: dadosFormulario.nome,
         email: dadosFormulario.email,
         senha: dadosFormulario.senha,
+        cpf: dadosFormulario.cpf.replace(/\D/g, ''),
         tipoUsuario,
       });
 
-      // Salva token
       localStorage.setItem("token", resposta.token);
 
-      // Decodifica token
       const decoded = jwtDecode<JwtPayload>(resposta.token);
 
       const usuario = {
@@ -64,11 +79,12 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
         role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
       };
 
-      aoFazerLogin(usuario);
+      lidarComLogin(usuario);
+      showSuccess(resposta.message || "Cadastro feito com sucesso!")
       navegar.push("/catalog");
 
     } catch (erro: any) {
-      alert(erro.message || "Erro ao cadastrar");
+      showError(erro.message || "Erro ao cadastrar");
     } finally {
       setCarregando(false);
     }
@@ -152,7 +168,31 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
                 />
               </div>
             </div>
+            <div>
+        <label htmlFor="cpf" className="block text-sm font-medium text-gray-700">
+          CPF
+        </label>
+        <div className="mt-1 relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <User className="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+          id="cpf"
+          name="cpf"
+          type="text"
+          value={dadosFormulario.cpf}
+          onChange={e => {
+            const valor = formatarCPF(e.target.value);
+            setDadosFormulario({ ...dadosFormulario, cpf: valor });
+          }}
+          placeholder="000.000.000-00"
+          maxLength={14}
+          required
+          className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        />
 
+        </div>
+      </div>
             <div>
               <label htmlFor="papel" className="block text-sm font-medium text-gray-700">
                 Eu quero
