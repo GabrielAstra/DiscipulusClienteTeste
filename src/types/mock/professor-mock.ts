@@ -1,4 +1,4 @@
-import { Professor } from "@/model/professor";
+import { Professor } from "@/types/professor";
 
 export const professores: Professor[] = [
   {

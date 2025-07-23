@@ -9,13 +9,13 @@ import {
   MessageCircle,
   Heart,
 } from "lucide-react";
-import { Usuario } from "@/model/usuario";
-import { professores } from "@/model/mock/professor-mock";
+import { Usuario } from "@/types/usuario";
+import { professores } from "@/types/mock/professor-mock";
 import { redirect } from "next/navigation";
 import ModalChat from "./ModalChat";
 import ModalLogin from "./ModalLogin";
 import ModalAgendamento from "./ModalAgendamento";
-import { useUsuario } from "@/app/context/UsuarioContext";
+import { useUsuario } from "@/context/UsuarioContext";
 
 interface PropriedadesPerfilProfessor {
   id: string;

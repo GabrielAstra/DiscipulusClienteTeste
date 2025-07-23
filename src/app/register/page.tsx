@@ -1,27 +1,24 @@
 "use client";
-import React, { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, User, UserCheck } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useToast } from "@/context/ToastContext";
+import { Eye, EyeOff, Lock, Mail, User, UserCheck } from "lucide-react";
 import Link from "next/link";
-import { cadastrarUsuario } from "@/lib/service/api";
-import { jwtDecode } from "jwt-decode";
-import { useUsuario } from "@/app/context/UsuarioContext";
-import { useToast } from "@/app/context/ToastContext";
-interface PropriedadesCadastrar {
-  aoFazerLogin: (usuario: any) => void;
-}
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+
 const formatarCPF = (value: string) => {
-  const v = value.replace(/\D/g, '');
+  const v = value.replace(/\D/g, "");
 
   let cpfFormatado = v;
-  if (v.length > 3) cpfFormatado = v.slice(0, 3) + '.' + v.slice(3);
-  if (v.length > 6) cpfFormatado = cpfFormatado.slice(0, 7) + '.' + cpfFormatado.slice(7);
-  if (v.length > 9) cpfFormatado = cpfFormatado.slice(0, 11) + '-' + cpfFormatado.slice(11, 13);
+  if (v.length > 3) cpfFormatado = v.slice(0, 3) + "." + v.slice(3);
+  if (v.length > 6)
+    cpfFormatado = cpfFormatado.slice(0, 7) + "." + cpfFormatado.slice(7);
+  if (v.length > 9)
+    cpfFormatado = cpfFormatado.slice(0, 11) + "-" + cpfFormatado.slice(11, 13);
 
-  return cpfFormatado.slice(0, 14); 
+  return cpfFormatado.slice(0, 14);
 };
 
-export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
+export default function CadastroPage() {
   debugger;
   const [dadosFormulario, setDadosFormulario] = useState({
     nome: "",
@@ -29,20 +26,13 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
     senha: "",
     confirmarSenha: "",
     papel: "estudante",
+    cpf: "",
   });
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
-  const { lidarComLogin } = useUsuario();
   const { showError, showSuccess } = useToast();
   const navegar = useRouter();
-  interface JwtPayload {
-    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
-    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;
-    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
-    papel: "Professor" | "Aluno";
-    [key: string]: any;
-  }
 
   const lidarComEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,46 +44,29 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
 
     setCarregando(true);
 
+    const tipoUsuario = dadosFormulario.papel === "professor" ? 1 : 2;
     try {
-      const tipoUsuario = dadosFormulario.papel === "professor" ? 1 : 2;
-
-      const resposta = await cadastrarUsuario({
-        nome: dadosFormulario.nome,
-        email: dadosFormulario.email,
-        senha: dadosFormulario.senha,
-        cpf: dadosFormulario.cpf.replace(/\D/g, ''),
-        tipoUsuario,
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome: dadosFormulario.nome,
+          email: dadosFormulario.email,
+          senha: dadosFormulario.senha,
+          tipoUsuario,
+        }),
       });
 
-      localStorage.setItem("token", resposta.token);
-
-      const decoded = jwtDecode<JwtPayload>(resposta.token);
-
-      const usuario = {
-        id: decoded[
-          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-        ],
-        nome: decoded[
-          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-        ],
-        email:
-          decoded[
-            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-          ],
-        papel: decoded["papel"],
-        role: decoded[
-          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-        ],
-      };
-
-      lidarComLogin(usuario);
-      showSuccess(resposta.message || "Cadastro feito com sucesso!")
-      navegar.push("/catalog");
+      showSuccess("Cadastro feito com sucesso!");
     } catch (erro: any) {
-      showError(erro.message || "Erro ao cadastrar");
+      showError("Erro ao cadastrar");
     } finally {
       setCarregando(false);
     }
+
+    navegar.push("/catalog");
   };
 
   const lidarComMudancaInput = (
@@ -182,30 +155,32 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
               </div>
             </div>
             <div>
-        <label htmlFor="cpf" className="block text-sm font-medium text-gray-700">
-          CPF
-        </label>
-        <div className="mt-1 relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <User className="h-5 w-5 text-gray-400" />
-          </div>
-          <input
-          id="cpf"
-          name="cpf"
-          type="text"
-          value={dadosFormulario.cpf}
-          onChange={e => {
-            const valor = formatarCPF(e.target.value);
-            setDadosFormulario({ ...dadosFormulario, cpf: valor });
-          }}
-          placeholder="000.000.000-00"
-          maxLength={14}
-          required
-          className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-        />
-
-        </div>
-      </div>
+              <label
+                htmlFor="cpf"
+                className="block text-sm font-medium text-gray-700"
+              >
+                CPF
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="cpf"
+                  name="cpf"
+                  type="text"
+                  value={dadosFormulario.cpf}
+                  onChange={(e) => {
+                    const valor = formatarCPF(e.target.value);
+                    setDadosFormulario({ ...dadosFormulario, cpf: valor });
+                  }}
+                  placeholder="000.000.000-00"
+                  maxLength={14}
+                  required
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+            </div>
             <div>
               <label
                 htmlFor="papel"

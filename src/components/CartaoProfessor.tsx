@@ -8,7 +8,7 @@ import {
   Award,
   Users,
 } from "lucide-react";
-import { Professor } from "@/model/professor";
+import { Professor } from "@/types/professor";
 import Link from "next/link";
 
 interface PropriedadesCartaoProfessor {
