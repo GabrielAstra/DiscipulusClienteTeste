@@ -1,5 +1,6 @@
 "use client";
 import { useToast } from "@/context/ToastContext";
+import { ICadastroRequest } from "@/lib/service/auth/auth.service";
 import { Eye, EyeOff, Lock, Mail, User, UserCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -45,28 +46,30 @@ export default function CadastroPage() {
     setCarregando(true);
 
     const tipoUsuario = dadosFormulario.papel === "professor" ? 1 : 2;
+    const request: ICadastroRequest = {
+      nome: dadosFormulario.nome,
+      email: dadosFormulario.email,
+      senha: dadosFormulario.senha,
+      cpf: dadosFormulario.cpf,
+      tipoUsuario,
+    };
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch("/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          nome: dadosFormulario.nome,
-          email: dadosFormulario.email,
-          senha: dadosFormulario.senha,
-          tipoUsuario,
-        }),
+        body: JSON.stringify(request),
       });
-
-      showSuccess("Cadastro feito com sucesso!");
-    } catch (erro: any) {
-      showError("Erro ao cadastrar");
+      if (res.ok) {
+        showSuccess("Cadastro feito com sucesso!");
+        navegar.push("/catalog");
+      } else {
+        showError("Erro ao cadastrar");
+      }
     } finally {
       setCarregando(false);
     }
-
-    navegar.push("/catalog");
   };
 
   const lidarComMudancaInput = (

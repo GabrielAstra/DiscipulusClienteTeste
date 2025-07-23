@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useUsuario } from "../../context/UsuarioContext";
+import { ILoginRequest } from "@/lib/service/auth/auth.service";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,7 +19,8 @@ export default function LoginPage() {
 
   const lidarComEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
-    await realizarLogin({ email, password: senha });
+    const request: ILoginRequest = { email, password: senha };
+    await realizarLogin(request);
     if (usuario) {
       showSuccess(`Bem-vindo(a), ${usuario.nome}!`, "Olá!");
       navegar.push("/catalog");

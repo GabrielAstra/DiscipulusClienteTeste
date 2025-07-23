@@ -1,6 +1,6 @@
 import { environment } from "@/lib/environment/environment";
 
-export interface ILoginPayload {
+export interface ILoginRequest {
   email: string;
   password: string;
 }
@@ -11,7 +11,7 @@ export interface ILoginResponse {
   mensagem: string;
 }
 
-export async function login(payload: ILoginPayload): Promise<ILoginResponse> {
+export async function login(payload: ILoginRequest): Promise<ILoginResponse> {
   try {
     const resposta = await fetch(
       `${environment.DISCIPULUS_API_URL}/Home/Login`,
@@ -37,10 +37,11 @@ export async function login(payload: ILoginPayload): Promise<ILoginResponse> {
   }
 }
 
-export interface ICadastroPayload {
+export interface ICadastroRequest {
   nome: string;
   email: string;
   senha: string;
+  cpf: string;
   tipoUsuario: number; // 1 = professor, 2 = estudante
 }
 
@@ -51,21 +52,29 @@ export interface ICadastroResponse {
 }
 
 export async function signup(
-  payload: ICadastroPayload
+  payload: ICadastroRequest
 ): Promise<ICadastroResponse> {
-  const resposta = await fetch(
-    `${environment.DISCIPULUS_API_URL}/Home/Registro`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...payload, status: 0 }),
-    }
-  );
+  try {
+    const resposta = await fetch(
+      `${environment.DISCIPULUS_API_URL}/Home/Registro`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...payload, status: 0 }),
+      }
+    );
+    const responseBody = await resposta.json();
+    console.log(responseBody);
 
-  const responseBody = await resposta.json();
-  console.log(responseBody);
-
-  return await resposta.json();
+    return await resposta.json();
+  } catch (error) {
+    console.error(error);
+    return {
+      email: "",
+      mensagem: "Erro ao executar requisicao",
+      token: "",
+    };
+  }
 }

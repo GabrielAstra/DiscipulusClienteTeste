@@ -1,13 +1,13 @@
 "use client";
 
-import { ILoginPayload } from "@/lib/service/auth/auth.service";
+import { ILoginRequest } from "@/lib/service/auth/auth.service";
 import { Usuario } from "@/types/usuario";
 import { createContext, useContext, useEffect, useState } from "react";
 
 interface UsuarioContextType {
   usuario: Usuario | null;
   refreshUser: () => Promise<void>;
-  realizarLogin: (payload: ILoginPayload) => Promise<void>;
+  realizarLogin: (payload: ILoginRequest) => Promise<void>;
   realizarLogout: () => void;
   loading: boolean;
 }
@@ -33,7 +33,7 @@ export function UsuarioProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function realizarLogin(payload: ILoginPayload) {
+  async function realizarLogin(payload: ILoginRequest) {
     setLoading(true);
     try {
       const res = await fetch("/api/login", {
