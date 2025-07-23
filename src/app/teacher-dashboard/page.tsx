@@ -10,8 +10,27 @@ import {
   TrendingUp,
   User,
   X,
+  Plus,
+  Trash2,
+  GraduationCap,
+  Briefcase,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+
+interface FormacaoDTO {
+  titulo: string;
+  instituicao: string;
+  dtInicio: string;
+  dtConclusao: string;
+}
+
+interface ExperienciaDTO {
+  titulo: string;
+  instituicao: string;
+  inicio: string;
+  fim: string;
+  descricao: string;
+}
 
 interface PerfilProfessor {
   id: string;
@@ -21,10 +40,10 @@ interface PerfilProfessor {
   biografia: string;
   materias: string[];
   valorHora: number;
-  experiencia: string;
+  experiencia: ExperienciaDTO[];
   idiomas: string[];
   disponibilidade: string[];
-  formacao: string;
+  formacao: FormacaoDTO[];
   certificacoes: string[];
   telefone: string;
   localizacao: string;
@@ -47,6 +66,30 @@ interface Transacao {
   status: "concluido" | "pendente" | "falhou";
 }
 
+function aplicarMascaraTelefone(valor: string) {
+  const apenasNumeros = valor.replace(/\D/g, "");
+
+  let telefoneFormatado = "+";
+
+  if (apenasNumeros.length > 0) {
+    telefoneFormatado += apenasNumeros.slice(0, 2);
+  }
+
+  if (apenasNumeros.length >= 3) {
+    telefoneFormatado += " " + apenasNumeros.slice(2, 4);
+  }
+
+  if (apenasNumeros.length >= 5) {
+    telefoneFormatado += " " + apenasNumeros.slice(4, 9);
+  }
+
+  if (apenasNumeros.length >= 10) {
+    telefoneFormatado += "-" + apenasNumeros.slice(9, 13);
+  }
+
+  return telefoneFormatado.trim();
+}
+
 export default function PainelProfessor() {
   const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira">("perfil");
   const [editando, setEditando] = useState(false);
@@ -65,10 +108,38 @@ export default function PainelProfessor() {
       "Professora apaixonada por matemática e física com doutorado em Matemática Aplicada. Especializo-me em tornar conceitos complexos acessíveis e envolventes para estudantes de todos os níveis.",
     materias: [],
     valorHora: 45,
-    experiencia: "8 anos",
+    experiencia: [
+      {
+        titulo: "Professora Senior de Matemática",
+        instituicao: "Colégio Objetivo",
+        inicio: "2020-01-15T00:00:00.000Z",
+        fim: "2024-12-31T00:00:00.000Z",
+        descricao: "Leciono matemática para ensino médio, desenvolvendo metodologias inovadoras e acompanhando alunos em vestibulares."
+      },
+      {
+        titulo: "Tutora de Física",
+        instituicao: "Centro de Estudos Avançados",
+        inicio: "2018-03-01T00:00:00.000Z",
+        fim: "2020-01-10T00:00:00.000Z",
+        descricao: "Aulas particulares e em grupo, focando na preparação para concursos e vestibulares."
+      }
+    ],
     idiomas: ["Português", "Inglês"],
     disponibilidade: ["Segunda", "Terça", "Quarta", "Sexta"],
-    formacao: "Doutorado em Matemática Aplicada - USP",
+    formacao: [
+      {
+        titulo: "Doutorado em Matemática Aplicada",
+        instituicao: "Universidade de São Paulo (USP)",
+        dtInicio: "2015-03-01T00:00:00.000Z",
+        dtConclusao: "2019-12-15T00:00:00.000Z"
+      },
+      {
+        titulo: "Mestrado em Física",
+        instituicao: "Instituto de Física - USP",
+        dtInicio: "2013-02-01T00:00:00.000Z",
+        dtConclusao: "2015-01-30T00:00:00.000Z"
+      }
+    ],
     certificacoes: [
       "Certificação em Ensino Online",
       "Especialização em Didática",
@@ -78,7 +149,6 @@ export default function PainelProfessor() {
   });
 
   const [dadosCarteira] = useState<DadosCarteira>({
-    
     saldo: 1250.5,
     ganhosTotal: 8750.0,
     pagamentosPendentes: 320.0,
@@ -115,6 +185,7 @@ export default function PainelProfessor() {
     setEditando(false);
     console.log("Perfil salvo:", perfil);
   };
+
   const [habilidadesDisponiveis, setHabilidadesDisponiveis] = useState<Habilidade[]>([]);
 
   useEffect(() => {
@@ -143,9 +214,82 @@ export default function PainelProfessor() {
   const formatarData = (dataString: string) => {
     return new Date(dataString).toLocaleDateString("pt-BR");
   };
+
+  const formatarDataInput = (dataString: string) => {
+    return new Date(dataString).toISOString().split('T')[0];
+  };
+
+  const adicionarFormacao = () => {
+    const novaFormacao: FormacaoDTO = {
+      titulo: "",
+      instituicao: "",
+      dtInicio: new Date().toISOString(),
+      dtConclusao: new Date().toISOString()
+    };
+    setPerfil({
+      ...perfil,
+      formacao: [...perfil.formacao, novaFormacao]
+    });
+  };
+
+  const removerFormacao = (index: number) => {
+    const novasFormacoes = perfil.formacao.filter((_, i) => i !== index);
+    setPerfil({
+      ...perfil,
+      formacao: novasFormacoes
+    });
+  };
+
+  const atualizarFormacao = (index: number, campo: keyof FormacaoDTO, valor: string) => {
+    const novasFormacoes = [...perfil.formacao];
+    novasFormacoes[index] = {
+      ...novasFormacoes[index],
+      [campo]: valor
+    };
+    setPerfil({
+      ...perfil,
+      formacao: novasFormacoes
+    });
+  };
+
+  const adicionarExperiencia = () => {
+    const novaExperiencia: ExperienciaDTO = {
+      titulo: "",
+      instituicao: "",
+      inicio: new Date().toISOString(),
+      fim: new Date().toISOString(),
+      descricao: ""
+    };
+    setPerfil({
+      ...perfil,
+      experiencia: [...perfil.experiencia, novaExperiencia]
+    });
+  };
+
+  const removerExperiencia = (index: number) => {
+    const novasExperiencias = perfil.experiencia.filter((_, i) => i !== index);
+    setPerfil({
+      ...perfil,
+      experiencia: novasExperiencias
+    });
+  };
+
+  const atualizarExperiencia = (index: number, campo: keyof ExperienciaDTO, valor: string) => {
+    const novasExperiencias = [...perfil.experiencia];
+    novasExperiencias[index] = {
+      ...novasExperiencias[index],
+      [campo]: valor
+    };
+    setPerfil({
+      ...perfil,
+      experiencia: novasExperiencias
+    });
+  };
+
   const habilidadesFiltradas = habilidadesDisponiveis.filter(hab =>
     hab.nomeHabilidade.toLowerCase().includes(filtroMateria.toLowerCase())
   );
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -248,10 +392,9 @@ export default function PainelProfessor() {
                       <input
                         type="email"
                         value={perfil.email}
-                        onChange={(e) =>
-                          setPerfil({ ...perfil, email: e.target.value })
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        readOnly
+                        disabled
+                        className="w-full p-3 border border-gray-200 bg-gray-100 text-gray-500 rounded-lg cursor-not-allowed"
                       />
                     ) : (
                       <p className="text-gray-900">{perfil.email}</p>
@@ -267,7 +410,10 @@ export default function PainelProfessor() {
                         type="tel"
                         value={perfil.telefone}
                         onChange={(e) =>
-                          setPerfil({ ...perfil, telefone: e.target.value })
+                          setPerfil({
+                            ...perfil,
+                            telefone: aplicarMascaraTelefone(e.target.value),
+                          })
                         }
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       />
@@ -319,42 +465,6 @@ export default function PainelProfessor() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Experiência
-                    </label>
-                    {editando ? (
-                      <input
-                        type="text"
-                        value={perfil.experiencia}
-                        onChange={(e) =>
-                          setPerfil({ ...perfil, experiencia: e.target.value })
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      />
-                    ) : (
-                      <p className="text-gray-900">{perfil.experiencia}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Formação
-                    </label>
-                    {editando ? (
-                      <input
-                        type="text"
-                        value={perfil.formacao}
-                        onChange={(e) =>
-                          setPerfil({ ...perfil, formacao: e.target.value })
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      />
-                    ) : (
-                      <p className="text-gray-900">{perfil.formacao}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Idiomas
                     </label>
                     {editando ? (
@@ -394,6 +504,238 @@ export default function PainelProfessor() {
                   />
                 ) : (
                   <p className="text-gray-900">{perfil.biografia}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Formação Acadêmica */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-2">
+                  <GraduationCap className="w-6 h-6 text-indigo-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Formação Acadêmica
+                  </h3>
+                </div>
+                {editando && (
+                  <button
+                    onClick={adicionarFormacao}
+                    className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Adicionar Formação</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-6">
+                {perfil.formacao.map((formacao, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    {editando ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-md font-medium text-gray-900">
+                            Formação #{index + 1}
+                          </h4>
+                          <button
+                            onClick={() => removerFormacao(index)}
+                            className="text-red-600 hover:text-red-800 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Título
+                            </label>
+                            <input
+                              type="text"
+                              value={formacao.titulo}
+                              onChange={(e) => atualizarFormacao(index, 'titulo', e.target.value)}
+                              placeholder="Ex: Doutorado em Matemática"
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Instituição
+                            </label>
+                            <input
+                              type="text"
+                              value={formacao.instituicao}
+                              onChange={(e) => atualizarFormacao(index, 'instituicao', e.target.value)}
+                              placeholder="Ex: Universidade de São Paulo"
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Data de Início
+                            </label>
+                            <input
+                              type="date"
+                              value={formatarDataInput(formacao.dtInicio)}
+                              onChange={(e) => atualizarFormacao(index, 'dtInicio', new Date(e.target.value).toISOString())}
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Data de Conclusão
+                            </label>
+                            <input
+                              type="date"
+                              value={formatarDataInput(formacao.dtConclusao)}
+                              onChange={(e) => atualizarFormacao(index, 'dtConclusao', new Date(e.target.value).toISOString())}
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-2">{formacao.titulo}</h4>
+                        <p className="text-gray-700 mb-1">{formacao.instituicao}</p>
+                        <p className="text-sm text-gray-600">
+                          {formatarData(formacao.dtInicio)} - {formatarData(formacao.dtConclusao)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                
+                {perfil.formacao.length === 0 && !editando && (
+                  <p className="text-gray-500 text-center py-8">
+                    Nenhuma formação acadêmica cadastrada
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Experiência Profissional */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-2">
+                  <Briefcase className="w-6 h-6 text-green-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Experiência Profissional
+                  </h3>
+                </div>
+                {editando && (
+                  <button
+                    onClick={adicionarExperiencia}
+                    className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Adicionar Experiência</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-6">
+                {perfil.experiencia.map((exp, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    {editando ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-md font-medium text-gray-900">
+                            Experiência #{index + 1}
+                          </h4>
+                          <button
+                            onClick={() => removerExperiencia(index)}
+                            className="text-red-600 hover:text-red-800 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Título do Cargo
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.titulo}
+                              onChange={(e) => atualizarExperiencia(index, 'titulo', e.target.value)}
+                              placeholder="Ex: Professor de Matemática"
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Instituição/Empresa
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.instituicao}
+                              onChange={(e) => atualizarExperiencia(index, 'instituicao', e.target.value)}
+                              placeholder="Ex: Colégio Objetivo"
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Data de Início
+                            </label>
+                            <input
+                              type="date"
+                              value={formatarDataInput(exp.inicio)}
+                              onChange={(e) => atualizarExperiencia(index, 'inicio', new Date(e.target.value).toISOString())}
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Data de Fim
+                            </label>
+                            <input
+                              type="date"
+                              value={formatarDataInput(exp.fim)}
+                              onChange={(e) => atualizarExperiencia(index, 'fim', new Date(e.target.value).toISOString())}
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Descrição das Atividades
+                          </label>
+                          <textarea
+                            value={exp.descricao}
+                            onChange={(e) => atualizarExperiencia(index, 'descricao', e.target.value)}
+                            rows={3}
+                            placeholder="Descreva suas principais atividades e responsabilidades..."
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-1">{exp.titulo}</h4>
+                        <p className="text-gray-700 mb-1">{exp.instituicao}</p>
+                        <p className="text-sm text-gray-600 mb-2">
+                          {formatarData(exp.inicio)} - {formatarData(exp.fim)}
+                        </p>
+                        <p className="text-gray-700 text-sm">{exp.descricao}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                
+                {perfil.experiencia.length === 0 && !editando && (
+                  <p className="text-gray-500 text-center py-8">
+                    Nenhuma experiência profissional cadastrada
+                  </p>
                 )}
               </div>
             </div>
@@ -491,7 +833,6 @@ export default function PainelProfessor() {
                   </div>
                 )}
               </div>
-
 
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
