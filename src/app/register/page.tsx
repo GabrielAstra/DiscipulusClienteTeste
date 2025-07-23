@@ -1,9 +1,9 @@
-'use client';
-import React, { useState } from 'react';
-import { Eye, EyeOff, Mail, Lock, User, UserCheck } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { cadastrarUsuario } from "@/service/api";
+"use client";
+import React, { useState } from "react";
+import { Eye, EyeOff, Mail, Lock, User, UserCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { cadastrarUsuario } from "@/lib/service/api";
 import { jwtDecode } from "jwt-decode";
 import { useUsuario } from "@/app/context/UsuarioContext";
 import { useToast } from "@/app/context/ToastContext";
@@ -24,12 +24,11 @@ const formatarCPF = (value: string) => {
 export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
   debugger;
   const [dadosFormulario, setDadosFormulario] = useState({
-    nome: '',
-    email: '',
-    senha: '',
-    cpf: '',
-    confirmarSenha: '',
-    papel: 'estudante'
+    nome: "",
+    email: "",
+    senha: "",
+    confirmarSenha: "",
+    papel: "estudante",
   });
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
@@ -37,14 +36,13 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
   const { lidarComLogin } = useUsuario();
   const { showError, showSuccess } = useToast();
   const navegar = useRouter();
-    interface JwtPayload {
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;
-        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
-        papel: "Professor" | "Aluno";
-        [key: string]: any;
-      }
-
+  interface JwtPayload {
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;
+    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
+    papel: "Professor" | "Aluno";
+    [key: string]: any;
+  }
 
   const lidarComEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,17 +70,25 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
       const decoded = jwtDecode<JwtPayload>(resposta.token);
 
       const usuario = {
-        id: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
-        nome: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
-        email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
+        id: decoded[
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+        ],
+        nome: decoded[
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+        ],
+        email:
+          decoded[
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+          ],
         papel: decoded["papel"],
-        role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
+        role: decoded[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ],
       };
 
       lidarComLogin(usuario);
       showSuccess(resposta.message || "Cadastro feito com sucesso!")
       navegar.push("/catalog");
-
     } catch (erro: any) {
       showError(erro.message || "Erro ao cadastrar");
     } finally {
@@ -90,11 +96,12 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
     }
   };
 
-
-  const lidarComMudancaInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const lidarComMudancaInput = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setDadosFormulario({
       ...dadosFormulario,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -102,9 +109,9 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <img 
-            src="/BrancoComFundoPreto.jpg" 
-            alt="Discipulus" 
+          <img
+            src="/BrancoComFundoPreto.jpg"
+            alt="Discipulus"
             className="h-12 w-12 rounded-lg object-cover"
           />
         </div>
@@ -112,7 +119,7 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
           Crie sua conta
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Ou{' '}
+          Ou{" "}
           <Link
             href="/login"
             className="font-medium text-indigo-600 hover:text-indigo-500"
@@ -126,7 +133,10 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
         <div className="bg-white py-8 px-4 shadow-sm rounded-lg sm:px-10 border border-gray-200">
           <form className="space-y-6" onSubmit={lidarComEnvio}>
             <div>
-              <label htmlFor="nome" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="nome"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Nome completo
               </label>
               <div className="mt-1 relative">
@@ -148,7 +158,10 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Endereço de email
               </label>
               <div className="mt-1 relative">
@@ -194,7 +207,10 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
         </div>
       </div>
             <div>
-              <label htmlFor="papel" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="papel"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Eu quero
               </label>
               <div className="mt-1 relative">
@@ -215,7 +231,10 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
             </div>
 
             <div>
-              <label htmlFor="senha" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="senha"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Senha
               </label>
               <div className="mt-1 relative">
@@ -225,7 +244,7 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
                 <input
                   id="senha"
                   name="senha"
-                  type={mostrarSenha ? 'text' : 'password'}
+                  type={mostrarSenha ? "text" : "password"}
                   autoComplete="new-password"
                   required
                   value={dadosFormulario.senha}
@@ -248,7 +267,10 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
             </div>
 
             <div>
-              <label htmlFor="confirmarSenha" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="confirmarSenha"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Confirmar senha
               </label>
               <div className="mt-1 relative">
@@ -258,7 +280,7 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
                 <input
                   id="confirmarSenha"
                   name="confirmarSenha"
-                  type={mostrarConfirmarSenha ? 'text' : 'password'}
+                  type={mostrarConfirmarSenha ? "text" : "password"}
                   autoComplete="new-password"
                   required
                   value={dadosFormulario.confirmarSenha}
@@ -269,7 +291,9 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+                  onClick={() =>
+                    setMostrarConfirmarSenha(!mostrarConfirmarSenha)
+                  }
                 >
                   {mostrarConfirmarSenha ? (
                     <EyeOff className="h-5 w-5 text-gray-400" />
@@ -288,12 +312,15 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
                 required
                 className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
               />
-              <label htmlFor="aceitar-termos" className="ml-2 block text-sm text-gray-900">
-                Eu concordo com os{' '}
+              <label
+                htmlFor="aceitar-termos"
+                className="ml-2 block text-sm text-gray-900"
+              >
+                Eu concordo com os{" "}
                 <a href="#" className="text-indigo-600 hover:text-indigo-500">
                   Termos de Serviço
-                </a>{' '}
-                e{' '}
+                </a>{" "}
+                e{" "}
                 <a href="#" className="text-indigo-600 hover:text-indigo-500">
                   Política de Privacidade
                 </a>
@@ -306,7 +333,7 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
                 disabled={carregando}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {carregando ? 'Criando conta...' : 'Criar conta'}
+                {carregando ? "Criando conta..." : "Criar conta"}
               </button>
             </div>
           </form>
@@ -317,7 +344,9 @@ export default function CadastroPage({ aoFazerLogin }: PropriedadesCadastrar) {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Ou continue com</span>
+                <span className="px-2 bg-white text-gray-500">
+                  Ou continue com
+                </span>
               </div>
             </div>
 

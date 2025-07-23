@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUsuario } from "../context/UsuarioContext";
 import { Usuario } from "@/model/usuario";
-import { loginUsuario } from "@/service/api";
+import { loginUsuario } from "@/lib/service/api";
 import { jwtDecode } from "jwt-decode";
 import { useToast } from "@/app/context/ToastContext";
 
@@ -20,12 +20,12 @@ export default function LoginPage() {
   const { showError, showSuccess } = useToast();
 
   interface JwtPayload {
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;
-        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
-        papel: "Professor" | "Aluno";
-        [key: string]: any;
-      }
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;
+    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
+    papel: "Professor" | "Aluno";
+    [key: string]: any;
+  }
 
   const lidarComEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,15 +34,23 @@ export default function LoginPage() {
     try {
       const resposta = await loginUsuario({ email, password: senha });
 
-      
       const decoded = jwtDecode<JwtPayload>(resposta.token);
 
       const usuario: Usuario = {
-        id: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
-        nome: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
-        email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
+        id: decoded[
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+        ],
+        nome: decoded[
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+        ],
+        email:
+          decoded[
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+          ],
         papel: decoded["papel"],
-        role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
+        role: decoded[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ],
       };
       lidarComLogin(usuario);
 
@@ -56,7 +64,6 @@ export default function LoginPage() {
       setCarregando(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

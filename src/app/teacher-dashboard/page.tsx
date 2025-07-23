@@ -1,5 +1,5 @@
 "use client";
-import { listarHabilidades, Habilidade } from "@/service/api";
+import { listarHabilidades, Habilidade } from "@/lib/service/api";
 
 import {
   Calendar,
@@ -97,7 +97,7 @@ export default function PainelProfessor() {
   const [valorSaque, setValorSaque] = useState("");
   const [metodoSaque, setMetodoSaque] = useState("pix");
   const [filtroMateria, setFiltroMateria] = useState("");
-  
+
   const [perfil, setPerfil] = useState<PerfilProfessor>({
     id: "1",
     nome: "Sarah Johnson",
@@ -756,8 +756,18 @@ export default function PainelProfessor() {
                         className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
                       />
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <svg
+                          className="h-5 w-5 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                          />
                         </svg>
                       </div>
                     </div>
@@ -765,18 +775,23 @@ export default function PainelProfessor() {
                       {habilidadesFiltradas.length > 0 ? (
                         <div className="space-y-3">
                           {habilidadesFiltradas.map((hab) => (
-                            <label 
-                              key={hab.habilidadeID} 
+                            <label
+                              key={hab.habilidadeID}
                               className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg transition-colors cursor-pointer"
                             >
                               <input
                                 type="checkbox"
-                                checked={perfil.materias.includes(hab.nomeHabilidade)}
+                                checked={perfil.materias.includes(
+                                  hab.nomeHabilidade
+                                )}
                                 onChange={(e) => {
                                   if (e.target.checked) {
                                     setPerfil({
                                       ...perfil,
-                                      materias: [...perfil.materias, hab.nomeHabilidade],
+                                      materias: [
+                                        ...perfil.materias,
+                                        hab.nomeHabilidade,
+                                      ],
                                     });
                                   } else {
                                     setPerfil({
@@ -805,7 +820,8 @@ export default function PainelProfessor() {
                     </div>
                     {filtroMateria && (
                       <p className="text-xs text-gray-500">
-                        Mostrando {habilidadesFiltradas.length} de {habilidadesDisponiveis.length} matérias
+                        Mostrando {habilidadesFiltradas.length} de{" "}
+                        {habilidadesDisponiveis.length} matérias
                       </p>
                     )}
                     <p className="text-xs text-gray-500">
