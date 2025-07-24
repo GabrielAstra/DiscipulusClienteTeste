@@ -1,50 +1,56 @@
-'use client';
-import { Search, SlidersHorizontal } from 'lucide-react';
-import { useMemo, useState } from 'react';
+"use client";
+import { Search, SlidersHorizontal } from "lucide-react";
+import { useMemo, useState } from "react";
 
-import CartaoProfessor from '@/components/CartaoProfessor';
-import { materias } from '@/model/mock/materia-mock';
-import FiltroMateria from '@/components/FiltroMateria';
-import { professores } from '@/model/mock/professor-mock';
+import CartaoProfessor from "@/components/CartaoProfessor";
+import { materias } from "@/types/mock/materia-mock";
+import FiltroMateria from "@/components/FiltroMateria";
+import { professores } from "@/types/mock/professor-mock";
 
 export default function CatalogoProfessoresPage() {
-  const [termoBusca, setTermoBusca] = useState('');
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState('Todas');
-  const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>([]);
+  const [termoBusca, setTermoBusca] = useState("");
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState("Todas");
+  const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>(
+    []
+  );
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
-  const [ordenarPor, setOrdenarPor] = useState('avaliacao');
+  const [ordenarPor, setOrdenarPor] = useState("avaliacao");
 
   const materiasDisponiveis = useMemo(() => {
-    if (categoriaSelecionada === 'Todas') {
-      return materias.map(m => m.nome);
+    if (categoriaSelecionada === "Todas") {
+      return materias.map((m) => m.nome);
     }
-    return materias.filter(m => m.categoria === categoriaSelecionada).map(m => m.nome);
+    return materias
+      .filter((m) => m.categoria === categoriaSelecionada)
+      .map((m) => m.nome);
   }, [categoriaSelecionada]);
 
   const professoresFiltrados = useMemo(() => {
-    let filtrados = professores.filter(professor => {
-      const correspondeABusca = professor.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
-                          professor.materias.some(materia => 
-                            materia.toLowerCase().includes(termoBusca.toLowerCase())
-                          );
-      
-      const correspondeMaterias = materiasSelecionadas.length === 0 ||
-                            materiasSelecionadas.some(materia => 
-                              professor.materias.includes(materia)
-                            );
-      
+    let filtrados = professores.filter((professor) => {
+      const correspondeABusca =
+        professor.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
+        professor.materias.some((materia) =>
+          materia.toLowerCase().includes(termoBusca.toLowerCase())
+        );
+
+      const correspondeMaterias =
+        materiasSelecionadas.length === 0 ||
+        materiasSelecionadas.some((materia) =>
+          professor.materias.includes(materia)
+        );
+
       return correspondeABusca && correspondeMaterias;
     });
 
     filtrados.sort((a, b) => {
       switch (ordenarPor) {
-        case 'avaliacao':
+        case "avaliacao":
           return b.avaliacao - a.avaliacao;
-        case 'preco-baixo':
+        case "preco-baixo":
           return a.valorHora - b.valorHora;
-        case 'preco-alto':
+        case "preco-alto":
           return b.valorHora - a.valorHora;
-        case 'avaliacoes':
+        case "avaliacoes":
           return b.numeroAvaliacoes - a.numeroAvaliacoes;
         default:
           return 0;
@@ -58,9 +64,12 @@ export default function CatalogoProfessoresPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Encontre o Professor Perfeito</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Encontre o Professor Perfeito
+          </h1>
           <p className="text-gray-600">
-            Navegue pelo nosso catálogo de professores especialistas e encontre a combinação perfeita para suas necessidades de aprendizado.
+            Navegue pelo nosso catálogo de professores especialistas e encontre
+            a combinação perfeita para suas necessidades de aprendizado.
           </p>
         </div>
 
@@ -76,7 +85,7 @@ export default function CatalogoProfessoresPage() {
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
-            
+
             <div className="flex gap-2">
               <button
                 onClick={() => setMostrarFiltros(!mostrarFiltros)}
@@ -85,7 +94,7 @@ export default function CatalogoProfessoresPage() {
                 <SlidersHorizontal className="w-5 h-5" />
                 <span>Filtros</span>
               </button>
-              
+
               <select
                 value={ordenarPor}
                 onChange={(e) => setOrdenarPor(e.target.value)}
@@ -116,7 +125,9 @@ export default function CatalogoProfessoresPage() {
           <div className="flex-1">
             <div className="mb-4 flex items-center justify-between">
               <p className="text-gray-600">
-                {professoresFiltrados.length} professor{professoresFiltrados.length !== 1 ? 'es' : ''} encontrado{professoresFiltrados.length !== 1 ? 's' : ''}
+                {professoresFiltrados.length} professor
+                {professoresFiltrados.length !== 1 ? "es" : ""} encontrado
+                {professoresFiltrados.length !== 1 ? "s" : ""}
               </p>
             </div>
 
@@ -125,9 +136,12 @@ export default function CatalogoProfessoresPage() {
                 <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Search className="w-12 h-12 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum professor encontrado</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Nenhum professor encontrado
+                </h3>
                 <p className="text-gray-600">
-                  Tente ajustar seus critérios de busca ou filtros para encontrar mais professores.
+                  Tente ajustar seus critérios de busca ou filtros para
+                  encontrar mais professores.
                 </p>
               </div>
             ) : (

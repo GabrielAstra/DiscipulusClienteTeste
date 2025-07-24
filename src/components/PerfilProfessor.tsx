@@ -1,25 +1,26 @@
 "use client";
-import { useState } from "react";
+import { useToast } from "@/context/ToastContext";
+import { useUsuario } from "@/context/UsuarioContext";
+import { ILoginRequest } from "@/lib/service/auth/auth.service";
+import { professores } from "@/types/mock/professor-mock";
 import {
-  Star,
+  Calendar,
+  CheckCircle,
   Clock,
   Globe,
-  CheckCircle,
-  Calendar,
   MessageCircle,
   Heart,
   GraduationCap,
   Briefcase,
   Award,
   MapPin,
+  Star,
 } from "lucide-react";
-import { Usuario } from "@/model/usuario";
-import { professores } from "@/model/mock/professor-mock";
 import { redirect } from "next/navigation";
+import { useState } from "react";
+import ModalAgendamento from "./ModalAgendamento";
 import ModalChat from "./ModalChat";
 import ModalLogin from "./ModalLogin";
-import ModalAgendamento from "./ModalAgendamento";
-import { useUsuario } from "@/app/context/UsuarioContext";
 
 interface FormacaoDTO {
   titulo: string;
@@ -41,7 +42,8 @@ interface PropriedadesPerfilProfessor {
 }
 
 export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
-  const { usuario, lidarComLogin } = useUsuario();
+  const { usuario, realizarLogin } = useUsuario();
+  const { showError, showSuccess } = useToast();
 
   const professor = professores.find((p) => p.id === id);
   const [agendamentoAberto, setAgendamentoAberto] = useState(false);
@@ -133,8 +135,13 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
     }
   };
 
-  const lidarComSucessoLogin = (dadosUsuario: Usuario) => {
-    lidarComLogin(dadosUsuario);
+  const lidarComSucessoLogin = async (dadosUsuario: ILoginRequest) => {
+    const { success, data } = await realizarLogin(dadosUsuario);
+    if (success) {
+      showSuccess("Olá!", `Bem-vindo(a) de volta, ${data?.nome}!`);
+    } else {
+      showError("Email e/ou senha inválidos!");
+    }
     setModalLoginAberto(false);
     setAgendamentoAberto(true);
   };

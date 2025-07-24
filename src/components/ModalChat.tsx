@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { X, Send, Paperclip, Smile } from "lucide-react";
-import { Professor } from "@/model/professor";
+import { Professor } from "@/types/professor";
 
 interface Mensagem {
   id: string;

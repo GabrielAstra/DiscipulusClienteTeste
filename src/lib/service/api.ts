@@ -1,7 +1,5 @@
-export interface Habilidade {
-  habilidadeID: string;
-  nomeHabilidade: string;
-}
+import { Habilidade } from "@/service/api";
+
 
 export async function listarHabilidades(
   pagina = 0,

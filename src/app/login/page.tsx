@@ -1,62 +1,34 @@
 "use client";
 
-import React, { useState } from "react";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { useToast } from "@/context/ToastContext";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useUsuario } from "../context/UsuarioContext";
-import { Usuario } from "@/model/usuario";
-import { loginUsuario } from "@/service/api";
-import { jwtDecode } from "jwt-decode";
-import { useToast } from "@/app/context/ToastContext";
+import React, { useState } from "react";
+import { useUsuario } from "../../context/UsuarioContext";
+import { ILoginRequest } from "@/lib/service/auth/auth.service";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
-  const [carregando, setCarregando] = useState(false);
   const navegar = useRouter();
-  const { lidarComLogin } = useUsuario();
+
+  const { realizarLogin, loading } = useUsuario();
   const { showError, showSuccess } = useToast();
 
-  interface JwtPayload {
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;
-        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
-        papel: "Professor" | "Aluno";
-        [key: string]: any;
-      }
-
   const lidarComEnvio = async (e: React.FormEvent) => {
+    debugger;
     e.preventDefault();
-    setCarregando(true);
-
-    try {
-      const resposta = await loginUsuario({ email, password: senha });
-
-      
-      const decoded = jwtDecode<JwtPayload>(resposta.token);
-
-      const usuario: Usuario = {
-        id: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
-        nome: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
-        email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
-        papel: decoded["papel"],
-        role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-      };
-      lidarComLogin(usuario);
-
-      localStorage.setItem("token", resposta.token);
-      showSuccess(`Bem-vindo(a), ${usuario.nome}!`, "Login realizado com sucesso");
-      
+    const request: ILoginRequest = { email, password: senha };
+    const { success, data } = await realizarLogin(request);
+    if (success) {
+      showSuccess("Olá!", `Bem-vindo(a) de volta, ${data?.nome}!`);
       navegar.push("/catalog");
-    } catch (erro: any) {
-      showError(erro.message || "Erro ao fazer login");
-    } finally {
-      setCarregando(false);
+    } else {
+      showError("Email e/ou senha inválidos!");
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -175,10 +147,10 @@ export default function LoginPage() {
             <div>
               <button
                 type="submit"
-                disabled={carregando}
+                disabled={loading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {carregando ? "Entrando..." : "Entrar"}
+                {loading ? "Entrando..." : "Entrar"}
               </button>
             </div>
           </form>

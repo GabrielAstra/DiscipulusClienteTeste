@@ -1,11 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import { X, Eye, EyeOff, Mail, Lock, User, UserCheck } from "lucide-react";
+import { ILoginRequest } from "@/lib/service/auth/auth.service";
 
 interface PropriedadesModalLogin {
   aberto: boolean;
   aoFechar: () => void;
-  aoFazerLogin: (usuario: any) => void;
+  aoFazerLogin: (usuario: ILoginRequest) => void;
 }
 
 export default function ModalLogin({
@@ -43,8 +44,9 @@ export default function ModalLogin({
         nome: "João Silva",
         email: dadosLogin.email,
         papel: "estudante",
+        senha: "",
       };
-      aoFazerLogin(usuario);
+      aoFazerLogin({ email: usuario.email, password: usuario.senha });
       setCarregando(false);
       aoFechar();
       setDadosLogin({ email: "", senha: "" });
@@ -67,8 +69,9 @@ export default function ModalLogin({
         nome: dadosCadastro.nome,
         email: dadosCadastro.email,
         papel: dadosCadastro.papel,
+        senha: "",
       };
-      aoFazerLogin(usuario);
+      aoFazerLogin({ email: usuario.email, password: usuario.senha });
       setCarregando(false);
       aoFechar();
       setDadosCadastro({

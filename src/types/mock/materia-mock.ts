@@ -1,4 +1,4 @@
-import { Materia } from "@/model/materia";
+import { Materia } from "@/types/materia";
 
 export const materias: Materia[] = [
   { id: "1", nome: "Matemática", categoria: "Exatas", icone: "Calculator" },

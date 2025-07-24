@@ -1,5 +1,5 @@
-import { categorias } from '@/model/mock/materia-mock';
-import React from 'react';
+import { categorias } from "@/types/mock/materia-mock";
+import React from "react";
 
 interface PropriedadesFiltroMateria {
   categoriaSelecionada: string;
@@ -14,11 +14,11 @@ export default function FiltroMateria({
   aoMudarCategoria,
   materiasSelecionadas,
   aoMudarMateria,
-  materiasDisponiveis
+  materiasDisponiveis,
 }: PropriedadesFiltroMateria) {
   const alternarMateria = (materia: string) => {
     if (materiasSelecionadas.includes(materia)) {
-      aoMudarMateria(materiasSelecionadas.filter(m => m !== materia));
+      aoMudarMateria(materiasSelecionadas.filter((m) => m !== materia));
     } else {
       aoMudarMateria([...materiasSelecionadas, materia]);
     }
@@ -26,8 +26,10 @@ export default function FiltroMateria({
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtrar por Matéria</h3>
-      
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        Filtrar por Matéria
+      </h3>
+
       <div className="space-y-4">
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -40,8 +42,8 @@ export default function FiltroMateria({
                 onClick={() => aoMudarCategoria(categoria)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   categoriaSelecionada === categoria
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? "bg-indigo-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
                 {categoria}
@@ -49,14 +51,17 @@ export default function FiltroMateria({
             ))}
           </div>
         </div>
-        
+
         <div>
           <label className="text-sm font-medium text-gray-700 mb-2 block">
             Matérias
           </label>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {materiasDisponiveis.map((materia) => (
-              <label key={materia} className="flex items-center space-x-2 cursor-pointer">
+              <label
+                key={materia}
+                className="flex items-center space-x-2 cursor-pointer"
+              >
                 <input
                   type="checkbox"
                   checked={materiasSelecionadas.includes(materia)}
@@ -68,7 +73,7 @@ export default function FiltroMateria({
             ))}
           </div>
         </div>
-        
+
         {materiasSelecionadas.length > 0 && (
           <button
             onClick={() => aoMudarMateria([])}
