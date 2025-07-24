@@ -22,7 +22,7 @@ export default function LoginPage() {
     const request: ILoginRequest = { email, password: senha };
     const { success, data } = await realizarLogin(request);
     if (success) {
-      showSuccess(`Bem-vindo(a), ${data?.nome}!`, "Olá!");
+      showSuccess("Olá!", `Bem-vindo(a) de volta, ${data?.nome}!`);
       navegar.push("/catalog");
     } else {
       showError("Email e/ou senha inválidos!");

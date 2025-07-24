@@ -56,9 +56,15 @@ export function UsuarioProvider({ children }: { children: React.ReactNode }) {
     return { success: true, data: data.data };
   }
 
-  const realizarLogout = () => {
+  async function realizarLogout() {
+    await fetch("/api/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     setUsuario(null);
-  };
+  }
 
   useEffect(() => {
     fetchUser();
