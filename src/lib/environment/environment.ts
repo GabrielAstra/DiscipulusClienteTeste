@@ -1,6 +1,7 @@
 // lib/env.ts
 import { z } from "zod";
-debugger;
+
+
 const envSchema = z.object({
   DISCIPULUS_API_URL: z.url(),
 });

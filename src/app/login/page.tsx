@@ -18,7 +18,6 @@ export default function LoginPage() {
   const { showError, showSuccess } = useToast();
 
   const lidarComEnvio = async (e: React.FormEvent) => {
-    debugger;
     e.preventDefault();
     const request: ILoginRequest = { email, password: senha };
     const { success, data } = await realizarLogin(request);

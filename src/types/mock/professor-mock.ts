@@ -19,9 +19,9 @@ export const professores: Professor[] = [
   },
   {
     id: "2",
-    nome: "Michael Chen",
+    nome: "Kim Jong Un",
     avatar:
-      "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400",
+      "https://media.gettyimages.com/id/529940582/pt/foto/north-korean-leader-kim-jong-un-waves-from-a-balcony-of-the-grand-peoples-study-house-following.jpg?s=612x612&w=0&k=20&c=j4t2iH8zxUUx813XMZ7hCcxOle56Q0UODcnnwExwnHc=",
     materias: ["Ciência da Computação", "Programação"],
     avaliacao: 4.8,
     numeroAvaliacoes: 89,
