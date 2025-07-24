@@ -8,7 +8,7 @@ export default function CabecalhoClient() {
   return (
     <Cabecalho
       usuario={usuarioContext.usuario}
-      aoFazerLogout={usuarioContext.lidarComLogout}
+      aoFazerLogout={usuarioContext.realizarLogout}
     />
   );
 }

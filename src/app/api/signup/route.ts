@@ -1,11 +1,32 @@
 import { signup } from "@/lib/service/auth/auth.service";
+import { IResponse } from "@/types/response";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  const response = await signup(body);
-  console.log(response);
+  const { message, success, data } = await signup(body);
+  var responseBody: IResponse<void>;
 
-  return NextResponse.json({}, { status: 200 });
+  if (!success) {
+    responseBody = IResponse.fail(message);
+    const stringfied = JSON.stringify(responseBody);
+    console.log(stringfied);
+    return NextResponse.json(stringfied, { status: 400 });
+  }
+
+  responseBody = IResponse.ok(message);
+  const stringfied = JSON.stringify(responseBody);
+  console.log(stringfied);
+  const res = NextResponse.json(stringfied);
+
+  // Set HttpOnly cookie for token
+  res.cookies.set("token", data?.token!, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+  });
+
+  return res;
 }

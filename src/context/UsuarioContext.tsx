@@ -1,13 +1,14 @@
 "use client";
 
 import { ILoginRequest } from "@/lib/service/auth/auth.service";
+import { IResponse } from "@/types/response";
 import { Usuario } from "@/types/usuario";
 import { createContext, useContext, useEffect, useState } from "react";
 
 interface UsuarioContextType {
   usuario: Usuario | null;
   refreshUser: () => Promise<void>;
-  realizarLogin: (payload: ILoginRequest) => Promise<void>;
+  realizarLogin: (payload: ILoginRequest) => Promise<IResponse<Usuario>>;
   realizarLogout: () => void;
   loading: boolean;
 }
@@ -20,35 +21,39 @@ export function UsuarioProvider({ children }: { children: React.ReactNode }) {
 
   async function fetchUser() {
     setLoading(true);
-    try {
-      const res = await fetch("/api/me");
-      if (res.ok) {
-        const data = await res.json();
-        setUsuario(data.usuario);
-      } else {
-        setUsuario(null);
-      }
-    } finally {
+    const res = await fetch("/api/user/me");
+    if (res.ok) {
+      const data = (await res.json()) as IResponse<Usuario>;
       setLoading(false);
+      setUsuario(data.data!);
+    } else {
+      setLoading(false);
+      setUsuario(null);
     }
   }
 
-  async function realizarLogin(payload: ILoginRequest) {
+  async function realizarLogin(
+    payload: ILoginRequest
+  ): Promise<IResponse<Usuario>> {
     setLoading(true);
-    try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        await fetchUser();
-      }
-    } finally {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
       setLoading(false);
+      return { success: false };
     }
+
+    const resUser = await fetch("/api/user/me");
+    const data = (await resUser.json()) as IResponse<Usuario>;
+    console.log(data);
+    setUsuario(data?.data!);
+    setLoading(false);
+    return { success: true, data: data.data };
   }
 
   const realizarLogout = () => {

@@ -14,15 +14,15 @@ export default function LoginPage() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const navegar = useRouter();
 
-  const { realizarLogin, loading, usuario } = useUsuario();
+  const { realizarLogin, loading } = useUsuario();
   const { showError, showSuccess } = useToast();
 
   const lidarComEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
     const request: ILoginRequest = { email, password: senha };
-    await realizarLogin(request);
-    if (usuario) {
-      showSuccess(`Bem-vindo(a), ${usuario.nome}!`, "Olá!");
+    const { success, data } = await realizarLogin(request);
+    if (success) {
+      showSuccess(`Bem-vindo(a), ${data?.nome}!`, "Olá!");
       navegar.push("/catalog");
     } else {
       showError("Email e/ou senha inválidos!");

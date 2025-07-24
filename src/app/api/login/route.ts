@@ -6,21 +6,23 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const response = await login(body);
 
-  const { flag, mensagem, token } = response;
+  const { message, success, data } = response;
+  var responseBody: IResponse<void>;
 
-  const responseBody: IResponse<void> = {
-    message: mensagem,
-    success: flag,
-  };
-
-  if (!flag) {
-    return NextResponse.json(responseBody, { status: 401 });
+  if (!success) {
+    responseBody = IResponse.fail(message);
+    const stringfied = JSON.stringify(responseBody);
+    return NextResponse.json(stringfied, { status: 401 });
   }
 
-  const res = NextResponse.json(responseBody);
+  responseBody = IResponse.ok(message);
+  const stringfied = JSON.stringify(responseBody);
+  const res = NextResponse.json(stringfied);
+
+  console.log(data);
 
   // Set HttpOnly cookie for token
-  res.cookies.set("token", token!, {
+  res.cookies.set("token", data?.token!, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",

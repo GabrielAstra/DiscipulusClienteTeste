@@ -1,4 +1,6 @@
 import { environment } from "@/lib/environment/environment";
+import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
+import { IServiceResponse } from "@/types/response";
 
 export interface ILoginRequest {
   email: string;
@@ -6,12 +8,12 @@ export interface ILoginRequest {
 }
 
 export interface ILoginResponse {
-  flag: boolean;
   token: string | undefined;
-  mensagem: string;
 }
 
-export async function login(payload: ILoginRequest): Promise<ILoginResponse> {
+export async function login(
+  payload: ILoginRequest
+): Promise<IServiceResponse<ILoginResponse>> {
   try {
     const resposta = await fetch(
       `${environment.DISCIPULUS_API_URL}/Home/Login`,
@@ -25,14 +27,18 @@ export async function login(payload: ILoginRequest): Promise<ILoginResponse> {
       }
     );
     const responseBody = await resposta.json();
-    console.log(responseBody);
-    return await resposta.json();
+
+    return {
+      message: responseBody.mensagem,
+      success: responseBody.flag,
+      data: { token: responseBody.token },
+    };
   } catch (error) {
     console.error(error);
     return {
-      flag: false,
-      mensagem: "Erro ao executar requisicao",
-      token: undefined,
+      success: false,
+      message: ERRO_REQUISICAO,
+      data: undefined,
     };
   }
 }
@@ -46,14 +52,12 @@ export interface ICadastroRequest {
 }
 
 export interface ICadastroResponse {
-  token: string;
-  mensagem: string;
-  email: string;
+  token?: string;
 }
 
 export async function signup(
   payload: ICadastroRequest
-): Promise<ICadastroResponse> {
+): Promise<IServiceResponse<ICadastroResponse>> {
   try {
     const resposta = await fetch(
       `${environment.DISCIPULUS_API_URL}/Home/Registro`,
@@ -66,15 +70,16 @@ export async function signup(
       }
     );
     const responseBody = await resposta.json();
-    console.log(responseBody);
-
-    return await resposta.json();
+    return {
+      message: responseBody.message,
+      success: responseBody.success,
+      data: { token: responseBody.token },
+    };
   } catch (error) {
     console.error(error);
     return {
-      email: "",
-      mensagem: "Erro ao executar requisicao",
-      token: "",
+      success: false,
+      message: ERRO_REQUISICAO,
     };
   }
 }

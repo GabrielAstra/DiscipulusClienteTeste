@@ -1,7 +1,4 @@
-export interface Habilidade {
-  habilidadeID: string;
-  nomeHabilidade: string;
-}
+
 
 export async function listarHabilidades(
   pagina = 0,
