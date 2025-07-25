@@ -1,6 +1,9 @@
 "use client";
 import { useToast } from "@/context/ToastContext";
+import { useUsuario } from "@/context/UsuarioContext";
 import { ICadastroRequest } from "@/lib/service/auth/auth.service";
+import { IResponse } from "@/types/response";
+import { Usuario } from "@/types/usuario";
 import { Eye, EyeOff, Lock, Mail, User, UserCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,7 +23,6 @@ const formatarCPF = (value: string) => {
 };
 
 export default function CadastroPage() {
-  debugger;
   const [dadosFormulario, setDadosFormulario] = useState({
     nome: "",
     email: "",
@@ -34,6 +36,7 @@ export default function CadastroPage() {
   const [carregando, setCarregando] = useState(false);
   const { showError, showSuccess } = useToast();
   const navegar = useRouter();
+  const { refreshUser } = useUsuario();
 
   const lidarComEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,22 +56,27 @@ export default function CadastroPage() {
       cpf: dadosFormulario.cpf,
       tipoUsuario,
     };
-    try {
-      const res = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-      });
-      if (res.ok) {
-        showSuccess("Cadastro feito com sucesso!");
-        navegar.push("/catalog");
-      } else {
-        showError("Erro ao cadastrar");
-      }
-    } finally {
+    const res = await fetch("/api/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    const responseBodySignup = await res.json();
+    if (!responseBodySignup.success) {
+      showError(responseBodySignup.message);
       setCarregando(false);
+      return;
+    } else {
+      const resUser = await fetch("/api/user/me");
+      const data = (await resUser.json()) as IResponse<Usuario>;
+      showSuccess(
+        `Bem vindo(a) ${data.data?.nome}`,
+        "Cadastro feito com sucesso!"
+      );
+      await refreshUser();
+      navegar.push("/catalog");
     }
   };
 

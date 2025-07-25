@@ -3,9 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const responseBody = IResponse.ok("Logout successful");
-  const stringified = JSON.stringify(responseBody);
 
-  const res = NextResponse.json(stringified);
+  const res = NextResponse.json(responseBody);
 
   res.cookies.set("token", "", {
     httpOnly: true,
