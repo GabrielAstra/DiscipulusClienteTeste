@@ -10,10 +10,10 @@ export interface ILoginRequest {
 export interface ILoginResponse {
   token: string | undefined;
 }
-
 export async function login(
   payload: ILoginRequest
 ): Promise<IServiceResponse<ILoginResponse>> {
+  const api = environment.DISCIPULUS_API_URL;
   try {
     const resposta = await fetch(
       `${environment.DISCIPULUS_API_URL}/Home/Login`,

@@ -1,3 +1,4 @@
+import { Habilidade } from "@/types/habilidade";
 
 
 export async function listarHabilidades(
