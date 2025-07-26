@@ -13,7 +13,6 @@ export interface ILoginResponse {
 export async function login(
   payload: ILoginRequest
 ): Promise<IServiceResponse<ILoginResponse>> {
-  const api = environment.DISCIPULUS_API_URL;
   try {
     const resposta = await fetch(
       `${environment.DISCIPULUS_API_URL}/Home/Login`,

@@ -10,15 +10,11 @@ export async function POST(req: NextRequest) {
 
   if (!success) {
     responseBody = IResponse.fail(message);
-    const stringfied = JSON.stringify(responseBody);
-    console.log(stringfied);
-    return NextResponse.json(stringfied, { status: 400 });
+    return NextResponse.json(responseBody, { status: 400 });
   }
 
   responseBody = IResponse.ok(message);
-  const stringfied = JSON.stringify(responseBody);
-  console.log(stringfied);
-  const res = NextResponse.json(stringfied);
+  const res = NextResponse.json(responseBody);
 
   // Set HttpOnly cookie for token
   res.cookies.set("token", data?.token!, {

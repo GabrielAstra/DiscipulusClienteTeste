@@ -11,13 +11,11 @@ export async function POST(req: NextRequest) {
 
   if (!success) {
     responseBody = IResponse.fail(message);
-    const stringfied = JSON.stringify(responseBody);
-    return NextResponse.json(stringfied, { status: 401 });
+    return NextResponse.json(responseBody, { status: 401 });
   }
 
   responseBody = IResponse.ok(message);
-  const stringfied = JSON.stringify(responseBody);
-  const res = NextResponse.json(stringfied);
+  const res = NextResponse.json(responseBody);
 
   console.log(data);
 

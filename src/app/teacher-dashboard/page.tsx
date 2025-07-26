@@ -1,19 +1,22 @@
 "use client";
-import { listarHabilidades, Habilidade } from "@/lib/service/api";
 
+import { useToast } from "@/context/ToastContext";
+import { Habilidade } from "@/types/habilidade";
+import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
+import { IResponse } from "@/types/response";
 import {
+  Briefcase,
   Calendar,
   DollarSign,
   Edit3,
+  GraduationCap,
+  Plus,
   Save,
   Star,
+  Trash2,
   TrendingUp,
   User,
   X,
-  Plus,
-  Trash2,
-  GraduationCap,
-  Briefcase,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -96,7 +99,7 @@ export default function PainelProfessor() {
   const [mostrarModalSaque, setMostrarModalSaque] = useState(false);
   const [valorSaque, setValorSaque] = useState("");
   const [metodoSaque, setMetodoSaque] = useState("pix");
-  const [filtroMateria, setFiltroMateria] = useState("");
+  const { showError } = useToast();
 
   const [perfil, setPerfil] = useState<PerfilProfessor>({
     id: "1",
@@ -114,15 +117,17 @@ export default function PainelProfessor() {
         instituicao: "Colégio Objetivo",
         inicio: "2020-01-15T00:00:00.000Z",
         fim: "2024-12-31T00:00:00.000Z",
-        descricao: "Leciono matemática para ensino médio, desenvolvendo metodologias inovadoras e acompanhando alunos em vestibulares."
+        descricao:
+          "Leciono matemática para ensino médio, desenvolvendo metodologias inovadoras e acompanhando alunos em vestibulares.",
       },
       {
         titulo: "Tutora de Física",
         instituicao: "Centro de Estudos Avançados",
         inicio: "2018-03-01T00:00:00.000Z",
         fim: "2020-01-10T00:00:00.000Z",
-        descricao: "Aulas particulares e em grupo, focando na preparação para concursos e vestibulares."
-      }
+        descricao:
+          "Aulas particulares e em grupo, focando na preparação para concursos e vestibulares.",
+      },
     ],
     idiomas: ["Português", "Inglês"],
     disponibilidade: ["Segunda", "Terça", "Quarta", "Sexta"],
@@ -131,14 +136,14 @@ export default function PainelProfessor() {
         titulo: "Doutorado em Matemática Aplicada",
         instituicao: "Universidade de São Paulo (USP)",
         dtInicio: "2015-03-01T00:00:00.000Z",
-        dtConclusao: "2019-12-15T00:00:00.000Z"
+        dtConclusao: "2019-12-15T00:00:00.000Z",
       },
       {
         titulo: "Mestrado em Física",
         instituicao: "Instituto de Física - USP",
         dtInicio: "2013-02-01T00:00:00.000Z",
-        dtConclusao: "2015-01-30T00:00:00.000Z"
-      }
+        dtConclusao: "2015-01-30T00:00:00.000Z",
+      },
     ],
     certificacoes: [
       "Certificação em Ensino Online",
@@ -186,13 +191,41 @@ export default function PainelProfessor() {
     console.log("Perfil salvo:", perfil);
   };
 
-  const [habilidadesDisponiveis, setHabilidadesDisponiveis] = useState<Habilidade[]>([]);
+  const [filtroHabilidade, setFiltroHabilidade] = useState("");
+  const [todasHabilidades, setTodasHabilidades] = useState<Habilidade[]>([]);
+  const [habilidadesFiltradas, setHabilidadesFiltradas] = useState<
+    Habilidade[]
+  >([]);
+
+  // todasHabilidades.filter((hab) =>
+  //   hab.nome.toLowerCase().includes(filtroMateria.toLowerCase())
+  // );
+
+  async function buscarHabilidades() {
+    const res = await fetch("/api/habilidade", { method: "GET" });
+    const body = (await res.json()) as IResponse<Habilidade[]>;
+    if (!body.success) {
+      showError(body.message ?? ERRO_REQUISICAO);
+      return [];
+    }
+    return body.data!;
+  }
 
   useEffect(() => {
     if (editando) {
-      listarHabilidades().then(setHabilidadesDisponiveis);
+      buscarHabilidades().then((res) => {
+        setTodasHabilidades(res);
+        setHabilidadesFiltradas(res);
+      });
     }
   }, [editando]);
+
+  useEffect(() => {
+    const filtered = todasHabilidades.filter((tag) =>
+      tag.nome.toLowerCase().includes(filtroHabilidade.toLowerCase())
+    );
+    setHabilidadesFiltradas(filtered);
+  }, [filtroHabilidade, todasHabilidades]);
 
   const lidarComSaque = () => {
     const valor = parseFloat(valorSaque);
@@ -216,7 +249,7 @@ export default function PainelProfessor() {
   };
 
   const formatarDataInput = (dataString: string) => {
-    return new Date(dataString).toISOString().split('T')[0];
+    return new Date(dataString).toISOString().split("T")[0];
   };
 
   const adicionarFormacao = () => {
@@ -224,11 +257,11 @@ export default function PainelProfessor() {
       titulo: "",
       instituicao: "",
       dtInicio: new Date().toISOString(),
-      dtConclusao: new Date().toISOString()
+      dtConclusao: new Date().toISOString(),
     };
     setPerfil({
       ...perfil,
-      formacao: [...perfil.formacao, novaFormacao]
+      formacao: [...perfil.formacao, novaFormacao],
     });
   };
 
@@ -236,19 +269,23 @@ export default function PainelProfessor() {
     const novasFormacoes = perfil.formacao.filter((_, i) => i !== index);
     setPerfil({
       ...perfil,
-      formacao: novasFormacoes
+      formacao: novasFormacoes,
     });
   };
 
-  const atualizarFormacao = (index: number, campo: keyof FormacaoDTO, valor: string) => {
+  const atualizarFormacao = (
+    index: number,
+    campo: keyof FormacaoDTO,
+    valor: string
+  ) => {
     const novasFormacoes = [...perfil.formacao];
     novasFormacoes[index] = {
       ...novasFormacoes[index],
-      [campo]: valor
+      [campo]: valor,
     };
     setPerfil({
       ...perfil,
-      formacao: novasFormacoes
+      formacao: novasFormacoes,
     });
   };
 
@@ -258,11 +295,11 @@ export default function PainelProfessor() {
       instituicao: "",
       inicio: new Date().toISOString(),
       fim: new Date().toISOString(),
-      descricao: ""
+      descricao: "",
     };
     setPerfil({
       ...perfil,
-      experiencia: [...perfil.experiencia, novaExperiencia]
+      experiencia: [...perfil.experiencia, novaExperiencia],
     });
   };
 
@@ -270,25 +307,25 @@ export default function PainelProfessor() {
     const novasExperiencias = perfil.experiencia.filter((_, i) => i !== index);
     setPerfil({
       ...perfil,
-      experiencia: novasExperiencias
+      experiencia: novasExperiencias,
     });
   };
 
-  const atualizarExperiencia = (index: number, campo: keyof ExperienciaDTO, valor: string) => {
+  const atualizarExperiencia = (
+    index: number,
+    campo: keyof ExperienciaDTO,
+    valor: string
+  ) => {
     const novasExperiencias = [...perfil.experiencia];
     novasExperiencias[index] = {
       ...novasExperiencias[index],
-      [campo]: valor
+      [campo]: valor,
     };
     setPerfil({
       ...perfil,
-      experiencia: novasExperiencias
+      experiencia: novasExperiencias,
     });
   };
-
-  const habilidadesFiltradas = habilidadesDisponiveis.filter(hab =>
-    hab.nomeHabilidade.toLowerCase().includes(filtroMateria.toLowerCase())
-  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -530,7 +567,10 @@ export default function PainelProfessor() {
 
               <div className="space-y-6">
                 {perfil.formacao.map((formacao, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div
+                    key={index}
+                    className="border border-gray-200 rounded-lg p-4 bg-gray-50"
+                  >
                     {editando ? (
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
@@ -544,7 +584,7 @@ export default function PainelProfessor() {
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
-                        
+
                         <div className="grid md:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -553,12 +593,18 @@ export default function PainelProfessor() {
                             <input
                               type="text"
                               value={formacao.titulo}
-                              onChange={(e) => atualizarFormacao(index, 'titulo', e.target.value)}
+                              onChange={(e) =>
+                                atualizarFormacao(
+                                  index,
+                                  "titulo",
+                                  e.target.value
+                                )
+                              }
                               placeholder="Ex: Doutorado em Matemática"
                               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Instituição
@@ -566,12 +612,18 @@ export default function PainelProfessor() {
                             <input
                               type="text"
                               value={formacao.instituicao}
-                              onChange={(e) => atualizarFormacao(index, 'instituicao', e.target.value)}
+                              onChange={(e) =>
+                                atualizarFormacao(
+                                  index,
+                                  "instituicao",
+                                  e.target.value
+                                )
+                              }
                               placeholder="Ex: Universidade de São Paulo"
                               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Data de Início
@@ -579,11 +631,17 @@ export default function PainelProfessor() {
                             <input
                               type="date"
                               value={formatarDataInput(formacao.dtInicio)}
-                              onChange={(e) => atualizarFormacao(index, 'dtInicio', new Date(e.target.value).toISOString())}
+                              onChange={(e) =>
+                                atualizarFormacao(
+                                  index,
+                                  "dtInicio",
+                                  new Date(e.target.value).toISOString()
+                                )
+                              }
                               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Data de Conclusão
@@ -591,7 +649,13 @@ export default function PainelProfessor() {
                             <input
                               type="date"
                               value={formatarDataInput(formacao.dtConclusao)}
-                              onChange={(e) => atualizarFormacao(index, 'dtConclusao', new Date(e.target.value).toISOString())}
+                              onChange={(e) =>
+                                atualizarFormacao(
+                                  index,
+                                  "dtConclusao",
+                                  new Date(e.target.value).toISOString()
+                                )
+                              }
                               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                           </div>
@@ -599,16 +663,21 @@ export default function PainelProfessor() {
                       </div>
                     ) : (
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">{formacao.titulo}</h4>
-                        <p className="text-gray-700 mb-1">{formacao.instituicao}</p>
+                        <h4 className="font-semibold text-gray-900 mb-2">
+                          {formacao.titulo}
+                        </h4>
+                        <p className="text-gray-700 mb-1">
+                          {formacao.instituicao}
+                        </p>
                         <p className="text-sm text-gray-600">
-                          {formatarData(formacao.dtInicio)} - {formatarData(formacao.dtConclusao)}
+                          {formatarData(formacao.dtInicio)} -{" "}
+                          {formatarData(formacao.dtConclusao)}
                         </p>
                       </div>
                     )}
                   </div>
                 ))}
-                
+
                 {perfil.formacao.length === 0 && !editando && (
                   <p className="text-gray-500 text-center py-8">
                     Nenhuma formação acadêmica cadastrada
@@ -639,7 +708,10 @@ export default function PainelProfessor() {
 
               <div className="space-y-6">
                 {perfil.experiencia.map((exp, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div
+                    key={index}
+                    className="border border-gray-200 rounded-lg p-4 bg-gray-50"
+                  >
                     {editando ? (
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
@@ -653,7 +725,7 @@ export default function PainelProfessor() {
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
-                        
+
                         <div className="grid md:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -662,12 +734,18 @@ export default function PainelProfessor() {
                             <input
                               type="text"
                               value={exp.titulo}
-                              onChange={(e) => atualizarExperiencia(index, 'titulo', e.target.value)}
+                              onChange={(e) =>
+                                atualizarExperiencia(
+                                  index,
+                                  "titulo",
+                                  e.target.value
+                                )
+                              }
                               placeholder="Ex: Professor de Matemática"
                               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Instituição/Empresa
@@ -675,12 +753,18 @@ export default function PainelProfessor() {
                             <input
                               type="text"
                               value={exp.instituicao}
-                              onChange={(e) => atualizarExperiencia(index, 'instituicao', e.target.value)}
+                              onChange={(e) =>
+                                atualizarExperiencia(
+                                  index,
+                                  "instituicao",
+                                  e.target.value
+                                )
+                              }
                               placeholder="Ex: Colégio Objetivo"
                               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Data de Início
@@ -688,11 +772,17 @@ export default function PainelProfessor() {
                             <input
                               type="date"
                               value={formatarDataInput(exp.inicio)}
-                              onChange={(e) => atualizarExperiencia(index, 'inicio', new Date(e.target.value).toISOString())}
+                              onChange={(e) =>
+                                atualizarExperiencia(
+                                  index,
+                                  "inicio",
+                                  new Date(e.target.value).toISOString()
+                                )
+                              }
                               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Data de Fim
@@ -700,19 +790,31 @@ export default function PainelProfessor() {
                             <input
                               type="date"
                               value={formatarDataInput(exp.fim)}
-                              onChange={(e) => atualizarExperiencia(index, 'fim', new Date(e.target.value).toISOString())}
+                              onChange={(e) =>
+                                atualizarExperiencia(
+                                  index,
+                                  "fim",
+                                  new Date(e.target.value).toISOString()
+                                )
+                              }
                               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                           </div>
                         </div>
-                        
+
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Descrição das Atividades
                           </label>
                           <textarea
                             value={exp.descricao}
-                            onChange={(e) => atualizarExperiencia(index, 'descricao', e.target.value)}
+                            onChange={(e) =>
+                              atualizarExperiencia(
+                                index,
+                                "descricao",
+                                e.target.value
+                              )
+                            }
                             rows={3}
                             placeholder="Descreva suas principais atividades e responsabilidades..."
                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
@@ -721,7 +823,9 @@ export default function PainelProfessor() {
                       </div>
                     ) : (
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-1">{exp.titulo}</h4>
+                        <h4 className="font-semibold text-gray-900 mb-1">
+                          {exp.titulo}
+                        </h4>
                         <p className="text-gray-700 mb-1">{exp.instituicao}</p>
                         <p className="text-sm text-gray-600 mb-2">
                           {formatarData(exp.inicio)} - {formatarData(exp.fim)}
@@ -731,7 +835,7 @@ export default function PainelProfessor() {
                     )}
                   </div>
                 ))}
-                
+
                 {perfil.experiencia.length === 0 && !editando && (
                   <p className="text-gray-500 text-center py-8">
                     Nenhuma experiência profissional cadastrada
@@ -751,8 +855,8 @@ export default function PainelProfessor() {
                       <input
                         type="text"
                         placeholder="Pesquisar matérias..."
-                        value={filtroMateria}
-                        onChange={(e) => setFiltroMateria(e.target.value)}
+                        value={filtroHabilidade}
+                        onChange={(e) => setFiltroHabilidade(e.target.value)}
                         className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
                       />
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -776,28 +880,23 @@ export default function PainelProfessor() {
                         <div className="space-y-3">
                           {habilidadesFiltradas.map((hab) => (
                             <label
-                              key={hab.habilidadeID}
+                              key={hab.id}
                               className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg transition-colors cursor-pointer"
                             >
                               <input
                                 type="checkbox"
-                                checked={perfil.materias.includes(
-                                  hab.nomeHabilidade
-                                )}
+                                checked={perfil.materias.includes(hab.nome)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
                                     setPerfil({
                                       ...perfil,
-                                      materias: [
-                                        ...perfil.materias,
-                                        hab.nomeHabilidade,
-                                      ],
+                                      materias: [...perfil.materias, hab.nome],
                                     });
                                   } else {
                                     setPerfil({
                                       ...perfil,
                                       materias: perfil.materias.filter(
-                                        (m) => m !== hab.nomeHabilidade
+                                        (m) => m !== hab.nome
                                       ),
                                     });
                                   }
@@ -805,7 +904,7 @@ export default function PainelProfessor() {
                                 className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2"
                               />
                               <span className="text-sm text-gray-700 font-medium">
-                                {hab.nomeHabilidade}
+                                {hab.nome}
                               </span>
                             </label>
                           ))}
@@ -813,15 +912,15 @@ export default function PainelProfessor() {
                       ) : (
                         <div className="text-center py-8">
                           <p className="text-gray-500 text-sm">
-                            Nenhuma matéria encontrada para "{filtroMateria}"
+                            Nenhuma matéria encontrada para "{filtroHabilidade}"
                           </p>
                         </div>
                       )}
                     </div>
-                    {filtroMateria && (
+                    {filtroHabilidade && (
                       <p className="text-xs text-gray-500">
                         Mostrando {habilidadesFiltradas.length} de{" "}
-                        {habilidadesDisponiveis.length} matérias
+                        {todasHabilidades.length} matérias
                       </p>
                     )}
                     <p className="text-xs text-gray-500">
