@@ -18,9 +18,11 @@ import {
   User,
   X,
 } from "lucide-react";
+
 import { useEffect, useState } from "react";
 
 interface FormacaoDTO {
+  id: string;
   titulo: string;
   instituicao: string;
   dtInicio: string;
@@ -28,6 +30,7 @@ interface FormacaoDTO {
 }
 
 interface ExperienciaDTO {
+  id: string;
   titulo: string;
   instituicao: string;
   inicio: string;
@@ -99,8 +102,7 @@ export default function PainelProfessor() {
   const [mostrarModalSaque, setMostrarModalSaque] = useState(false);
   const [valorSaque, setValorSaque] = useState("");
   const [metodoSaque, setMetodoSaque] = useState("pix");
-  const { showError } = useToast();
-
+  const { showError, showSuccess } = useToast();
   const [perfil, setPerfil] = useState<PerfilProfessor>({
     id: "1",
     nome: "Sarah Johnson",
@@ -111,24 +113,7 @@ export default function PainelProfessor() {
       "Professora apaixonada por matemática e física com doutorado em Matemática Aplicada. Especializo-me em tornar conceitos complexos acessíveis e envolventes para estudantes de todos os níveis.",
     materias: [],
     valorHora: 45,
-    experiencia: [
-      {
-        titulo: "Professora Senior de Matemática",
-        instituicao: "Colégio Objetivo",
-        inicio: "2020-01-15T00:00:00.000Z",
-        fim: "2024-12-31T00:00:00.000Z",
-        descricao:
-          "Leciono matemática para ensino médio, desenvolvendo metodologias inovadoras e acompanhando alunos em vestibulares.",
-      },
-      {
-        titulo: "Tutora de Física",
-        instituicao: "Centro de Estudos Avançados",
-        inicio: "2018-03-01T00:00:00.000Z",
-        fim: "2020-01-10T00:00:00.000Z",
-        descricao:
-          "Aulas particulares e em grupo, focando na preparação para concursos e vestibulares.",
-      },
-    ],
+    experiencia: [],
     idiomas: ["Português", "Inglês"],
     disponibilidade: ["Segunda", "Terça", "Quarta", "Sexta"],
     formacao: [],
@@ -207,6 +192,53 @@ export default function PainelProfessor() {
     }
   }
 
+  async function buscarExperiencias() {
+    try {
+      const res = await fetch(`/api/experiencia`, {
+        method: "GET",
+      });
+      const body = (await res.json()) as IResponse<ExperienciaDTO[]>;
+
+      if (!body.success) {
+        showError(body.message ?? ERRO_REQUISICAO);
+        return [];
+      }
+
+      return body.data ?? [];
+    } catch (err) {
+      console.error("Erro ao buscar experiencias:", err);
+      showError("Erro ao buscar experiëncias.");
+      return [];
+    }
+  }
+  async function removerExperiencia(id: string, index: number) {
+   
+
+    try {
+      const res = await fetch(`/api/experiencia/${id}`, {
+        method: "DELETE",
+      });
+
+      const result = await res.json();
+
+      if (!result.success) {
+        showError(result.message || "Erro ao remover experiência.");
+        return;
+      }
+      const novasExperiencias = perfil.experiencia.filter((_, i) => i !== index);
+      setPerfil({
+        ...perfil,
+        experiencia: novasExperiencias,
+      });
+
+      showSuccess(result.message || "Experiência removida com sucesso!");
+    } catch (err) {
+      console.error("Erro:", err);
+      showError("Erro ao remover experiência.");
+    }
+  }
+
+
   async function buscarHabilidades() {
     const res = await fetch("/api/habilidade", { method: "GET" });
     const body = (await res.json()) as IResponse<Habilidade[]>;
@@ -236,6 +268,18 @@ export default function PainelProfessor() {
     }
 
     carregarFormacoes();
+  }, []);
+
+  useEffect(() => {
+  async function carregarExperiencias() {
+      const experiencias = await buscarExperiencias();
+      setPerfil((prev) => ({
+        ...prev,
+        experiencia: experiencias,
+      }));
+    }
+
+    carregarExperiencias();
   }, []);
 
   useEffect(() => {
@@ -272,6 +316,7 @@ export default function PainelProfessor() {
 
   const adicionarFormacao = () => {
     const novaFormacao: FormacaoDTO = {
+      id:"",
       titulo: "",
       instituicao: "",
       dtInicio: new Date().toISOString(),
@@ -283,12 +328,32 @@ export default function PainelProfessor() {
     });
   };
 
-  const removerFormacao = (index: number) => {
-    const novasFormacoes = perfil.formacao.filter((_, i) => i !== index);
-    setPerfil({
-      ...perfil,
-      formacao: novasFormacoes,
-    });
+  async function removerFormacao(id: string, index: number){
+
+    
+    try {
+      const res = await fetch(`/api/formacao/${id}`, {
+        method: "DELETE",
+      });
+
+      const result = await res.json();
+
+      if (!result.success) {
+        showError(result.message || "Erro ao remover formação.");
+        return;
+      }
+      const novasFormacoes = perfil.formacao.filter((_, i) => i !== index);
+      setPerfil({
+        ...perfil,
+        formacao: novasFormacoes,
+      });
+
+      showSuccess(result.message || "Formação removida com sucesso!");
+    } catch (err) {
+      console.error("Erro:", err);
+      showError("Erro ao remover formação.");
+    }
+    
   };
 
   const atualizarFormacao = (
@@ -309,6 +374,7 @@ export default function PainelProfessor() {
 
   const adicionarExperiencia = () => {
     const novaExperiencia: ExperienciaDTO = {
+      id: "",
       titulo: "",
       instituicao: "",
       inicio: new Date().toISOString(),
@@ -318,14 +384,6 @@ export default function PainelProfessor() {
     setPerfil({
       ...perfil,
       experiencia: [...perfil.experiencia, novaExperiencia],
-    });
-  };
-
-  const removerExperiencia = (index: number) => {
-    const novasExperiencias = perfil.experiencia.filter((_, i) => i !== index);
-    setPerfil({
-      ...perfil,
-      experiencia: novasExperiencias,
     });
   };
 
@@ -596,7 +654,7 @@ export default function PainelProfessor() {
                             Formação #{index + 1}
                           </h4>
                           <button
-                            onClick={() => removerFormacao(index)}
+                            onClick={() => removerFormacao(formacao.id, index)}
                             className="text-red-600 hover:text-red-800 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -737,7 +795,7 @@ export default function PainelProfessor() {
                             Experiência #{index + 1}
                           </h4>
                           <button
-                            onClick={() => removerExperiencia(index)}
+                            onClick={() => removerExperiencia(exp.id, index)}
                             className="text-red-600 hover:text-red-800 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -1279,3 +1337,7 @@ export default function PainelProfessor() {
     </div>
   );
 }
+
+
+
+

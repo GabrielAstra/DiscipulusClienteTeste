@@ -1,6 +1,7 @@
 import { listarFormacoes } from "@/lib/service/formacao/formacao.service";
 import { cookies } from 'next/headers'
 import { ERRO_SEM_TOKEN } from '@/types/messages/error-messages'
+
 export async function GET() {
   const cookieStore = cookies()
   const token = (await cookieStore).get('token')?.value

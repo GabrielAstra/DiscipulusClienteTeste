@@ -3,7 +3,7 @@ import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
 import { IServiceResponse } from "@/types/response";
 
 export interface FormacaoResponse {
-  id: string; 
+  id: string;
   titulo: string;
   instituicao: string;
   dtInicio: string;
@@ -39,10 +39,10 @@ export async function listarFormacoes(token: string): Promise<IServiceResponse<F
     const body = await response.json();
 
     const formacoes: FormacaoResponse[] = body.formacoesResponse?.formacao?.["$values"] || [];
-    
+
 
     const formacoesDTO: FormacaoDTO[] = formacoes.map((formacao: FormacaoResponse) => ({
-      id: formacao.id, 
+      id: formacao.id,
       titulo: formacao.titulo,
       instituicao: formacao.instituicao,
       dtInicio: formacao.dtInicio,
@@ -53,6 +53,28 @@ export async function listarFormacoes(token: string): Promise<IServiceResponse<F
     return { success: true, data: formacoesDTO };
   } catch (error) {
     console.error("Erro ao listar formações:", error);
+    return { success: false, message: ERRO_REQUISICAO };
+  }
+}
+
+
+export async function excluirFormacao(id: string, token: string): Promise<IServiceResponse<null>> {
+  try {
+    const response = await fetch(`${environment.DISCIPULUS_API_URL}/Formacao/Excluir?formacaoId=${id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`Erro ao excluir formacao: ${response.status} - ${response.statusText}`);
+      return { success: false, message: ERRO_REQUISICAO };
+    }
+
+    return { success: true, data: null };
+  } catch (error) {
+    console.error("Erro ao excluir formacao:", error);
     return { success: false, message: ERRO_REQUISICAO };
   }
 }
