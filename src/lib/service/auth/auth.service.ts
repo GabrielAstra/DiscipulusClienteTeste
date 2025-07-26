@@ -10,7 +10,6 @@ export interface ILoginRequest {
 export interface ILoginResponse {
   token: string | undefined;
 }
-
 export async function login(
   payload: ILoginRequest
 ): Promise<IServiceResponse<ILoginResponse>> {

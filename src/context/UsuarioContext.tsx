@@ -50,7 +50,6 @@ export function UsuarioProvider({ children }: { children: React.ReactNode }) {
 
     const resUser = await fetch("/api/user/me");
     const data = (await resUser.json()) as IResponse<Usuario>;
-    console.log(data);
     setUsuario(data?.data!);
     setLoading(false);
     return { success: true, data: data.data };
