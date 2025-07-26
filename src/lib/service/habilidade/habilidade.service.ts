@@ -1,8 +1,3 @@
-// export interface Habilidade {
-//   habilidadeID: string;
-//   nomeHabilidade: string;
-// }
-
 import { environment } from "@/lib/environment/environment";
 import { Habilidade } from "@/types/habilidade";
 import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
@@ -13,7 +8,7 @@ interface HabilidadeResponse {
   nomeHabilidade: string;
 }
 
-export async function fetchTags(
+export async function listarHabilidades(
   pagina = 0,
   itensPorPagina = 150
 ): Promise<IServiceResponse<Habilidade[]>> {
@@ -30,7 +25,6 @@ export async function fetchTags(
       }
     );
     const body = await response.json();
-    console.log(body);
     const dtos = body["$values"] as HabilidadeResponse[];
     const habilidades: Habilidade[] = [];
     dtos.forEach((dto) => {
