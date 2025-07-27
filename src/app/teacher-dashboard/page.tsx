@@ -17,6 +17,7 @@ import {
   TrendingUp,
   User,
   X,
+  Globe,
 } from "lucide-react";
 
 import { useEffect, useState } from "react";
@@ -72,6 +73,64 @@ interface Transacao {
   status: "concluido" | "pendente" | "falhou";
 }
 
+const capitais = [
+  "Rio Branco - AC",
+  "Maceió - AL",
+  "Macapá - AP",
+  "Manaus - AM",
+  "Salvador - BA",
+  "Fortaleza - CE",
+  "Brasília - DF",
+  "Vitória - ES",
+  "Goiânia - GO",
+  "São Luís - MA",
+  "Cuiabá - MT",
+  "Campo Grande - MS",
+  "Belo Horizonte - MG",
+  "Belém - PA",
+  "João Pessoa - PB",
+  "Curitiba - PR",
+  "Recife - PE",
+  "Teresina - PI",
+  "Rio de Janeiro - RJ",
+  "Natal - RN",
+  "Porto Alegre - RS",
+  "Porto Velho - RO",
+  "Boa Vista - RR",
+  "Florianópolis - SC",
+  "São Paulo - SP",
+  "Aracaju - SE",
+  "Palmas - TO"
+];
+
+const idiomasDisponiveis = [
+  "Português",
+  "Inglês",
+  "Espanhol",
+  "Francês",
+  "Alemão",
+  "Italiano",
+  "Japonês",
+  "Chinês (Mandarim)",
+  "Russo",
+  "Árabe",
+  "Coreano",
+  "Holandês",
+  "Sueco",
+  "Norueguês",
+  "Dinamarquês",
+  "Finlandês",
+  "Polonês",
+  "Tcheco",
+  "Húngaro",
+  "Grego",
+  "Turco",
+  "Hindi",
+  "Hebraico",
+  "Tailandês",
+  "Vietnamita"
+];
+
 function aplicarMascaraTelefone(valor: string) {
   const apenasNumeros = valor.replace(/\D/g, "");
 
@@ -105,24 +164,24 @@ export default function PainelProfessor() {
   const { showError, showSuccess } = useToast();
   const [perfil, setPerfil] = useState<PerfilProfessor>({
     id: "1",
-    nome: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
+    nome: "",
+    email: "",
     avatar:
       "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400",
     biografia:
-      "Professora apaixonada por matemática e física com doutorado em Matemática Aplicada. Especializo-me em tornar conceitos complexos acessíveis e envolventes para estudantes de todos os níveis.",
+      "",
     materias: [],
     valorHora: 45,
     experiencia: [],
-    idiomas: ["Português", "Inglês"],
-    disponibilidade: ["Segunda", "Terça", "Quarta", "Sexta"],
+    idiomas: [],
+    disponibilidade: [],
     formacao: [],
     certificacoes: [
       "Certificação em Ensino Online",
       "Especialização em Didática",
     ],
-    telefone: "+55 11 99999-9999",
-    localizacao: "São Paulo, SP",
+    telefone: "",
+    localizacao: "",
   });
 
   const [dadosCarteira] = useState<DadosCarteira>({
@@ -168,10 +227,46 @@ export default function PainelProfessor() {
   const [habilidadesFiltradas, setHabilidadesFiltradas] = useState<
     Habilidade[]
   >([]);
+  const [filtroIdioma, setFiltroIdioma] = useState("");
+  const [idiomasFiltrados, setIdiomasFiltrados] = useState<string[]>(idiomasDisponiveis);
+async function buscarInformacoesPessoais() {
+  try {
+    const res = await fetch(`/api/informacoesPessoais`, {
+      method: "GET",
+    });
 
-  // todasHabilidades.filter((hab) =>
-  //   hab.nome.toLowerCase().includes(filtroMateria.toLowerCase())
-  // );
+    const body = (await res.json()) as IResponse<any>;
+
+    if (!body.success) {
+      showError(body.message ?? ERRO_REQUISICAO);
+      return null;
+    }
+
+    const data = body.data;
+
+    const idiomasArray = data.idiomas
+      ? data.idiomas.split(",").map((i: string) => i.trim()).filter(Boolean)
+      : [];
+
+    const perfilFormatado: Partial<PerfilProfessor> = {
+      nome: data.nome,
+      email: data.email,
+      avatar: data.urlFoto,
+      biografia: data.biografia,
+      valorHora: data.horaAula,
+      telefone: data.celular || "",
+      localizacao: data.localizacao || "",
+      idiomas: idiomasArray,
+    };
+
+    return perfilFormatado;
+  } catch (err) {
+    console.error("Erro ao buscar informações pessoais:", err);
+    showError("Erro ao buscar informações pessoais.");
+    return null;
+  }
+}
+
   async function buscarFormacoes() {
     try {
       const res = await fetch(`/api/formacao`, {
@@ -211,9 +306,8 @@ export default function PainelProfessor() {
       return [];
     }
   }
-  async function removerExperiencia(id: string, index: number) {
-   
 
+  async function removerExperiencia(id: string, index: number) {
     try {
       const res = await fetch(`/api/experiencia/${id}`, {
         method: "DELETE",
@@ -238,7 +332,6 @@ export default function PainelProfessor() {
     }
   }
 
-
   async function buscarHabilidades() {
     const res = await fetch("/api/habilidade", { method: "GET" });
     const body = (await res.json()) as IResponse<Habilidade[]>;
@@ -248,6 +341,19 @@ export default function PainelProfessor() {
     }
     return body.data!;
   }
+useEffect(() => {
+  async function carregarInformacoesPessoais() {
+    const info = await buscarInformacoesPessoais();
+    if (info) {
+      setPerfil((prev) => ({
+        ...prev,
+        ...info,
+      }));
+    }
+  }
+
+  carregarInformacoesPessoais();
+}, []);
 
   useEffect(() => {
     if (editando) {
@@ -259,7 +365,7 @@ export default function PainelProfessor() {
   }, [editando]);
   
   useEffect(() => {
-  async function carregarFormacoes() {
+    async function carregarFormacoes() {
       const formacoes = await buscarFormacoes();
       setPerfil((prev) => ({
         ...prev,
@@ -271,7 +377,7 @@ export default function PainelProfessor() {
   }, []);
 
   useEffect(() => {
-  async function carregarExperiencias() {
+    async function carregarExperiencias() {
       const experiencias = await buscarExperiencias();
       setPerfil((prev) => ({
         ...prev,
@@ -288,6 +394,13 @@ export default function PainelProfessor() {
     );
     setHabilidadesFiltradas(filtered);
   }, [filtroHabilidade, todasHabilidades]);
+
+  useEffect(() => {
+    const filtered = idiomasDisponiveis.filter((idioma) =>
+      idioma.toLowerCase().includes(filtroIdioma.toLowerCase())
+    );
+    setIdiomasFiltrados(filtered);
+  }, [filtroIdioma]);
 
   const lidarComSaque = () => {
     const valor = parseFloat(valorSaque);
@@ -329,8 +442,6 @@ export default function PainelProfessor() {
   };
 
   async function removerFormacao(id: string, index: number){
-
-    
     try {
       const res = await fetch(`/api/formacao/${id}`, {
         method: "DELETE",
@@ -353,7 +464,6 @@ export default function PainelProfessor() {
       console.error("Erro:", err);
       showError("Erro ao remover formação.");
     }
-    
   };
 
   const atualizarFormacao = (
@@ -540,17 +650,23 @@ export default function PainelProfessor() {
                       Localização
                     </label>
                     {editando ? (
-                      <input
-                        type="text"
-                        value={perfil.localizacao}
-                        onChange={(e) =>
-                          setPerfil({ ...perfil, localizacao: e.target.value })
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      />
-                    ) : (
-                      <p className="text-gray-900">{perfil.localizacao}</p>
-                    )}
+                    <select
+                      value={perfil.localizacao}
+                      onChange={(e) =>
+                        setPerfil({ ...perfil, localizacao: e.target.value })
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    >
+                      <option value="">Selecione uma capital</option>
+                      {capitais.map((cidade) => (
+                        <option key={cidade} value={cidade}>
+                          {cidade}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-gray-900">{perfil.localizacao}</p>
+                  )}
                   </div>
                 </div>
 
@@ -581,22 +697,91 @@ export default function PainelProfessor() {
                       Idiomas
                     </label>
                     {editando ? (
-                      <input
-                        type="text"
-                        value={perfil.idiomas.join(", ")}
-                        onChange={(e) =>
-                          setPerfil({
-                            ...perfil,
-                            idiomas: e.target.value.split(", "),
-                          })
-                        }
-                        placeholder="Português, Inglês, Espanhol"
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      />
+                      <div className="space-y-3">
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder="Pesquisar idiomas..."
+                            value={filtroIdioma}
+                            onChange={(e) => setFiltroIdioma(e.target.value)}
+                            className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                          />
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Globe className="h-5 w-5 text-gray-400" />
+                          </div>
+                        </div>
+                        <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
+                          {idiomasFiltrados.length > 0 ? (
+                            <div className="space-y-3">
+                              {idiomasFiltrados.map((idioma) => (
+                                <label
+                                  key={idioma}
+                                  className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg transition-colors cursor-pointer"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={perfil.idiomas.includes(idioma)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setPerfil({
+                                          ...perfil,
+                                          idiomas: [...perfil.idiomas, idioma],
+                                        });
+                                      } else {
+                                        setPerfil({
+                                          ...perfil,
+                                          idiomas: perfil.idiomas.filter(
+                                            (i) => i !== idioma
+                                          ),
+                                        });
+                                      }
+                                    }}
+                                    className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2"
+                                  />
+                                  <span className="text-sm text-gray-700 font-medium">
+                                    {idioma}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-4">
+                              <p className="text-gray-500 text-sm">
+                                Nenhum idioma encontrado para "{filtroIdioma}"
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                        {filtroIdioma && (
+                          <p className="text-xs text-gray-500">
+                            Mostrando {idiomasFiltrados.length} de{" "}
+                            {idiomasDisponiveis.length} idiomas
+                          </p>
+                        )}
+                        <p className="text-xs text-gray-500">
+                          Selecione os idiomas que você domina
+                        </p>
+                      </div>
                     ) : (
-                      <p className="text-gray-900">
-                        {perfil.idiomas.join(", ")}
-                      </p>
+                      <div className="space-y-2">
+                        {perfil.idiomas.length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {perfil.idiomas.map((idioma) => (
+                              <span
+                                key={idioma}
+                                className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200"
+                              >
+                                <Globe className="w-3 h-3 mr-1" />
+                                {idioma}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-gray-500 text-sm italic">
+                            Nenhum idioma selecionado
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1337,7 +1522,3 @@ export default function PainelProfessor() {
     </div>
   );
 }
-
-
-
-
