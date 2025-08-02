@@ -49,11 +49,14 @@ export default function CadastroPage() {
     setCarregando(true);
 
     const tipoUsuario = dadosFormulario.papel === "professor" ? 1 : 2;
+
+    const cpfNumerico = dadosFormulario.cpf.replace(/\D/g, "");
+    
     const request: ICadastroRequest = {
       nome: dadosFormulario.nome,
       email: dadosFormulario.email,
       senha: dadosFormulario.senha,
-      cpf: dadosFormulario.cpf,
+      cpf: cpfNumerico,
       tipoUsuario,
     };
     const res = await fetch("/api/signup", {

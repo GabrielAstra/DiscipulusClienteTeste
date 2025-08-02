@@ -1,4 +1,4 @@
 export interface Habilidade {
-  id: number;
+  id: string;
   nome: string;
 }

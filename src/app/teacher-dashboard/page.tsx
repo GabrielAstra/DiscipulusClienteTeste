@@ -167,6 +167,7 @@ function aplicarMascaraTelefone(valor: string) {
 export default function PainelProfessor() {
   const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira">("perfil");
   const [editando, setEditando] = useState(false);
+  const [salvandoPerfil, setSalvandoPerfil] = useState(false);
   const [mostrarModalSaque, setMostrarModalSaque] = useState(false);
   const [mostrarModalPreview, setMostrarModalPreview] = useState(false);
   const [valorSaque, setValorSaque] = useState("");
@@ -230,9 +231,65 @@ export default function PainelProfessor() {
     ],
   });
 
-  const lidarComSalvarPerfil = () => {
-    setEditando(false);
-    console.log("Perfil salvo:", perfil);
+  const lidarComSalvarPerfil = async () => {
+    setSalvandoPerfil(true);
+
+    try {
+      // Preparar dados para enviar para a API
+      const payload = {
+        perfil: {
+          nome: perfil.nome || "",
+          sobrenome: "", // Campo obrigatório na API, mas não temos no frontend
+          biografia: perfil.biografia || "",
+          sobreMim: perfil.biografia || "", // Usando biografia como sobreMim
+          status: 1, // Status ativo por padrão
+          precoHoraAula: perfil.valorHora || 0,
+          fotoPerfil: "", // Não enviando foto por enquanto conforme solicitado
+          idiomas: perfil.idiomas.join(", "), // Convertendo array para string
+          localizacao: perfil.localizacao || "",
+        },
+        formacoes: perfil.formacao.map(formacao => ({
+          titulo: formacao.titulo || "",
+          instituicao: formacao.instituicao || "",
+          dtInicio: formacao.dtInicio || new Date().toISOString(),
+          dtConclusao: formacao.dtConclusao || new Date().toISOString(),
+        })),
+        experiencias: perfil.experiencia.map(exp => ({
+          titulo: exp.titulo || "",
+          instituicao: exp.instituicao || "",
+          inicio: exp.inicio || new Date().toISOString(),
+          fim: exp.fim || new Date().toISOString(),
+          descricao: exp.descricao || "",
+        })),
+        habilidades: perfil.materias || [], // Usando materias como habilidades
+      };
+
+      // Chamar a API
+      const response = await fetch('/api/salvarPerfilCompleto', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        showError(result.message || "Erro ao salvar perfil.");
+        return;
+      }
+
+      // Sucesso
+      showSuccess("Perfil salvo com sucesso!");
+      setEditando(false);
+
+    } catch (error) {
+      console.error("Erro ao salvar perfil:", error);
+      showError("Erro inesperado ao salvar perfil.");
+    } finally {
+      setSalvandoPerfil(false);
+    }
   };
 
   const [filtroHabilidade, setFiltroHabilidade] = useState("");
@@ -677,14 +734,25 @@ export default function PainelProfessor() {
                     <div className="flex space-x-2">
                       <button
                         onClick={lidarComSalvarPerfil}
-                        className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                        disabled={salvandoPerfil}
+                        className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <Save className="w-4 h-4" />
-                        <span>Salvar</span>
+                        {salvandoPerfil ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <span>Salvando...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-4 h-4" />
+                            <span>Salvar</span>
+                          </>
+                        )}
                       </button>
                       <button
                         onClick={() => setEditando(false)}
-                        className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        disabled={salvandoPerfil}
+                        className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <X className="w-4 h-4" />
                         <span>Cancelar</span>
@@ -1317,18 +1385,18 @@ export default function PainelProfessor() {
                             >
                               <input
                                 type="checkbox"
-                                checked={perfil.materias.includes(hab.nome)}
+                                checked={perfil.materias.includes(hab.id.toString())}
                                 onChange={(e) => {
                                   if (e.target.checked) {
                                     setPerfil({
                                       ...perfil,
-                                      materias: [...perfil.materias, hab.nome],
+                                      materias: [...perfil.materias, hab.id.toString()],
                                     });
                                   } else {
                                     setPerfil({
                                       ...perfil,
                                       materias: perfil.materias.filter(
-                                        (m) => m !== hab.nome
+                                        (m) => m !== hab.id.toString()
                                       ),
                                     });
                                   }
