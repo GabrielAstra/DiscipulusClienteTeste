@@ -235,17 +235,16 @@ export default function PainelProfessor() {
     setSalvandoPerfil(true);
 
     try {
-      // Preparar dados para enviar para a API
       const payload = {
         perfil: {
           nome: perfil.nome || "",
-          sobrenome: "", // Campo obrigatório na API, mas não temos no frontend
+          sobrenome: "", 
           biografia: perfil.biografia || "",
-          sobreMim: perfil.biografia || "", // Usando biografia como sobreMim
-          status: 1, // Status ativo por padrão
+          sobreMim: perfil.biografia || "", 
+          status: 1, 
           precoHoraAula: perfil.valorHora || 0,
-          fotoPerfil: "", // Não enviando foto por enquanto conforme solicitado
-          idiomas: perfil.idiomas.join(", "), // Convertendo array para string
+          fotoPerfil: "", 
+          idiomas: perfil.idiomas.join(", "), 
           localizacao: perfil.localizacao || "",
         },
         formacoes: perfil.formacao.map(formacao => ({
@@ -261,10 +260,9 @@ export default function PainelProfessor() {
           fim: exp.fim || new Date().toISOString(),
           descricao: exp.descricao || "",
         })),
-        habilidades: perfil.materias || [], // Usando materias como habilidades
+        habilidades: perfil.materias || [], 
       };
 
-      // Chamar a API
       const response = await fetch('/api/salvarPerfilCompleto', {
         method: 'POST',
         headers: {
@@ -416,13 +414,11 @@ export default function PainelProfessor() {
   const handleFileUpload = async (file: File) => {
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       showError('Por favor, selecione apenas arquivos de imagem.');
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       showError('A imagem deve ter no máximo 5MB.');
       return;
@@ -431,11 +427,8 @@ export default function PainelProfessor() {
     setUploadingPhoto(true);
 
     try {
-      // Create preview URL
       const previewUrl = URL.createObjectURL(file);
       
-      // Here you would normally upload to your server/cloud storage
-      // For now, we'll just use the preview URL
       setPerfil(prevPerfil => ({
         ...prevPerfil,
         avatar: previewUrl

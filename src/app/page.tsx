@@ -1,28 +1,31 @@
-import { Metadata } from "next";
-import { ArrowRight, BookOpen, CheckCircle, Search, Star, Users } from 'lucide-react';
-import Link from "next/link";
+"use client"
 
-export const metadata: Metadata = {
-  title: "Discipulus - Plataforma de Tutoria",
-  icons: "../public/BrancoComFundoPreto.jpg"
-};
+import { Metadata } from "next";
+import { ArrowRight, BookOpen, CheckCircle, Search, Star, Users, Clock, Shield, Award, ChevronDown, MessageCircle, Zap, Target } from 'lucide-react';
+import Link from "next/link";
+import { useState } from "react";
 
 export default function Home() {
+  const [faqAberto, setFaqAberto] = useState<number | null>(null);
+
   const recursos = [
     {
       icone: Users,
       titulo: 'Professores Especialistas',
-      descricao: 'Conecte-se com professores verificados e experientes em todas as matérias'
+      descricao: 'Conecte-se com professores verificados e experientes em todas as matérias',
+      cor: 'indigo'
     },
     {
       icone: BookOpen,
       titulo: 'Todas as Matérias',
-      descricao: 'De exatas a humanas, encontre ajuda em qualquer matéria que precisar'
+      descricao: 'De exatas a humanas, encontre ajuda em qualquer matéria que precisar',
+      cor: 'purple'
     },
     {
       icone: Star,
       titulo: 'Qualidade Garantida',
-      descricao: 'Todos os professores são avaliados por estudantes como você'
+      descricao: 'Todos os professores são avaliados por estudantes como você',
+      cor: 'blue'
     }
   ];
 
@@ -33,44 +36,167 @@ export default function Home() {
     { numero: '4.9', rotulo: 'Avaliação Média' }
   ];
 
+  const testimonials = [
+    {
+      nome: "Ana Silva",
+      curso: "Engenharia",
+      avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+      texto: "O Discipulus mudou completamente minha experiência acadêmica. Consegui tirar 9.5 em Cálculo com a ajuda do Professor João!",
+      nota: 5
+    },
+    {
+      nome: "Carlos Mendes",
+      curso: "Medicina",
+      avatar: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+      texto: "Professores incríveis e metodologia que realmente funciona. Recomendo para todos que querem melhorar suas notas.",
+      nota: 5
+    },
+    {
+      nome: "Maria Santos",
+      curso: "Direito",
+      avatar: "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+      texto: "A plataforma é intuitiva e os professores são extremamente qualificados. Consegui aprovação no vestibular!",
+      nota: 5
+    }
+  ];
+
+  const planos = [
+    {
+      nome: "Essencial",
+      preco: "R$ 29",
+      periodo: "/mês",
+      recursos: [
+        "2 aulas por mês",
+        "Acesso a materiais básicos",
+        "Suporte por chat",
+        "Professores verificados"
+      ],
+      popular: false
+    },
+    {
+      nome: "Premium",
+      preco: "R$ 59",
+      periodo: "/mês",
+      recursos: [
+        "6 aulas por mês",
+        "Materiais exclusivos",
+        "Suporte prioritário",
+        "Aulas gravadas",
+        "Revisões ilimitadas"
+      ],
+      popular: true
+    },
+    {
+      nome: "Ilimitado",
+      preco: "R$ 99",
+      periodo: "/mês",
+      recursos: [
+        "Aulas ilimitadas",
+        "Todos os materiais",
+        "Suporte 24/7",
+        "Mentor dedicado",
+        "Garantia de aprovação"
+      ],
+      popular: false
+    }
+  ];
+
+  const faq = [
+    {
+      pergunta: "Como funciona o processo de agendamento?",
+      resposta: "Você escolhe o professor, seleciona data e horário disponíveis, realiza o pagamento e recebe confirmação com link da aula."
+    },
+    {
+      pergunta: "Posso cancelar ou remarcar uma aula?",
+      resposta: "Sim! Você pode cancelar ou remarcar até 24h antes da aula sem custo adicional."
+    },
+    {
+      pergunta: "Como são selecionados os professores?",
+      resposta: "Todos passam por verificação de diplomas, experiência comprovada e avaliação pedagógica rigorosa."
+    },
+    {
+      pergunta: "Existe garantia de satisfação?",
+      resposta: "Oferecemos garantia de 100% de satisfação. Se não ficar satisfeito, devolvemos seu dinheiro."
+    }
+  ];
+
+  const recursos2 = [
+    {
+      icone: Clock,
+      titulo: "Horários Flexíveis",
+      descricao: "Agende suas aulas quando for mais conveniente para você"
+    },
+    {
+      icone: Shield,
+      titulo: "100% Seguro",
+      descricao: "Pagamentos protegidos e dados criptografados"
+    },
+    {
+      icone: Award,
+      titulo: "Professores Premiados",
+      descricao: "Educadores reconhecidos e com excelência comprovada"
+    },
+    {
+      icone: Zap,
+      titulo: "Resultados Rápidos",
+      descricao: "Veja melhorias em suas notas já nas primeiras aulas"
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-white">
-      <section className="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-16 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white overflow-hidden">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-20 pb-32 overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse delay-1000"></div>
+          <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse delay-2000"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-indigo-200 rounded-full px-6 py-2 mb-8 shadow-lg">
+              <Star className="w-4 h-4 text-indigo-600 mr-2" />
+              <span className="text-sm font-medium text-indigo-700">Plataforma #1 de Tutoria no Brasil</span>
+            </div>
+
+            <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-8 leading-tight">
               Encontre o Professor
-              <span className="text-indigo-600 block">Perfeito para Você</span>
+              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent block">
+                Perfeito para Você
+              </span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            
+            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
               Conecte-se com professores especialistas para experiências de aprendizado personalizadas. 
               Domine qualquer matéria com orientação individual de profissionais verificados.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
               <Link
                 href="/catalog"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors inline-flex items-center justify-center space-x-2"
+                className="group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 <span>Encontrar Professores</span>
               </Link>
               <Link
                 href="/register"
-                className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 px-8 py-4 rounded-lg text-lg font-semibold transition-colors inline-flex items-center justify-center space-x-2"
+                className="group border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 backdrop-blur-sm bg-white/80 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 <span>Seja um Professor</span>
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
               {estatisticas.map((estatistica, indice) => (
-                <div key={indice} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-indigo-600 mb-2">
+                <div key={indice} className="group text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20">
+                  <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3 group-hover:scale-105 transition-transform">
                     {estatistica.numero}
                   </div>
-                  <div className="text-gray-600 font-medium">{estatistica.rotulo}</div>
+                  <div className="text-gray-700 font-semibold text-sm md:text-base">{estatistica.rotulo}</div>
                 </div>
               ))}
             </div>
@@ -78,39 +204,61 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-20 bg-gray-50">
+      {/* Recursos Section */}
+      <section className="py-24 bg-white relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Por que Escolher o Discipulus?
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Por que Escolher o
+              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"> Discipulus?</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Tornamos o aprendizado acessível, eficaz e prazeroso para estudantes de todos os níveis.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 mb-20">
             {recursos.map((recurso, indice) => (
-              <div key={indice} className="bg-white rounded-xl p-8 shadow-sm border border-gray-200 text-center">
-                <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <recurso.icone className="w-8 h-8 text-indigo-600" />
+              <div key={indice} className="group bg-white rounded-3xl p-10 shadow-lg hover:shadow-2xl border border-gray-100 text-center transition-all duration-500 hover:-translate-y-2">
+                <div className={`w-20 h-20 bg-gradient-to-br ${
+                  recurso.cor === 'indigo' ? 'from-indigo-100 to-indigo-200' :
+                  recurso.cor === 'purple' ? 'from-purple-100 to-purple-200' :
+                  'from-blue-100 to-blue-200'
+                } rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300`}>
+                  <recurso.icone className={`w-10 h-10 ${
+                    recurso.cor === 'indigo' ? 'text-indigo-600' :
+                    recurso.cor === 'purple' ? 'text-purple-600' :
+                    'text-blue-600'
+                  }`} />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   {recurso.titulo}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 leading-relaxed">
                   {recurso.descricao}
                 </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Recursos Adicionais */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {recursos2.map((recurso, indice) => (
+              <div key={indice} className="group bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 hover:border-indigo-300 transition-all duration-300 hover:shadow-lg">
+                <recurso.icone className="w-8 h-8 text-indigo-600 mb-4 group-hover:scale-110 transition-transform" />
+                <h4 className="font-semibold text-gray-900 mb-2">{recurso.titulo}</h4>
+                <p className="text-sm text-gray-600">{recurso.descricao}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-20 bg-white">
+      {/* Como Funciona */}
+      <section className="py-24 bg-gradient-to-br from-gray-50 to-indigo-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Como Funciona
             </h2>
             <p className="text-xl text-gray-600">
@@ -118,118 +266,259 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">
-                1
+          <div className="grid md:grid-cols-4 gap-8 mb-16">
+            {[
+              { numero: 1, titulo: "Encontre seu Professor", descricao: "Navegue pelo nosso catálogo de professores verificados e encontre o ideal para suas necessidades." },
+              { numero: 2, titulo: "Pague com Segurança", descricao: "Realize o pagamento de forma segura através da nossa plataforma protegida e confiável." },
+              { numero: 3, titulo: "Tenha sua Aula", descricao: "Conecte-se com seu professor no horário agendado e aproveite sua aula personalizada." },
+              { numero: 4, titulo: "Garantia Total", descricao: "Sua satisfação é garantida. Caso não fique satisfeito, devolvemos seu dinheiro." }
+            ].map((passo, indice) => (
+              <div key={indice} className="text-center group">
+                <div className={`w-16 h-16 ${passo.numero === 4 ? 'bg-gradient-to-br from-green-500 to-emerald-600' : 'bg-gradient-to-br from-indigo-600 to-purple-600'} text-white rounded-2xl flex items-center justify-center mx-auto mb-8 text-xl font-bold shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  {passo.numero === 4 ? '✓' : passo.numero}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  {passo.titulo}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {passo.descricao}
+                </p>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Encontre seu Professor
-              </h3>
-              <p className="text-gray-600">
-                Navegue pelo nosso catálogo de professores verificados e encontre o ideal para suas necessidades.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">
-                2
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Pague com Segurança
-              </h3>
-              <p className="text-gray-600">
-                Realize o pagamento de forma segura através da nossa plataforma protegida e confiável.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">
-                3
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Tenha sua Aula
-              </h3>
-              <p className="text-gray-600">
-                Conecte-se com seu professor no horário agendado e aproveite sua aula personalizada.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">
-                ✓
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Garantia Total
-              </h3>
-              <p className="text-gray-600">
-                Sua satisfação é garantida. Caso não fique satisfeito, devolvemos seu dinheiro.
-              </p>
-            </div>
+            ))}
           </div>
           
-          <div className="mt-16 bg-gray-50 rounded-2xl p-8">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-10 shadow-xl border border-white/20">
+            <div className="text-center mb-10">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">
                 Segurança da Plataforma
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 text-lg">
                 Sua tranquilidade é nossa prioridade
               </p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { icone: CheckCircle, titulo: "Professores Verificados", descricao: "Todos os professores passam por verificação rigorosa de identidade e qualificações.", cor: "green" },
+                { icone: Star, titulo: "Pagamento Seguro", descricao: "Transações protegidas com criptografia de ponta e sistemas de pagamento confiáveis.", cor: "blue" },
+                { icone: Users, titulo: "Suporte 24/7", descricao: "Nossa equipe está sempre disponível para ajudar você em qualquer situação.", cor: "purple" }
+              ].map((item, indice) => (
+                <div key={indice} className="text-center group">
+                  <div className={`w-20 h-20 ${
+                    item.cor === 'green' ? 'bg-gradient-to-br from-green-100 to-emerald-200' :
+                    item.cor === 'blue' ? 'bg-gradient-to-br from-blue-100 to-indigo-200' :
+                    'bg-gradient-to-br from-purple-100 to-pink-200'
+                  } rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <item.icone className={`w-10 h-10 ${
+                      item.cor === 'green' ? 'text-green-600' :
+                      item.cor === 'blue' ? 'text-blue-600' :
+                      'text-purple-600'
+                    }`} />
+                  </div>
+                  <h4 className="text-xl font-bold text-gray-900 mb-3">{item.titulo}</h4>
+                  <p className="text-gray-600 leading-relaxed">
+                    {item.descricao}
+                  </p>
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Professores Verificados</h4>
-                <p className="text-sm text-gray-600">
-                  Todos os professores passam por verificação rigorosa de identidade e qualificações.
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              O que Nossos Estudantes Dizem
+            </h2>
+            <p className="text-xl text-gray-600">
+              Histórias reais de sucesso acadêmico
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, indice) => (
+              <div key={indice} className="group bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-lg hover:shadow-2xl border border-gray-100 transition-all duration-500 hover:-translate-y-2">
+                <div className="flex items-center mb-6">
+                  <img 
+                    src={testimonial.avatar} 
+                    alt={testimonial.nome}
+                    className="w-16 h-16 rounded-full object-cover mr-4 ring-4 ring-indigo-100"
+                  />
+                  <div>
+                    <h4 className="font-bold text-gray-900">{testimonial.nome}</h4>
+                    <p className="text-gray-600 text-sm">{testimonial.curso}</p>
+                  </div>
+                </div>
+                
+                <div className="flex mb-4">
+                  {[...Array(testimonial.nota)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                
+                <p className="text-gray-700 leading-relaxed italic">
+                  "{testimonial.texto}"
                 </p>
               </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Star className="w-8 h-8 text-blue-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Pagamento Seguro</h4>
-                <p className="text-sm text-gray-600">
-                  Transações protegidas com criptografia de ponta e sistemas de pagamento confiáveis.
-                </p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-24 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Perguntas Frequentes
+            </h2>
+            <p className="text-xl text-gray-600">
+              Tire suas dúvidas sobre nossa plataforma
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {faq.map((item, indice) => (
+              <div key={indice} className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
+                <button
+                  onClick={() => setFaqAberto(faqAberto === indice ? null : indice)}
+                  className="w-full text-left p-6 flex items-center justify-between"
+                >
+                  <h3 className="text-lg font-semibold text-gray-900">{item.pergunta}</h3>
+                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${faqAberto === indice ? 'rotate-180' : ''}`} />
+                </button>
+                {faqAberto === indice && (
+                  <div className="px-6 pb-6">
+                    <p className="text-gray-600 leading-relaxed">{item.resposta}</p>
+                  </div>
+                )}
               </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-purple-600" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Suporte 24/7</h4>
-                <p className="text-sm text-gray-600">
-                  Nossa equipe está sempre disponível para ajudar você em qualquer situação.
-                </p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Final */}
+      <section className="py-24 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
+        </div>
+        
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-8">
+            Pronto para Começar
+            <span className="block">a Aprender?</span>
+          </h2>
+          <p className="text-xl md:text-2xl text-indigo-100 mb-12 max-w-3xl mx-auto">
+            Junte-se a milhares de estudantes que melhoraram suas notas e confiança com o Discipulus.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link
+              href="/catalog"
+              className="group bg-white text-indigo-600 hover:bg-gray-50 px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+            >
+              <span>Comece Agora</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link
+              href="/demo"
+              className="group border-2 border-white text-white hover:bg-white hover:text-indigo-600 px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3"
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span>Ver Demo</span>
+            </Link>
+          </div>
+
+          <div className="mt-16 bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+            <div className="grid md:grid-cols-3 gap-8 text-center">
+              <div>
+                <Target className="w-12 h-12 text-white mx-auto mb-4" />
+                <h4 className="text-lg font-semibold text-white mb-2">Resultados Garantidos</h4>
+                <p className="text-indigo-100 text-sm">Melhore suas notas ou seu dinheiro de volta</p>
+              </div>
+              <div>
+                <Clock className="w-12 h-12 text-white mx-auto mb-4" />
+                <h4 className="text-lg font-semibold text-white mb-2">Suporte Imediato</h4>
+                <p className="text-indigo-100 text-sm">Tire dúvidas em tempo real com nossos especialistas</p>
+              </div>
+              <div>
+                <Award className="w-12 h-12 text-white mx-auto mb-4" />
+                <h4 className="text-lg font-semibold text-white mb-2">Certificado de Qualidade</h4>
+                <p className="text-indigo-100 text-sm">Plataforma certificada pelos melhores educadores</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-20 bg-indigo-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Pronto para Começar a Aprender?
-          </h2>
-          <p className="text-xl text-indigo-100 mb-8">
-            Junte-se a milhares de estudantes que melhoraram suas notas e confiança com o Discipulus.
-          </p>
-          <Link
-            href="/catalog"
-            className="bg-white text-indigo-600 hover:bg-gray-50 px-8 py-4 rounded-lg text-lg font-semibold transition-colors inline-flex items-center space-x-2"
-          >
-            <span>Comece Agora</span>
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8 mb-12">
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-6">Discipulus</h3>
+              <p className="text-gray-400 mb-6">
+                A plataforma que conecta estudantes aos melhores professores do Brasil.
+              </p>
+              <div className="flex space-x-4">
+                <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
+                  <span className="text-sm font-bold">f</span>
+                </div>
+                <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
+                  <span className="text-sm font-bold">tw</span>
+                </div>
+                <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
+                  <span className="text-sm font-bold">in</span>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-6">Para Estudantes</h4>
+              <ul className="space-y-3">
+                <li><Link href="/catalog" className="text-gray-400 hover:text-white transition-colors">Encontrar Professores</Link></li>
+                <li><Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">Planos e Preços</Link></li>
+                <li><Link href="/how-it-works" className="text-gray-400 hover:text-white transition-colors">Como Funciona</Link></li>
+                <li><Link href="/subjects" className="text-gray-400 hover:text-white transition-colors">Matérias</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-6">Para Professores</h4>
+              <ul className="space-y-3">
+                <li><Link href="/register" className="text-gray-400 hover:text-white transition-colors">Cadastre-se</Link></li>
+                <li><Link href="/teacher-resources" className="text-gray-400 hover:text-white transition-colors">Recursos</Link></li>
+                <li><Link href="/teacher-guidelines" className="text-gray-400 hover:text-white transition-colors">Diretrizes</Link></li>
+                <li><Link href="/earnings" className="text-gray-400 hover:text-white transition-colors">Ganhos</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-6">Suporte</h4>
+              <ul className="space-y-3">
+                <li><Link href="/help" className="text-gray-400 hover:text-white transition-colors">Central de Ajuda</Link></li>
+                <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">Contato</Link></li>
+                <li><Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacidade</Link></li>
+                <li><Link href="/terms" className="text-gray-400 hover:text-white transition-colors">Termos de Uso</Link></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
+            <p className="text-gray-400 text-sm">
+              © 2025 Discipulus. Todos os direitos reservados.
+            </p>
+            <div className="flex items-center space-x-6 mt-4 md:mt-0">
+              <span className="text-gray-400 text-sm">Feito com ❤️ no Brasil</span>
+            </div>
+          </div>
         </div>
-      </section>
+      </footer>
     </div>
   );
 }
