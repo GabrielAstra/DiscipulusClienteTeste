@@ -248,12 +248,14 @@ export default function PainelProfessor() {
           localizacao: perfil.localizacao || "",
         },
         formacoes: perfil.formacao.map(formacao => ({
+          id: formacao.id || null,
           titulo: formacao.titulo || "",
           instituicao: formacao.instituicao || "",
           dtInicio: formacao.dtInicio || new Date().toISOString(),
           dtConclusao: formacao.dtConclusao || new Date().toISOString(),
         })),
         experiencias: perfil.experiencia.map(exp => ({
+          id: exp.id || null,
           titulo: exp.titulo || "",
           instituicao: exp.instituicao || "",
           inicio: exp.inicio || new Date().toISOString(),

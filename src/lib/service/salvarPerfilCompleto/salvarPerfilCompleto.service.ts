@@ -15,12 +15,14 @@ export interface EditarPerfilPayload {
         localizacao: string;
     };
     formacoes: {
+        id?: string;
         titulo: string;
         instituicao: string;
         dtInicio: string;
         dtConclusao: string;
     }[];
     experiencias: {
+        id?: string;
         titulo: string;
         instituicao: string;
         inicio: string;
