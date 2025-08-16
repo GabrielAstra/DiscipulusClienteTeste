@@ -4,14 +4,14 @@ import { useState } from "react";
 import { User, DollarSign } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { DadosCarteira } from "@/types/teacher";
-import { ProfileHeader } from "@/components/teacher/ProfileHeader";
-import { AcademicEducation } from "@/components/teacher/AcademicEducation";
-import { ProfessionalExperience } from "@/components/teacher/ProfessionalExperience";
-import { SubjectsAndAvailability } from "@/components/teacher/SubjectsAndAvailability";
-import { WalletOverview } from "@/components/teacher/WalletOverview";
-import { TransactionHistory } from "@/components/teacher/TransactionHistory";
-import { WithdrawalModal } from "@/components/teacher/WithdrawalModal";
-import { ProfilePreviewModal } from "@/components/teacher/ProfilePreviewModal";
+import { ProfileHeader } from "./ProfileHeader";
+import { AcademicEducation } from "./AcademicEducation";
+import { ProfessionalExperience } from "./ProfessionalExperience";
+import { SubjectsAndAvailability } from "./SubjectsAndAvailability";
+import { WalletOverview } from "./WalletOverview";
+import { TransactionHistory } from "./TransactionHistory";
+import { WithdrawalModal } from "./WithdrawalModal";
+import { ProfilePreviewModal } from "./ProfilePreviewModal";
 
 export default function PainelProfessor() {
   const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira">("perfil");
