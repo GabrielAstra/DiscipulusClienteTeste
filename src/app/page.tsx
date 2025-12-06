@@ -513,9 +513,6 @@ export default function Home() {
             <p className="text-gray-400 text-sm">
               © 2025 Discipulus. Todos os direitos reservados.
             </p>
-            <div className="flex items-center space-x-6 mt-4 md:mt-0">
-              <span className="text-gray-400 text-sm">Feito com ❤️ no Brasil</span>
-            </div>
           </div>
         </div>
       </footer>

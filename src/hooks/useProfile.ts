@@ -10,6 +10,8 @@ import {
   removerExperiencia,
   salvarPerfilCompleto
 } from '@/services/teacherApi';
+import { listarAgenda } from "@/lib/service/agenda/agenda.service";
+import { mapearAgendaDaApi } from "@/utils/mapAgenda";
 
 const initialPerfil: PerfilProfessor = {
   id: "1",
@@ -95,13 +97,13 @@ export function useProfile() {
       const payload = {
         perfil: {
           nome: perfil.nome || "",
-          sobrenome: "", 
+          sobrenome: "",
           biografia: perfil.biografia || "",
-          sobreMim: perfil.biografia || "", 
-          status: 1, 
+          sobreMim: perfil.biografia || "",
+          status: 1,
           precoHoraAula: perfil.valorHora || 0,
-          fotoPerfil: "", 
-          idiomas: perfil.idiomas.join(", "), 
+          fotoPerfil: "",
+          idiomas: perfil.idiomas.join(", "),
           localizacao: perfil.localizacao || "",
         },
         formacoes: perfil.formacao.map(formacao => ({
@@ -119,7 +121,7 @@ export function useProfile() {
           fim: exp.fim || new Date().toISOString(),
           descricao: exp.descricao || "",
         })),
-        habilidades: perfil.materias || [], 
+        habilidades: perfil.materias || [],
       };
 
       await salvarPerfilCompleto(payload);

@@ -12,3 +12,6 @@ export interface Professor {
   disponibilidade: string[];
   verificado: boolean;
 }
+
+
+

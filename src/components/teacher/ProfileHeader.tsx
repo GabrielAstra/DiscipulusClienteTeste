@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { PerfilProfessor, Habilidade } from '@/types/teacher';
-import { capitais, idiomasDisponiveis } from '@/constants/teacher';
+import { capitais, idiomasDisponiveis, mapaDiasSemana } from '@/constants/teacher';
 import { aplicarMascaraTelefone } from '@/utils/formatters';
+import { salvarAgenda } from '@/lib/service/agenda/agenda.service';
 import { Edit3, Save, X, Camera, Upload, Eye, Globe } from 'lucide-react';
+import { AgendaDiaPayload } from '@/types/teacher';
 
 interface ProfileHeaderProps {
   perfil: PerfilProfessor;
@@ -37,7 +39,7 @@ export function ProfileHeader({
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragOver(false);
-    
+
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       onFileUpload(files[0]);
@@ -62,6 +64,47 @@ export function ProfileHeader({
     setIdiomasFiltrados(filtered);
   };
 
+  const prepararPayloadAgenda = (): AgendaDiaPayload[] => {
+    if (!perfil.disponibilidadeHorarios) return [];
+
+    return perfil.disponibilidadeHorarios.map((d) => ({
+      diaSemana: mapaDiasSemana[d.dia],
+      horarios: d.horarios.map((h) => {
+        const horaInicial = `${h.inicio}:00`;
+        const horaFinal = `${h.fim}:00`;
+
+        return {
+          horaInicial,
+          horaFinal,
+          agendaDisponivelEnum: 1,
+        };
+      }),
+    }));
+  };
+
+  const handleSalvarComAgenda = async () => {
+    try {
+      const payloadAgenda = prepararPayloadAgenda();
+
+      if (payloadAgenda.length > 0) {
+        console.log("📋 Salvando agenda:", JSON.stringify(payloadAgenda, null, 2));
+
+        const response = await salvarAgenda(payloadAgenda);
+
+        if (response?.sucesso) {
+          console.log("✅ Agenda salva com sucesso!");
+        } else {
+          console.error(`❌ ${response?.mensagem ?? "Erro ao salvar agenda"}`);
+        }
+      }
+
+      onSalvar();
+    } catch (err) {
+      console.error("💥 Erro ao salvar:", err);
+      alert("❌ Erro ao salvar as informações");
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -79,7 +122,7 @@ export function ProfileHeader({
           {!editando ? (
             <button
               onClick={() => setEditando(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Edit3 className="w-4 h-4" />
               <span>Editar</span>
@@ -87,7 +130,7 @@ export function ProfileHeader({
           ) : (
             <div className="flex space-x-2">
               <button
-                onClick={onSalvar}
+                onClick={handleSalvarComAgenda}
                 disabled={salvandoPerfil}
                 className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -118,7 +161,6 @@ export function ProfileHeader({
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-4">
-          {/* Profile Photo Section */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Foto de Perfil
@@ -136,7 +178,7 @@ export function ProfileHeader({
                   </div>
                 )}
               </div>
-              
+
               {editando && (
                 <div className="flex-1">
                   <div
@@ -144,8 +186,8 @@ export function ProfileHeader({
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors cursor-pointer ${
-                      dragOver 
-                        ? 'border-indigo-500 bg-indigo-50' 
+                      dragOver
+                        ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-300 hover:border-gray-400'
                     }`}
                   >
@@ -164,12 +206,12 @@ export function ProfileHeader({
                       className="cursor-pointer flex flex-col items-center space-y-2"
                     >
                       {uploadingPhoto ? (
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                       ) : (
                         <>
                           <Upload className="w-8 h-8 text-gray-400" />
                           <div className="text-sm text-gray-600">
-                            <span className="font-medium text-indigo-600">Clique para fazer upload</span>
+                            <span className="font-medium text-blue-600">Clique para fazer upload</span>
                             <span> ou arraste a imagem aqui</span>
                           </div>
                           <p className="text-xs text-gray-500">PNG, JPG até 5MB</p>
@@ -193,7 +235,7 @@ export function ProfileHeader({
                 onChange={(e) =>
                   setPerfil({ ...perfil, nome: e.target.value })
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             ) : (
               <p className="text-gray-900">{perfil.nome}</p>
@@ -231,7 +273,7 @@ export function ProfileHeader({
                     telefone: aplicarMascaraTelefone(e.target.value),
                   })
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             ) : (
               <p className="text-gray-900">{perfil.telefone}</p>
@@ -248,7 +290,7 @@ export function ProfileHeader({
                 onChange={(e) =>
                   setPerfil({ ...perfil, localizacao: e.target.value })
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Selecione uma capital</option>
                 {capitais.map((cidade) => (
@@ -266,7 +308,7 @@ export function ProfileHeader({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Valor por Hora (R$)
+              Valor por aula
             </label>
             {editando ? (
               <input
@@ -278,7 +320,7 @@ export function ProfileHeader({
                     valorHora: parseFloat(e.target.value),
                   })
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             ) : (
               <p className="text-gray-900">R$ {perfil.valorHora}</p>
@@ -297,7 +339,7 @@ export function ProfileHeader({
                     placeholder="Pesquisar idiomas..."
                     value={filtroIdioma}
                     onChange={(e) => handleIdiomaFilterChange(e.target.value)}
-                    className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                    className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Globe className="h-5 w-5 text-gray-400" />
@@ -329,7 +371,7 @@ export function ProfileHeader({
                                 });
                               }
                             }}
-                            className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2"
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                           />
                           <span className="text-sm text-gray-700 font-medium">
                             {idioma}
@@ -391,7 +433,7 @@ export function ProfileHeader({
               setPerfil({ ...perfil, biografia: e.target.value })
             }
             rows={4}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         ) : (
           <p className="text-gray-900">{perfil.biografia}</p>

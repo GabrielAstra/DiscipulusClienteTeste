@@ -8,7 +8,7 @@ import { ToastProvider } from "@/context/ToastContext";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "Discipulus App",
+  title: "Discipulus",
 };
 
 export default function RootLayout({

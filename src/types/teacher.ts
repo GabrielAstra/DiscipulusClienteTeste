@@ -15,6 +15,16 @@ export interface ExperienciaDTO {
     descricao: string;
 }
 
+export interface HorarioDisponivel {
+    inicio: string;
+    fim: string;
+}
+
+export interface DisponibilidadeDia {
+    dia: string;
+    horarios: HorarioDisponivel[];
+}
+
 export interface PerfilProfessor {
     id: string;
     nome: string;
@@ -26,6 +36,7 @@ export interface PerfilProfessor {
     experiencia: ExperienciaDTO[];
     idiomas: string[];
     disponibilidade: string[];
+    disponibilidadeHorarios: DisponibilidadeDia[];
     diasBloqueados: string[];
     formacao: FormacaoDTO[];
     certificacoes: string[];
@@ -53,4 +64,21 @@ export interface DadosCarteira {
 export interface Habilidade {
     id: number;
     nome: string;
+}
+
+
+export interface AgendaHorarioPayload {
+  horaInicial: string;  
+  horaFinal: string;    
+  agendaDisponivelEnum: number;
+}
+
+export interface AgendaDiaPayload {
+  diaSemana: number;
+  horarios: AgendaHorarioPayload[];
+}
+
+export interface HorarioDisponivel {
+  inicio: string; 
+  fim: string;   
 }

@@ -1,10 +1,8 @@
-"use client";
-
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, BookOpen } from 'lucide-react';
-import { PerfilProfessor, Habilidade } from '@/types/teacher';
+import { Clock, BookOpen } from 'lucide-react';
+import { PerfilProfessor, Habilidade, HorarioDisponivel } from '@/types/teacher';
 import { diasSemana } from '@/constants/teacher';
-import { CalendarBlocker } from './CalendarBlocked';
+import { TimeSlotSelector } from './TimeSlotSelector';
 
 interface SubjectsAndAvailabilityProps {
   perfil: PerfilProfessor;
@@ -13,15 +11,15 @@ interface SubjectsAndAvailabilityProps {
   todasHabilidades: Habilidade[];
 }
 
-export function SubjectsAndAvailability({ 
-  perfil, 
-  setPerfil, 
-  editando, 
-  todasHabilidades 
+export function SubjectsAndAvailability({
+  perfil,
+  setPerfil,
+  editando,
+  todasHabilidades
 }: SubjectsAndAvailabilityProps) {
   const [filtroHabilidade, setFiltroHabilidade] = useState("");
   const [habilidadesFiltradas, setHabilidadesFiltradas] = useState<Habilidade[]>([]);
-  const [abaDisponibilidade, setAbaDisponibilidade] = useState<"semanal" | "bloqueios">("semanal");
+  const [intervaloHorario, setIntervaloHorario] = useState<30 | 50 | 120>(50);
 
   useEffect(() => {
     const filtered = todasHabilidades.filter((tag) =>
@@ -30,46 +28,56 @@ export function SubjectsAndAvailability({
     setHabilidadesFiltradas(filtered);
   }, [filtroHabilidade, todasHabilidades]);
 
-  const handleToggleDayBlock = (dateString: string) => {
-    const diasBloqueados = perfil.diasBloqueados || [];
-    
-    if (diasBloqueados.includes(dateString)) {
-      setPerfil({
-        ...perfil,
-        diasBloqueados: diasBloqueados.filter(d => d !== dateString),
-      });
+  const handleAddHorario = (dia: string, horario: HorarioDisponivel) => {
+    const disponibilidadeAtual = perfil.disponibilidadeHorarios || [];
+    const diaExistente = disponibilidadeAtual.find((d) => d.dia === dia);
+
+    if (diaExistente) {
+      const novaDisponibilidade = disponibilidadeAtual.map((d) =>
+        d.dia === dia
+          ? { ...d, horarios: [...d.horarios, horario] }
+          : d
+      );
+      setPerfil({ ...perfil, disponibilidadeHorarios: novaDisponibilidade });
     } else {
       setPerfil({
         ...perfil,
-        diasBloqueados: [...diasBloqueados, dateString],
+        disponibilidadeHorarios: [
+          ...disponibilidadeAtual,
+          { dia, horarios: [horario] },
+        ],
       });
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString + 'T00:00:00');
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+  const handleRemoveHorario = (dia: string, index: number) => {
+    const disponibilidadeAtual = perfil.disponibilidadeHorarios || [];
+    const novaDisponibilidade = disponibilidadeAtual
+      .map((d) =>
+        d.dia === dia
+          ? { ...d, horarios: d.horarios.filter((_, i) => i !== index) }
+          : d
+      )
+      .filter((d) => d.horarios.length > 0);
+
+    setPerfil({ ...perfil, disponibilidadeHorarios: novaDisponibilidade });
   };
 
-  const getDayOfWeek = (dateString: string) => {
-    const date = new Date(dateString + 'T00:00:00');
-    const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-    return days[date.getDay()];
+  const getHorariosPorDia = (dia: string): HorarioDisponivel[] => {
+    const diaDisponivel = (perfil.disponibilidadeHorarios || []).find(
+      (d) => d.dia === dia
+    );
+    return diaDisponivel ? diaDisponivel.horarios : [];
   };
 
   return (
-    <div className="grid lg:grid-cols-3 gap-8">
-      {/* Matérias */}
+    <div className="space-y-8">
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex items-center space-x-2 mb-4">
-          <BookOpen className="w-5 h-5 text-indigo-600" />
+          <BookOpen className="w-5 h-5 text-blue-600" />
           <h3 className="text-lg font-semibold text-gray-900">Matérias</h3>
         </div>
-        
+
         {editando ? (
           <div className="space-y-3">
             <div className="relative">
@@ -78,7 +86,7 @@ export function SubjectsAndAvailability({
                 placeholder="Pesquisar matérias..."
                 value={filtroHabilidade}
                 onChange={(e) => setFiltroHabilidade(e.target.value)}
-                className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
@@ -96,7 +104,7 @@ export function SubjectsAndAvailability({
                 </svg>
               </div>
             </div>
-            
+
             <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
               {habilidadesFiltradas.length > 0 ? (
                 <div className="space-y-3">
@@ -123,7 +131,7 @@ export function SubjectsAndAvailability({
                             });
                           }
                         }}
-                        className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                       />
                       <span className="text-sm text-gray-700 font-medium">
                         {hab.nome}
@@ -139,14 +147,14 @@ export function SubjectsAndAvailability({
                 </div>
               )}
             </div>
-            
+
             {filtroHabilidade && (
               <p className="text-xs text-gray-500">
                 Mostrando {habilidadesFiltradas.length} de{" "}
                 {todasHabilidades.length} matérias
               </p>
             )}
-            
+
             <p className="text-xs text-gray-500">
               Selecione as matérias que você ensina
             </p>
@@ -158,7 +166,7 @@ export function SubjectsAndAvailability({
                 {perfil.materias.map((materia) => (
                   <span
                     key={materia}
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 border border-indigo-200"
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200"
                   >
                     {materia}
                   </span>
@@ -173,7 +181,6 @@ export function SubjectsAndAvailability({
         )}
       </div>
 
-      {/* Disponibilidade Semanal */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex items-center space-x-2 mb-4">
           <Clock className="w-5 h-5 text-green-600" />
@@ -181,153 +188,104 @@ export function SubjectsAndAvailability({
             Disponibilidade Semanal
           </h3>
         </div>
-        
+
         {editando ? (
-          <div className="space-y-3">
-            <p className="text-sm text-gray-600 mb-3">
-              Selecione os dias da semana que você está disponível
-            </p>
-            {diasSemana.map((dia) => (
-              <label key={dia} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={perfil.disponibilidade.includes(dia)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setPerfil({
-                        ...perfil,
-                        disponibilidade: [...perfil.disponibilidade, dia],
-                      });
-                    } else {
-                      setPerfil({
-                        ...perfil,
-                        disponibilidade: perfil.disponibilidade.filter(
-                          (d) => d !== dia
-                        ),
-                      });
-                    }
-                  }}
-                  className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                />
-                <span className="text-sm font-medium text-gray-700">{dia}</span>
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Duração das aulas
               </label>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {diasSemana.map((dia) => (
-              <div key={dia} className="flex items-center justify-between p-2 rounded-lg bg-gray-50">
-                <span className="text-sm font-medium text-gray-700">{dia}</span>
-                <span
-                  className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                    perfil.disponibilidade.includes(dia)
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setIntervaloHorario(30)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    intervaloHorario === 30
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  {perfil.disponibilidade.includes(dia)
-                    ? "Disponível"
-                    : "Indisponível"}
-                </span>
+                  30 minutos
+                </button>
+                <button
+                  onClick={() => setIntervaloHorario(50)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    intervaloHorario === 50
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  50 minutos
+                </button>
+                <button
+                  onClick={() => setIntervaloHorario(120)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    intervaloHorario === 120
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  2 horas
+                </button>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Selecione a duração padrão das suas aulas
+              </p>
+            </div>
 
-      {/* Bloqueios de Agenda */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center space-x-2 mb-4">
-          <Calendar className="w-5 h-5 text-red-600" />
-          <h3 className="text-lg font-semibold text-gray-900">
-            Bloqueios de Agenda
-          </h3>
-        </div>
-
-        {editando ? (
-          <div className="space-y-4">
-            <p className="text-sm text-gray-600">
-              Clique nos dias do calendário para bloquear/desbloquear sua agenda
-            </p>
-            
-            <CalendarBlocker
-              diasBloqueados={perfil.diasBloqueados || []}
-              onToggleDay={handleToggleDayBlock}
-            />
-
-            {perfil.diasBloqueados && perfil.diasBloqueados.length > 0 && (
-              <div className="mt-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">
-                  Dias bloqueados ({perfil.diasBloqueados.length}):
-                </p>
-                <div className="max-h-32 overflow-y-auto space-y-1">
-                  {perfil.diasBloqueados
-                    .sort()
-                    .map((dateString) => (
-                      <div
-                        key={dateString}
-                        className="flex items-center justify-between p-2 bg-red-50 border border-red-200 rounded-lg text-sm"
-                      >
-                        <div>
-                          <span className="font-medium text-red-800">
-                            {formatDate(dateString)}
-                          </span>
-                          <span className="text-red-600 ml-1">
-                            ({getDayOfWeek(dateString)})
-                          </span>
-                        </div>
-                        <button
-                          onClick={() => handleToggleDayBlock(dateString)}
-                          className="text-red-600 hover:text-red-800 text-xs underline"
-                        >
-                          Remover
-                        </button>
-                      </div>
-                    ))}
-                </div>
+            <div className="border-t pt-6">
+              <p className="text-sm text-gray-600 mb-4">
+                Selecione os dias e horários em que você está disponível
+              </p>
+              <div className="grid md:grid-cols-2 gap-4">
+                {diasSemana.map((dia) => (
+                  <div key={dia} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <TimeSlotSelector
+                      dia={dia}
+                      horarios={getHorariosPorDia(dia)}
+                      intervalo={intervaloHorario}
+                      onAddHorario={handleAddHorario}
+                      onRemoveHorario={handleRemoveHorario}
+                    />
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            {perfil.diasBloqueados && perfil.diasBloqueados.length > 0 ? (
-              <div>
-                <p className="text-sm text-gray-600 mb-3">
-                  Próximos dias bloqueados:
-                </p>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {perfil.diasBloqueados
-                    .filter(date => new Date(date + 'T00:00:00') >= new Date())
-                    .sort()
-                    .slice(0, 10)
-                    .map((dateString) => (
-                      <div
-                        key={dateString}
-                        className="p-3 bg-red-50 border border-red-200 rounded-lg"
-                      >
-                        <div className="text-sm font-medium text-red-800">
-                          {formatDate(dateString)}
-                        </div>
-                        <div className="text-xs text-red-600">
-                          {getDayOfWeek(dateString)}
-                        </div>
-                      </div>
-                    ))}
+          <div className="space-y-3">
+            {diasSemana.map((dia) => {
+              const horarios = getHorariosPorDia(dia);
+              return (
+                <div key={dia} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-gray-900">{dia}</span>
+                    <span
+                      className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                        horarios.length > 0
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {horarios.length > 0
+                        ? `${horarios.length} ${horarios.length === 1 ? 'horário' : 'horários'}`
+                        : "Indisponível"}
+                    </span>
+                  </div>
+                  {horarios.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {horarios.map((horario, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200"
+                        >
+                          {horario.inicio} - {horario.fim}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {perfil.diasBloqueados.filter(date => new Date(date + 'T00:00:00') >= new Date()).length > 10 && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    E mais {perfil.diasBloqueados.filter(date => new Date(date + 'T00:00:00') >= new Date()).length - 10} dias...
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-500 text-sm">
-                  Nenhum dia bloqueado na agenda
-                </p>
-              </div>
-            )}
+              );
+            })}
           </div>
         )}
       </div>
