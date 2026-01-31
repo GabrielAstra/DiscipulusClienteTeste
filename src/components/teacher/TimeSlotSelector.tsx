@@ -6,7 +6,7 @@ interface TimeSlotSelectorProps {
   horarios: HorarioDisponivel[];
   intervalo: number;
   onAddHorario: (dia: string, horario: HorarioDisponivel) => void;
-  onRemoveHorario: (dia: string, horarioId: string) => void;
+  onRemoveHorario: (dia: string, horario: HorarioDisponivel) => void;
 }
 
 
@@ -84,7 +84,7 @@ const formatarIntervalo = (horario: HorarioDisponivel) => {
                 {formatarIntervalo(horario)}
               </span>
               <button
-                onClick={() => horario.id && onRemoveHorario(dia, horario.id)}
+                onClick={() => onRemoveHorario(dia, horario)}
                 className="text-red-600 hover:text-red-800 transition-colors"
                 title="Remover horário"
               >

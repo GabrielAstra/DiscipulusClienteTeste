@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PerfilProfessor, Habilidade } from '@/types/teacher';
 import { useToast } from '@/context/ToastContext';
+import { mapaDiasSemana } from '@/utils/mapaDiasSemana'
 import {
   buscarInformacoesPessoais,
   buscarFormacoes,
@@ -99,12 +100,20 @@ export function useProfile() {
     setSalvandoPerfil(true);
 
     try {
-      // if (horariosRemovidos.length > 0) {
-      //   await removerAgenda(horariosRemovidos);
-      // }
 
-      if (perfil.disponibilidadeHorarios.length > 0) {
-        await salvarAgenda(perfil.disponibilidadeHorarios);
+
+        if (perfil.disponibilidadeHorarios.length > 0) {
+          const agendaPayload = perfil.disponibilidadeHorarios.map(dia => ({
+          diaSemana: mapaDiasSemana[dia.dia], 
+          horarios: dia.horarios.map(h => ({
+            id: h.id,
+            horaInicial: h.HoraInicial,
+            horaFinal: h.HoraFinal,
+            agendaDisponivelEnum: 1
+          }))
+        }));
+
+        await salvarAgenda(agendaPayload);
       }
 
       const payloadPerfil = {

@@ -93,20 +93,27 @@ useEffect(() => {
 
   
 
-  const handleRemoveHorario = (dia: string, horarioId: string) => {
-    const disponibilidadeAtual = perfil.disponibilidadeHorarios || [];
+  const handleRemoveHorario = (dia: string, horario: HorarioDisponivel) => {
+  const disponibilidadeAtual = perfil.disponibilidadeHorarios || [];
 
-    const novaDisponibilidade = disponibilidadeAtual
-      .map((d) =>
-        d.dia === dia
-          ? { ...d, horarios: d.horarios.filter(h => h.id !== horarioId) }
-          : d
-      )
-      .filter((d) => d.horarios.length > 0);
+  const novaDisponibilidade = disponibilidadeAtual
+    .map((d) =>
+      d.dia === dia
+        ? {
+            ...d,
+            horarios: d.horarios.filter(
+              (h) =>
+                h.HoraInicial !== horario.HoraInicial ||
+                h.HoraFinal !== horario.HoraFinal
+            ),
+          }
+        : d
+    )
+    .filter((d) => d.horarios.length > 0);
 
-    setPerfil({ ...perfil, disponibilidadeHorarios: novaDisponibilidade });
-    setHorariosRemovidos((prev) => [...prev, horarioId]);
-  };
+  setPerfil({ ...perfil, disponibilidadeHorarios: novaDisponibilidade });
+};
+
 
 
 const getHorariosPorDia = (dia: string): HorarioDisponivel[] => {
