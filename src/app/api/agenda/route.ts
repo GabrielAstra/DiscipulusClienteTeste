@@ -11,19 +11,46 @@ export async function GET(request: Request) {
         return NextResponse.json({ success: false, message: "Sem token!" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url);
-    const professorId = searchParams.get("professorId");
+    try {
+        const res = await fetch(`${API_URL}/Listar`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
 
-    const res = await fetch(`${API_URL}/Listar?professorId=${professorId}`, {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
-    });
+        const raw = await res.text();   // <-- PRIMEIRO lê como texto
+        console.log("RAW AGENDA RESPONSE:", raw);
 
-    const data = await res.json();
-    return NextResponse.json(data);
+        // Caso retorno não seja JSON
+        if (!raw) {
+            return NextResponse.json(
+                { success: false, message: "Resposta vazia da API!" },
+                { status: 500 }
+            );
+        }
+
+        let data;
+        try {
+            data = JSON.parse(raw);     // <-- tenta converter para JSON
+        } catch {
+            return NextResponse.json(
+                { success: false, message: "Resposta não é um JSON válido!", raw },
+                { status: 500 }
+            );
+        }
+
+        return NextResponse.json(data);
+
+    } catch (error) {
+        console.error("ERRO AO LISTAR AGENDA:", error);
+        return NextResponse.json(
+            { success: false, message: "Erro inesperado ao listar agenda." },
+            { status: 500 }
+        );
+    }
 }
+
 export async function POST(request: Request) {
     const body = await request.json();
 
@@ -43,10 +70,10 @@ export async function POST(request: Request) {
         body: JSON.stringify(body),
     });
 
+
     const data = await res.json();
     return NextResponse.json(data);
 }
-
 
 export async function DELETE(request: Request) {
     const cookieStore = await cookies();
@@ -56,17 +83,17 @@ export async function DELETE(request: Request) {
         return NextResponse.json({ success: false, message: "Sem token!" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const { ids } = await request.json();
 
-    const res = await fetch(`${API_URL}/Remover?id=${id}`, {
+    const res = await fetch(`${API_URL}/Remover`, {
         method: "DELETE",
         headers: {
             "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
         },
+        body: JSON.stringify(ids),
     });
 
     const data = await res.json();
     return NextResponse.json(data);
 }
-

@@ -70,8 +70,8 @@ export function ProfileHeader({
     return perfil.disponibilidadeHorarios.map((d) => ({
       diaSemana: mapaDiasSemana[d.dia],
       horarios: d.horarios.map((h) => {
-        const horaInicial = `${h.inicio}:00`;
-        const horaFinal = `${h.fim}:00`;
+        const horaInicial = `${h.HoraInicial}:00`;
+        const horaFinal = `${h.HoraFinal}:00`;
 
         return {
           horaInicial,
@@ -80,29 +80,6 @@ export function ProfileHeader({
         };
       }),
     }));
-  };
-
-  const handleSalvarComAgenda = async () => {
-    try {
-      const payloadAgenda = prepararPayloadAgenda();
-
-      if (payloadAgenda.length > 0) {
-        console.log("📋 Salvando agenda:", JSON.stringify(payloadAgenda, null, 2));
-
-        const response = await salvarAgenda(payloadAgenda);
-
-        if (response?.sucesso) {
-          console.log("✅ Agenda salva com sucesso!");
-        } else {
-          console.error(`❌ ${response?.mensagem ?? "Erro ao salvar agenda"}`);
-        }
-      }
-
-      onSalvar();
-    } catch (err) {
-      console.error("💥 Erro ao salvar:", err);
-      alert("❌ Erro ao salvar as informações");
-    }
   };
 
   return (
@@ -130,7 +107,7 @@ export function ProfileHeader({
           ) : (
             <div className="flex space-x-2">
               <button
-                onClick={handleSalvarComAgenda}
+                onClick={onSalvar}
                 disabled={salvandoPerfil}
                 className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >

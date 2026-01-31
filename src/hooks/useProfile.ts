@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { PerfilProfessor, FormacaoDTO, ExperienciaDTO, Habilidade } from '@/types/teacher';
+import { PerfilProfessor, Habilidade } from '@/types/teacher';
 import { useToast } from '@/context/ToastContext';
 import {
   buscarInformacoesPessoais,
@@ -10,9 +10,10 @@ import {
   removerExperiencia,
   salvarPerfilCompleto
 } from '@/services/teacherApi';
-import { listarAgenda } from "@/lib/service/agenda/agenda.service";
-import { mapearAgendaDaApi } from "@/utils/mapAgenda";
 
+import { listarAgenda } from "@/lib/service/agenda/agenda.service";
+import { mapearAgendaParaPerfil } from "@/utils/mapAgenda";
+import { salvarAgenda, removerAgenda } from "@/lib/service/agenda/agenda.service";
 const initialPerfil: PerfilProfessor = {
   id: "1",
   nome: "",
@@ -23,7 +24,7 @@ const initialPerfil: PerfilProfessor = {
   valorHora: 45,
   experiencia: [],
   idiomas: [],
-  disponibilidade: [],
+  disponibilidadeHorarios: [],
   formacao: [],
   certificacoes: [
     "Certificação em Ensino Online",
@@ -41,6 +42,7 @@ export function useProfile() {
   const [todasHabilidades, setTodasHabilidades] = useState<Habilidade[]>([]);
   const { showError, showSuccess } = useToast();
 
+  // 1. Buscar informações pessoais
   useEffect(() => {
     async function carregarInformacoesPessoais() {
       try {
@@ -48,40 +50,40 @@ export function useProfile() {
         if (info) {
           setPerfil((prev) => ({ ...prev, ...info }));
         }
-      } catch (error) {
+      } catch {
         showError("Erro ao buscar informações pessoais.");
       }
     }
-
     carregarInformacoesPessoais();
   }, [showError]);
 
+  // 2. Formações
   useEffect(() => {
     async function carregarFormacoes() {
       try {
         const formacoes = await buscarFormacoes();
         setPerfil((prev) => ({ ...prev, formacao: formacoes }));
-      } catch (error) {
+      } catch {
         showError("Erro ao buscar formações acadêmicas.");
       }
     }
-
     carregarFormacoes();
   }, [showError]);
 
+  // 3. Experiências
   useEffect(() => {
     async function carregarExperiencias() {
       try {
         const experiencias = await buscarExperiencias();
         setPerfil((prev) => ({ ...prev, experiencia: experiencias }));
-      } catch (error) {
+      } catch {
         showError("Erro ao buscar experiências.");
       }
     }
-
     carregarExperiencias();
   }, [showError]);
 
+  // 4. Habilidades (quando clicou em editar)
   useEffect(() => {
     if (editando) {
       buscarHabilidades()
@@ -90,102 +92,97 @@ export function useProfile() {
     }
   }, [editando, showError]);
 
+  // ---------- SALVAR PERFIL ----------
+
+
   const lidarComSalvarPerfil = async () => {
     setSalvandoPerfil(true);
 
     try {
-      const payload = {
+      // if (horariosRemovidos.length > 0) {
+      //   await removerAgenda(horariosRemovidos);
+      // }
+
+      if (perfil.disponibilidadeHorarios.length > 0) {
+        await salvarAgenda(perfil.disponibilidadeHorarios);
+      }
+
+      const payloadPerfil = {
         perfil: {
-          nome: perfil.nome || "",
+          nome: perfil.nome,
           sobrenome: "",
-          biografia: perfil.biografia || "",
-          sobreMim: perfil.biografia || "",
+          biografia: perfil.biografia,
+          sobreMim: perfil.biografia,
           status: 1,
-          precoHoraAula: perfil.valorHora || 0,
+          precoHoraAula: perfil.valorHora,
           fotoPerfil: "",
           idiomas: perfil.idiomas.join(", "),
-          localizacao: perfil.localizacao || "",
+          localizacao: perfil.localizacao,
         },
-        formacoes: perfil.formacao.map(formacao => ({
-          id: formacao.id || null,
-          titulo: formacao.titulo || "",
-          instituicao: formacao.instituicao || "",
-          dtInicio: formacao.dtInicio || new Date().toISOString(),
-          dtConclusao: formacao.dtConclusao || new Date().toISOString(),
-        })),
-        experiencias: perfil.experiencia.map(exp => ({
-          id: exp.id || null,
-          titulo: exp.titulo || "",
-          instituicao: exp.instituicao || "",
-          inicio: exp.inicio || new Date().toISOString(),
-          fim: exp.fim || new Date().toISOString(),
-          descricao: exp.descricao || "",
-        })),
-        habilidades: perfil.materias || [],
+        formacoes: perfil.formacao,
+        experiencias: perfil.experiencia,
+        habilidades: perfil.materias,
+        // ❌ NUNCA envie disponibilidade aqui
       };
 
-      await salvarPerfilCompleto(payload);
-      showSuccess("Perfil salvo com sucesso!");
+      await salvarPerfilCompleto(payloadPerfil);
+
+      /* ---------------- 4. LIMPAR ESTADO ---------------- */
+      setHorariosRemovidos([]);
       setEditando(false);
+
+      showSuccess("Perfil salvo com sucesso!");
     } catch (error) {
-      showError(error instanceof Error ? error.message : "Erro inesperado ao salvar perfil.");
+      console.error("Erro ao salvar perfil + agenda", error);
+      showError("Erro inesperado ao salvar perfil.");
     } finally {
       setSalvandoPerfil(false);
     }
   };
 
-  const handleFileUpload = async (file: File) => {
-    if (!file) return;
+  useEffect(() => {
+    async function carregarAgenda() {
+      try {
+        const agendaBackend = await listarAgenda();
+        const agendaPerfil = mapearAgendaParaPerfil(agendaBackend);
 
-    if (!file.type.startsWith('image/')) {
-      showError('Por favor, selecione apenas arquivos de imagem.');
-      return;
+        setPerfil((prev) => ({
+          ...prev,
+          disponibilidadeHorarios: agendaPerfil,
+        }));
+      } catch {
+        showError("Erro ao carregar agenda.");
+      }
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      showError('A imagem deve ter no máximo 5MB.');
-      return;
-    }
+    carregarAgenda();
+  }, [showError]);
 
-    setUploadingPhoto(true);
 
-    try {
-      const previewUrl = URL.createObjectURL(file);
-      setPerfil(prevPerfil => ({
-        ...prevPerfil,
-        avatar: previewUrl
-      }));
-
-      showSuccess('Foto atualizada com sucesso!');
-    } catch (error) {
-      console.error('Error uploading photo:', error);
-      showError('Erro ao fazer upload da foto.');
-    } finally {
-      setUploadingPhoto(false);
-    }
-  };
-
+  // ---------- Remoções ----------
   const handleRemoverFormacao = async (id: string, index: number) => {
     try {
       await removerFormacao(id);
-      const novasFormacoes = perfil.formacao.filter((_, i) => i !== index);
-      setPerfil({ ...perfil, formacao: novasFormacoes });
+      const novas = perfil.formacao.filter((_, i) => i !== index);
+      setPerfil({ ...perfil, formacao: novas });
       showSuccess("Formação removida com sucesso!");
-    } catch (error) {
-      showError(error instanceof Error ? error.message : "Erro ao remover formação.");
+    } catch {
+      showError("Erro ao remover formação.");
     }
   };
 
   const handleRemoverExperiencia = async (id: string, index: number) => {
     try {
       await removerExperiencia(id);
-      const novasExperiencias = perfil.experiencia.filter((_, i) => i !== index);
-      setPerfil({ ...perfil, experiencia: novasExperiencias });
+      const novas = perfil.experiencia.filter((_, i) => i !== index);
+      setPerfil({ ...perfil, experiencia: novas });
       showSuccess("Experiência removida com sucesso!");
-    } catch (error) {
-      showError(error instanceof Error ? error.message : "Erro ao remover experiência.");
+    } catch {
+      showError("Erro ao remover experiência.");
     }
   };
+
+  const [horariosRemovidos, setHorariosRemovidos] = useState<string[]>([]);
 
   return {
     perfil,
@@ -196,8 +193,9 @@ export function useProfile() {
     uploadingPhoto,
     todasHabilidades,
     lidarComSalvarPerfil,
-    handleFileUpload,
     handleRemoverFormacao,
     handleRemoverExperiencia,
+    horariosRemovidos,
+    setHorariosRemovidos
   };
 }

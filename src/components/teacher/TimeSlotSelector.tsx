@@ -6,8 +6,9 @@ interface TimeSlotSelectorProps {
   horarios: HorarioDisponivel[];
   intervalo: number;
   onAddHorario: (dia: string, horario: HorarioDisponivel) => void;
-  onRemoveHorario: (dia: string, index: number) => void;
+  onRemoveHorario: (dia: string, horarioId: string) => void;
 }
+
 
 export function TimeSlotSelector({
   dia,
@@ -17,35 +18,51 @@ export function TimeSlotSelector({
   onRemoveHorario,
 }: TimeSlotSelectorProps) {
   const gerarHorarios = () => {
-    const horariosDisponiveis: string[] = [];
-    for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 30) {
-        const hora = String(h).padStart(2, '0');
-        const minuto = String(m).padStart(2, '0');
-        horariosDisponiveis.push(`${hora}:${minuto}`);
-      }
+  const horariosDisponiveis: string[] = [];
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      const hora = String(h).padStart(2, '0');
+      const minuto = String(m).padStart(2, '0');
+      // Adiciona sempre os segundos :00
+      horariosDisponiveis.push(`${hora}:${minuto}:00`);
     }
-    return horariosDisponiveis;
-  };
+  }
+  return horariosDisponiveis;
+};
+
 
   const horariosDisponiveis = gerarHorarios();
 
   const calcularHorarioFim = (inicio: string, duracaoMinutos: number) => {
     const [horaInicio, minutoInicio] = inicio.split(':').map(Number);
     const totalMinutos = horaInicio * 60 + minutoInicio + duracaoMinutos;
+
     const horaFim = Math.floor(totalMinutos / 60) % 24;
     const minutoFim = totalMinutos % 60;
-    return `${String(horaFim).padStart(2, '0')}:${String(minutoFim).padStart(2, '0')}`;
+
+    return `${String(horaFim).padStart(2, '0')}:${String(minutoFim).padStart(2, '0')}:00`;
   };
+
 
   const handleAddSlot = (inicio: string) => {
     const fim = calcularHorarioFim(inicio, intervalo);
-    onAddHorario(dia, { inicio, fim });
+
+    onAddHorario(dia, {
+      HoraInicial:inicio,
+      HoraFinal: fim
+    });
+
   };
 
-  const formatarIntervalo = (horario: HorarioDisponivel) => {
-    return `${horario.inicio} - ${horario.fim}`;
-  };
+
+  const adicionarSegundos = (hora: string) => {
+  return hora.length === 5 ? `${hora}:00` : hora; 
+};
+
+const formatarIntervalo = (horario: HorarioDisponivel) => {
+  return `${adicionarSegundos(horario.HoraInicial)} - ${adicionarSegundos(horario.HoraFinal)}`;
+};
+
 
   return (
     <div className="space-y-3">
@@ -67,7 +84,7 @@ export function TimeSlotSelector({
                 {formatarIntervalo(horario)}
               </span>
               <button
-                onClick={() => onRemoveHorario(dia, index)}
+                onClick={() => horario.id && onRemoveHorario(dia, horario.id)}
                 className="text-red-600 hover:text-red-800 transition-colors"
                 title="Remover horário"
               >
@@ -92,7 +109,7 @@ export function TimeSlotSelector({
           {horariosDisponiveis.map((hora) => {
             const fim = calcularHorarioFim(hora, intervalo);
             const jaSelecionado = horarios.some(
-              (h) => h.inicio === hora
+              (h) => h.HoraInicial === hora
             );
             return (
               <option key={hora} value={hora} disabled={jaSelecionado}>

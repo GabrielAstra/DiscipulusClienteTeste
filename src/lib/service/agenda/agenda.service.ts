@@ -1,7 +1,7 @@
 const BASE_URL = "/api/agenda";
 
-export async function listarAgenda(professorId: string) {
-    const res = await fetch(`${BASE_URL}?professorId=${professorId}`, {
+export async function listarAgenda() {
+    const res = await fetch(BASE_URL, {
         method: "GET",
     });
 
@@ -18,12 +18,17 @@ export async function salvarAgenda(dados: any) {
     return res.json();
 }
 
-export async function removerAgenda(id: string) {
-    const res = await fetch(`${BASE_URL}?id=${id}`, {
+export async function removerAgenda(ids: string[]) {
+    const res = await fetch("/api/agenda", {
         method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids }),
     });
 
     return res.json();
 }
+
 
 

@@ -3,19 +3,27 @@ import { Clock, BookOpen } from 'lucide-react';
 import { PerfilProfessor, Habilidade, HorarioDisponivel } from '@/types/teacher';
 import { diasSemana } from '@/constants/teacher';
 import { TimeSlotSelector } from './TimeSlotSelector';
+import { listarAgenda, removerAgenda } from "@/lib/service/agenda/agenda.service";
+import { mapearAgendaParaPerfil } from "@/utils/mapAgenda";
 
 interface SubjectsAndAvailabilityProps {
   perfil: PerfilProfessor;
   setPerfil: (perfil: PerfilProfessor) => void;
   editando: boolean;
   todasHabilidades: Habilidade[];
-}
+  setHorariosRemovidos: React.Dispatch<React.SetStateAction<string[]>>;
 
+}
+const formatarHorario = (hora: string) => {
+  if (hora.length === 5) return `${hora}:00`; 
+  return hora; 
+};
 export function SubjectsAndAvailability({
   perfil,
   setPerfil,
   editando,
-  todasHabilidades
+  todasHabilidades,
+  setHorariosRemovidos
 }: SubjectsAndAvailabilityProps) {
   const [filtroHabilidade, setFiltroHabilidade] = useState("");
   const [habilidadesFiltradas, setHabilidadesFiltradas] = useState<Habilidade[]>([]);
@@ -27,48 +35,94 @@ export function SubjectsAndAvailability({
     );
     setHabilidadesFiltradas(filtered);
   }, [filtroHabilidade, todasHabilidades]);
+const adicionarSegundos = (hora: string) => {
+  return hora.length === 5 ? `${hora}:00` : hora; 
+};
 
-  const handleAddHorario = (dia: string, horario: HorarioDisponivel) => {
-    const disponibilidadeAtual = perfil.disponibilidadeHorarios || [];
-    const diaExistente = disponibilidadeAtual.find((d) => d.dia === dia);
-
-    if (diaExistente) {
-      const novaDisponibilidade = disponibilidadeAtual.map((d) =>
-        d.dia === dia
-          ? { ...d, horarios: [...d.horarios, horario] }
-          : d
-      );
-      setPerfil({ ...perfil, disponibilidadeHorarios: novaDisponibilidade });
-    } else {
-      setPerfil({
-        ...perfil,
-        disponibilidadeHorarios: [
-          ...disponibilidadeAtual,
-          { dia, horarios: [horario] },
-        ],
-      });
-    }
+ const handleAddHorario = (dia: string, horario: HorarioDisponivel) => {
+  const disponibilidadeAtual = perfil.disponibilidadeHorarios || [];
+  const horarioComSegundos = {
+    ...horario,
+    HoraInicial: adicionarSegundos(horario.HoraInicial),
+    HoraFinal: adicionarSegundos(horario.HoraFinal),
   };
 
-  const handleRemoveHorario = (dia: string, index: number) => {
+  const diaExistente = disponibilidadeAtual.find((d) => d.dia === dia);
+
+  if (diaExistente) {
+    const novaDisponibilidade = disponibilidadeAtual.map((d) =>
+      d.dia === dia
+        ? { ...d, horarios: [...d.horarios, horarioComSegundos] }
+        : d
+    );
+    setPerfil({ ...perfil, disponibilidadeHorarios: novaDisponibilidade });
+  } else {
+    setPerfil({
+      ...perfil,
+      disponibilidadeHorarios: [
+        ...disponibilidadeAtual,
+        { dia, horarios: [horarioComSegundos] },
+      ],
+    });
+  }
+};
+
+
+useEffect(() => {
+  if (!perfil.disponibilidadeHorarios) return;
+
+  // Checa se algum horário precisa de normalização
+  const precisaNormalizar = perfil.disponibilidadeHorarios.some(d =>
+    d.horarios.some(h => h.HoraInicial.length === 5 || h.HoraFinal.length === 5)
+  );
+
+  if (!precisaNormalizar) return; // Não faz nada se já estiver normalizado
+
+  const normalizados = perfil.disponibilidadeHorarios.map(d => ({
+    ...d,
+    horarios: d.horarios.map(h => ({
+      ...h,
+      HoraInicial: adicionarSegundos(h.HoraInicial),
+      HoraFinal: adicionarSegundos(h.HoraFinal),
+    })),
+  }));
+
+  setPerfil({ ...perfil, disponibilidadeHorarios: normalizados });
+}, [perfil.disponibilidadeHorarios]);
+
+
+  
+
+  const handleRemoveHorario = (dia: string, horarioId: string) => {
     const disponibilidadeAtual = perfil.disponibilidadeHorarios || [];
+
     const novaDisponibilidade = disponibilidadeAtual
       .map((d) =>
         d.dia === dia
-          ? { ...d, horarios: d.horarios.filter((_, i) => i !== index) }
+          ? { ...d, horarios: d.horarios.filter(h => h.id !== horarioId) }
           : d
       )
       .filter((d) => d.horarios.length > 0);
 
     setPerfil({ ...perfil, disponibilidadeHorarios: novaDisponibilidade });
+    setHorariosRemovidos((prev) => [...prev, horarioId]);
   };
 
-  const getHorariosPorDia = (dia: string): HorarioDisponivel[] => {
-    const diaDisponivel = (perfil.disponibilidadeHorarios || []).find(
-      (d) => d.dia === dia
-    );
-    return diaDisponivel ? diaDisponivel.horarios : [];
-  };
+
+const getHorariosPorDia = (dia: string): HorarioDisponivel[] => {
+  const diaDisponivel = (perfil.disponibilidadeHorarios || []).find(
+    (d) => d.dia === dia
+  );
+  if (!diaDisponivel) return [];
+  
+  return diaDisponivel.horarios.map(h => ({
+    ...h,
+    HoraInicial: adicionarSegundos(h.HoraInicial),
+    HoraFinal: adicionarSegundos(h.HoraFinal),
+  }));
+};
+
+
 
   return (
     <div className="space-y-8">
@@ -278,7 +332,7 @@ export function SubjectsAndAvailability({
                           key={index}
                           className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200"
                         >
-                          {horario.inicio} - {horario.fim}
+    {formatarHorario(horario.HoraInicial)} - {formatarHorario(horario.HoraFinal)}
                         </span>
                       ))}
                     </div>

@@ -69,6 +69,7 @@ export default function PainelProfessor() {
     console.log("Solicitação de saque:", { valor, metodo });
     alert("Solicitação de saque enviada com sucesso!");
   };
+  const [horariosRemovidos, setHorariosRemovidos] = useState<string[]>([]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -143,6 +144,7 @@ export default function PainelProfessor() {
               setPerfil={setPerfil}
               editando={editando}
               todasHabilidades={todasHabilidades}
+              setHorariosRemovidos={setHorariosRemovidos}
             />
           </div>
         )}
