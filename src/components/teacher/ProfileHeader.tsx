@@ -17,7 +17,7 @@ interface ProfileHeaderProps {
   uploadingPhoto: boolean;
   todasHabilidades: Habilidade[];
   onSalvar: () => void;
-  onFileUpload: (file: File) => void;
+  // onFileUpload: (file: File) => void;
   onShowPreview: () => void;
 }
 
@@ -29,7 +29,7 @@ export function ProfileHeader({
   salvandoPerfil,
   uploadingPhoto,
   onSalvar,
-  onFileUpload,
+  // onFileUpload,
   onShowPreview
 }: ProfileHeaderProps) {
   const [dragOver, setDragOver] = useState(false);
@@ -40,10 +40,10 @@ export function ProfileHeader({
     e.preventDefault();
     setDragOver(false);
 
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      onFileUpload(files[0]);
-    }
+    // const files = e.dataTransfer.files;
+    // if (files.length > 0) {
+    //   onFileUpload(files[0]);
+    // }
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -172,8 +172,8 @@ export function ProfileHeader({
                       type="file"
                       accept="image/*"
                       onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) onFileUpload(file);
+                        // const file = e.target.files?.[0];
+                        // if (file) onFileUpload(file);
                       }}
                       className="hidden"
                       id="photo-upload"

@@ -27,7 +27,7 @@ export default function PainelProfessor() {
     uploadingPhoto,
     todasHabilidades,
     lidarComSalvarPerfil,
-    handleFileUpload,
+    // handleFileUpload,
     handleRemoverFormacao,
     handleRemoverExperiencia,
   } = useProfile();
@@ -121,7 +121,7 @@ export default function PainelProfessor() {
               uploadingPhoto={uploadingPhoto}
               todasHabilidades={todasHabilidades}
               onSalvar={lidarComSalvarPerfil}
-              onFileUpload={handleFileUpload}
+              // onFileUpload={handleFileUpload}
               onShowPreview={() => setMostrarModalPreview(true)}
             />
 
