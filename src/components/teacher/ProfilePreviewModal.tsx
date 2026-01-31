@@ -288,14 +288,14 @@ export function ProfilePreviewModal({
                   {diasSemana.map((dia) => (
                     <div key={dia} className="flex items-center justify-between">
                       <span className="text-gray-700">{dia}</span>
-                      <span
+                        <span
                         className={`text-sm font-medium px-2 py-1 rounded-full ${
-                          perfil.disponibilidade.includes(dia)
+                          (perfil.disponibilidade ?? []).includes(dia)
                             ? "text-green-700 bg-green-100"
                             : "text-gray-500 bg-gray-100"
                         }`}
                       >
-                        {perfil.disponibilidade.includes(dia)
+                        {(perfil.disponibilidade ?? []).includes(dia)
                           ? "Disponível"
                           : "Indisponível"}
                       </span>
