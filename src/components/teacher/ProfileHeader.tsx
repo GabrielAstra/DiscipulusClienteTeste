@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { PerfilProfessor, Habilidade } from '@/types/teacher';
-import { capitais, idiomasDisponiveis, mapaDiasSemana } from '@/constants/teacher';
+import { capitais, idiomasDisponiveis } from '@/constants/teacher';
 import { aplicarMascaraTelefone } from '@/utils/formatters';
 import { salvarAgenda } from '@/lib/service/agenda/agenda.service';
 import { Edit3, Save, X, Camera, Upload, Eye, Globe } from 'lucide-react';
 import { AgendaDiaPayload } from '@/types/teacher';
-
+import {mapaDiasSemana} from '@/utils/mapaDiasSemana'
 interface ProfileHeaderProps {
   perfil: PerfilProfessor;
   setPerfil: (perfil: PerfilProfessor) => void;
