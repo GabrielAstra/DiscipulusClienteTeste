@@ -15,6 +15,7 @@ export interface InformacoesPessoaisResponse {
     urlFoto: string;
     idiomas: string;
     localizacao: string;
+    tempoExperiencia: number;
 }
 
 export interface InformacoesPessoaisDTO {
@@ -28,6 +29,7 @@ export interface InformacoesPessoaisDTO {
     urlFoto: string;
     idiomas: string;
     localizacao: string;
+    tempoExperiencia: number;
 }
 
 
@@ -61,7 +63,8 @@ export async function listarInformacoesPessoais(token: string): Promise<IService
             username: body.username,
             urlFoto: body.urlFoto,
             idiomas: body.idiomas,
-            localizacao: body.localizacao
+            localizacao: body.localizacao,
+            tempoExperiencia: body.tempoExperiencia
         };
 
         return { success: true, data: informacoesPessoaisDTO };

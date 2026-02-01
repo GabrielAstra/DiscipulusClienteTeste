@@ -20,7 +20,6 @@ export async function GET(request: Request) {
         });
 
         const raw = await res.text();   // <-- PRIMEIRO lê como texto
-        console.log("RAW AGENDA RESPONSE:", raw);
 
         // Caso retorno não seja JSON
         if (!raw) {

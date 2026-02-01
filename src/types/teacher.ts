@@ -43,6 +43,7 @@ export interface PerfilProfessor {
     certificacoes: string[];
     telefone: string;
     localizacao: string;
+    tempoExperiencia: number;
 }
 
 export interface Transacao {

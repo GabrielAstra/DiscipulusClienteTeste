@@ -28,6 +28,7 @@ export async function buscarInformacoesPessoais(): Promise<Partial<PerfilProfess
       telefone: data.celular || "",
       localizacao: data.localizacao || "",
       idiomas: idiomasArray,
+      tempoExperiencia: data.tempoExperiencia
     };
   } catch (err) {
     console.error("Erro ao buscar informações pessoais:", err);

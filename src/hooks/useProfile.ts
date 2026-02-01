@@ -26,6 +26,7 @@ const initialPerfil: PerfilProfessor = {
   experiencia: [],
   idiomas: [],
   disponibilidadeHorarios: [],
+  tempoExperiencia: 0,
   formacao: [],
   certificacoes: [
     "Certificação em Ensino Online",
@@ -49,7 +50,11 @@ export function useProfile() {
       try {
         const info = await buscarInformacoesPessoais();
         if (info) {
-          setPerfil((prev) => ({ ...prev, ...info }));
+          setPerfil((prev) => ({
+            ...prev,
+            ...info,
+            tempoExperiencia: info.tempoExperiencia ?? 0,
+          }));
         }
       } catch {
         showError("Erro ao buscar informações pessoais.");
@@ -102,9 +107,9 @@ export function useProfile() {
     try {
 
 
-        if (perfil.disponibilidadeHorarios.length > 0) {
-          const agendaPayload = perfil.disponibilidadeHorarios.map(dia => ({
-          diaSemana: mapaDiasSemana[dia.dia], 
+      if (perfil.disponibilidadeHorarios.length > 0) {
+        const agendaPayload = perfil.disponibilidadeHorarios.map(dia => ({
+          diaSemana: mapaDiasSemana[dia.dia],
           horarios: dia.horarios.map(h => ({
             id: h.id,
             horaInicial: h.HoraInicial,
@@ -127,6 +132,8 @@ export function useProfile() {
           fotoPerfil: "",
           idiomas: perfil.idiomas.join(", "),
           localizacao: perfil.localizacao,
+          tempoExperiencia: perfil.tempoExperiencia ?? null,
+
         },
         formacoes: perfil.formacao,
         experiencias: perfil.experiencia,
@@ -154,7 +161,6 @@ export function useProfile() {
       try {
         const agendaBackend = await listarAgenda();
         const agendaPerfil = mapearAgendaParaPerfil(agendaBackend);
-
         setPerfil((prev) => ({
           ...prev,
           disponibilidadeHorarios: agendaPerfil,

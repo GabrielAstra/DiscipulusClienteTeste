@@ -303,6 +303,33 @@ export function ProfileHeader({
               <p className="text-gray-900">R$ {perfil.valorHora}</p>
             )}
           </div>
+            <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Tempo de experiência (em anos)
+          </label>
+
+          {editando ? (
+            <input
+              type="number"
+              min={0}
+              value={perfil.tempoExperiencia ?? ""}
+              onChange={(e) =>
+                setPerfil({
+                  ...perfil,
+                  tempoExperiencia: Number(e.target.value),
+                })
+              }
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="Ex: 5"
+            />
+          ) : (
+            <p className="text-gray-900">
+              {perfil.tempoExperiencia != null
+                ? `${perfil.tempoExperiencia} anos`
+                : "Não informado"}
+            </p>
+          )}
+        </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
