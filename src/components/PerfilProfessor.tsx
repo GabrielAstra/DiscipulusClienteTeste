@@ -531,7 +531,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
           </div>
         </div>
 
-        <ModalAgendamento
+        {/* <ModalAgendamento
           professor={professor}
           aberto={agendamentoAberto}
           aoFechar={() => setAgendamentoAberto(false)}
@@ -541,7 +541,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
           professor={professor}
           aberto={chatAberto}
           aoFechar={() => setChatAberto(false)}
-        />
+        /> */}
 
         <ModalLogin
           aberto={modalLoginAberto}
