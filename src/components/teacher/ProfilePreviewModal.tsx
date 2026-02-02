@@ -208,7 +208,7 @@ export function ProfilePreviewModal({
               )}
 
               {/* Certifications */}
-              {perfil.certificacoes.length > 0 && (
+              {/* {perfil.certificacoes.length > 0 && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <div className="flex items-center space-x-2 mb-6">
                     <Award className="w-6 h-6 text-amber-600" />
@@ -232,7 +232,7 @@ export function ProfilePreviewModal({
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
 
             {/* Sidebar */}

@@ -9,7 +9,11 @@ import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Discipulus",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
+
 
 export default function RootLayout({
   children,

@@ -1,12 +1,14 @@
 "use client";
 import { Search, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect,useMemo, useState } from "react";
 
 import CartaoProfessor from "@/components/CartaoProfessor";
 import { materias } from "@/types/mock/materia-mock";
 import FiltroMateria from "@/components/FiltroMateria";
-import { professores } from "@/types/mock/professor-mock";
-
+// import { professores } from "@/types/mock/professor-mock";
+import { Professor } from "@/types/professor";
+import { listarProfessores } from "@/lib/service/catalog/catalog.service";
+import { mapProfessorFromApi } from "@/services/professor.mapper";
 export default function CatalogoProfessoresPage() {
   const [termoBusca, setTermoBusca] = useState("");
   const [categoriaSelecionada, setCategoriaSelecionada] = useState("Todas");
@@ -15,6 +17,35 @@ export default function CatalogoProfessoresPage() {
   );
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [ordenarPor, setOrdenarPor] = useState("avaliacao");
+  const [professores, setProfessores] = useState<Professor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [pagina, setPagina] = useState(1);
+  const PAGINACAO = 12;
+
+  useEffect(() => {
+    async function carregarProfessores() {
+      try {
+        const data = await listarProfessores({
+          filtros: termoBusca || undefined,
+          pagina,
+          paginacao: PAGINACAO,
+          busca: !!termoBusca,
+        });
+
+        const professoresMapeados =
+          data.resposta?.$values?.map(mapProfessorFromApi) ?? [];
+
+        setProfessores(professoresMapeados);
+      } catch (error) {
+        console.error("Erro ao carregar professores", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarProfessores();
+  }, [termoBusca, pagina]);
+
 
   const materiasDisponiveis = useMemo(() => {
     if (categoriaSelecionada === "Todas") {
@@ -58,7 +89,7 @@ export default function CatalogoProfessoresPage() {
     });
 
     return filtrados;
-  }, [termoBusca, materiasSelecionadas, ordenarPor]);
+  }, [ professores, termoBusca, materiasSelecionadas, ordenarPor]);
 
   return (
     <div className="min-h-screen bg-gray-50">

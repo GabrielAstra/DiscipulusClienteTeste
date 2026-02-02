@@ -3,6 +3,7 @@ import { useToast } from "@/context/ToastContext";
 import { useUsuario } from "@/context/UsuarioContext";
 import { ILoginRequest } from "@/lib/service/auth/auth.service";
 import { professores } from "@/types/mock/professor-mock";
+import { useRouter } from "next/navigation";
 import {
   Calendar,
   CheckCircle,
@@ -17,10 +18,12 @@ import {
   Star,
 } from "lucide-react";
 import { redirect } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalAgendamento from "./ModalAgendamento";
 import ModalChat from "./ModalChat";
 import ModalLogin from "./ModalLogin";
+import { PerfilProfessor as PerfilDTO, Experiencia, Formacao } from "@/lib/service/teacher/teacher.service";
+import { listarProfessor } from "@/lib/service/teacher/teacher.service";
 
 interface FormacaoDTO {
   titulo: string;
@@ -45,53 +48,38 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
   const { usuario, realizarLogin } = useUsuario();
   const { showError, showSuccess } = useToast();
 
-  const professor = professores.find((p) => p.id === id);
+  const [professor, setProfessor] = useState<PerfilDTO | null>(null);
+  const [loading, setLoading] = useState(true);
   const [agendamentoAberto, setAgendamentoAberto] = useState(false);
   const [chatAberto, setChatAberto] = useState(false);
   const [modalLoginAberto, setModalLoginAberto] = useState(false);
+  const router = useRouter();
 
-  // Dados simulados para demonstração - em produção viriam da API
-  const formacaoAcademica: FormacaoDTO[] = [
-    {
-      titulo: "Doutorado em Matemática Aplicada",
-      instituicao: "Universidade de São Paulo (USP)",
-      dtInicio: "2015-03-01T00:00:00.000Z",
-      dtConclusao: "2019-12-15T00:00:00.000Z"
-    },
-    {
-      titulo: "Mestrado em Física",
-      instituicao: "Instituto de Física - USP",
-      dtInicio: "2013-02-01T00:00:00.000Z",
-      dtConclusao: "2015-01-30T00:00:00.000Z"
-    }
-  ];
+  
+    useEffect(() => {
+      async function carregarPerfil() {
+        try {
+          const data = await listarProfessor(id);
+          setProfessor(data);
+         
 
-  const experienciaProfissional: ExperienciaDTO[] = [
-    {
-      titulo: "Professora Senior de Matemática",
-      instituicao: "Colégio Objetivo",
-      inicio: "2020-01-15T00:00:00.000Z",
-      fim: "2024-12-31T00:00:00.000Z",
-      descricao: "Leciono matemática para ensino médio, desenvolvendo metodologias inovadoras e acompanhando alunos em vestibulares."
-    },
-    {
-      titulo: "Tutora de Física",
-      instituicao: "Centro de Estudos Avançados",
-      inicio: "2018-03-01T00:00:00.000Z",
-      fim: "2020-01-10T00:00:00.000Z",
-      descricao: "Aulas particulares e em grupo, focando na preparação para concursos e vestibulares."
-    }
-  ];
+        } catch (err) {
+          console.error("Erro ao carregar perfil do professor", err);
+          setProfessor(null);
+        } finally {
+          setLoading(false);
+        }
+      }
 
-  const certificacoes = [
-    "Certificação em Ensino Online",
-    "Especialização em Didática",
-    "Metodologias Ativas de Aprendizagem"
-  ];
+      carregarPerfil();
+    }, [id]);
 
-  if (!professor) {
-    redirect("/catalog");
-  }
+    useEffect(() => {
+      if (!loading && !professor) {
+        router.push("/catalog");
+      }
+    }, [loading, professor, router]);
+
 
   const formatarData = (dataString: string) => {
     return new Date(dataString).toLocaleDateString("pt-BR", {
@@ -135,16 +123,47 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
     }
   };
 
-  const lidarComSucessoLogin = async (dadosUsuario: ILoginRequest) => {
-    const { success, data } = await realizarLogin(dadosUsuario);
-    if (success) {
-      showSuccess("Olá!", `Bem-vindo(a) de volta, ${data?.nome}!`);
-    } else {
-      showError("Email e/ou senha inválidos!");
-    }
-    setModalLoginAberto(false);
-    setAgendamentoAberto(true);
-  };
+    const lidarComSucessoLogin = async (dadosUsuario: ILoginRequest) => {
+      const { success, data } = await realizarLogin(dadosUsuario);
+      if (success) {
+        showSuccess("Olá!", `Bem-vindo(a) de volta, ${data?.nome}!`);
+      } else {
+        showError("Email e/ou senha inválidos!");
+      }
+      setModalLoginAberto(false);
+      setAgendamentoAberto(true);
+    };
+    const renderStars = (nota: number) => {
+      return [...Array(5)].map((_, i) => (
+        <Star
+          key={i}
+          className={`w-4 h-4 ${
+            i < nota ? "text-yellow-400 fill-current" : "text-gray-300"
+          }`}
+        />
+      ));
+    };
+  
+  if (loading || !professor) {
+    return null; 
+  }
+  const disponibilidade =
+    Array.isArray(professor.disponibilidade)
+      ? professor.disponibilidade
+      : professor.disponibilidade?.$values ?? [];
+  const avaliacoes = professor.avaliacao?.$values ?? [];
+
+  const totalAvaliacoes = avaliacoes.length;
+
+  const mediaAvaliacoes =
+    totalAvaliacoes > 0
+      ? (
+          avaliacoes.reduce((acc, av) => acc + av.nota, 0) /
+          totalAvaliacoes
+        ).toFixed(1)
+      : "0";
+
+  
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -154,16 +173,16 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
           <div className="p-8">
             <div className="flex flex-col md:flex-row gap-6">
               <div className="relative">
-                <img
+                {/* <img
                   src={professor.avatar}
                   alt={professor.nome}
                   className="w-32 h-32 rounded-full object-cover mx-auto md:mx-0"
-                />
-                {professor.verificado && (
+                /> */}
+                {/* {professor.verificado && ( */}
                   <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
                     <CheckCircle className="w-4 h-4 text-white" />
                   </div>
-                )}
+                {/* )} */}
               </div>
 
               <div className="flex-1 text-center md:text-left">
@@ -180,35 +199,37 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                       <div className="flex items-center space-x-1">
                         <Star className="w-5 h-5 text-yellow-400 fill-current" />
                         <span className="font-medium">
-                          {professor.avaliacao}
+                          {mediaAvaliacoes}
                         </span>
-                        <span>({professor.numeroAvaliacoes} avaliações)</span>
+                        <span>({totalAvaliacoes} avaliações)</span>
+
                       </div>
                       <div className="flex items-center space-x-1">
                         <Clock className="w-5 h-5" />
-                        <span>{professor.experiencia} de experiência</span>
+                        <span>{professor.tempoExperiencia} anos de experiência</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="text-center md:text-right">
                     <div className="text-3xl font-bold text-gray-900">
-                      R${professor.valorHora}
+                      R${professor.horaAula}
                     </div>
                     <div className="text-gray-600">por hora</div>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-6">
-                  {professor.materias.map((materia) => (
+                  {professor.habilidades?.$values.map((habilidade) => (
                     <span
-                      key={materia}
+                      key={habilidade.habilidadeID}
                       className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 border border-indigo-200"
                     >
-                      {materia}
+                      {habilidade.nomeHabilidade}
                     </span>
                   ))}
                 </div>
+
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
                   <button
@@ -256,29 +277,38 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                 </h2>
               </div>
               <div className="space-y-6">
-                {formacaoAcademica.map((formacao, index) => (
-                  <div key={index} className="relative pl-6 border-l-2 border-indigo-100 last:border-l-0">
-                    <div className="absolute -left-2 top-2 w-4 h-4 bg-indigo-600 rounded-full"></div>
-                    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-4 border border-indigo-100">
-                      <h3 className="font-semibold text-gray-900 mb-1">
-                        {formacao.titulo}
-                      </h3>
-                      <p className="text-indigo-700 font-medium mb-2">
-                        {formacao.instituicao}
-                      </p>
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Calendar className="w-4 h-4" />
-                        <span>
-                          {formatarData(formacao.dtInicio)} - {formatarData(formacao.dtConclusao)}
-                        </span>
-                        <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">
-                          {calcularDuracao(formacao.dtInicio, formacao.dtConclusao)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+  {professor.formacoes?.$values.map((formacao, index) => (
+    <div
+      key={formacao.id ?? index}
+      className="relative pl-6 border-l-2 border-indigo-100 last:border-l-0"
+    >
+      <div className="absolute -left-2 top-2 w-4 h-4 bg-indigo-600 rounded-full"></div>
+
+      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-4 border border-indigo-100">
+        <h3 className="font-semibold text-gray-900 mb-1">
+          {formacao.titulo}
+        </h3>
+
+        <p className="text-indigo-700 font-medium mb-2">
+          {formacao.instituicao}
+        </p>
+
+        <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <Calendar className="w-4 h-4" />
+          <span>
+            {formatarData(formacao.dtInicio)} -{" "}
+            {formatarData(formacao.dtConclusao)}
+          </span>
+
+          <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">
+            {calcularDuracao(formacao.dtInicio, formacao.dtConclusao)}
+          </span>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
             </div>
 
             {/* Professional Experience */}
@@ -290,7 +320,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                 </h2>
               </div>
               <div className="space-y-6">
-                {experienciaProfissional.map((exp, index) => (
+                {professor.experiencias?.$values.map((exp, index) => (
                   <div key={index} className="relative pl-6 border-l-2 border-green-100 last:border-l-0">
                     <div className="absolute -left-2 top-2 w-4 h-4 bg-green-600 rounded-full"></div>
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-100">
@@ -319,7 +349,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
             </div>
 
             {/* Certifications */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <Award className="w-6 h-6 text-amber-600" />
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -327,7 +357,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                 </h2>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
-                {certificacoes.map((certificacao, index) => (
+                {professor..map((certificacao, index) => (
                   <div
                     key={index}
                     className="flex items-center space-x-3 p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg border border-amber-100 hover:shadow-sm transition-shadow"
@@ -341,7 +371,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Subject Areas */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -349,63 +379,57 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                 Matérias e Especialidades
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
-                {professor.materias.map((materia) => (
+                {professor.habilidades?.$values.map((habilidade) => (
                   <div
-                    key={materia}
+                    key={habilidade.habilidadeID}
                     className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
                     <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
-                    <span className="font-medium text-gray-900">{materia}</span>
+                    <span className="font-medium text-gray-900">
+                      {habilidade.nomeHabilidade}
+                    </span>
                   </div>
                 ))}
               </div>
+
             </div>
 
             {/* Reviews */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Avaliações ({professor.numeroAvaliacoes})
+                Avaliações ({totalAvaliacoes})
               </h2>
-              <div className="space-y-4">
-                <div className="border-b border-gray-200 pb-4">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-4 h-4 text-yellow-400 fill-current"
-                        />
-                      ))}
-                    </div>
-                    <span className="font-medium text-gray-900">Sarah M.</span>
-                    <span className="text-gray-500">2 semanas atrás</span>
-                  </div>
-                  <p className="text-gray-700">
-                    Excelente professora! Realmente me ajudou a entender
-                    conceitos complexos de cálculo. Paciente e explica as coisas
-                    claramente.
-                  </p>
-                </div>
 
-                <div className="border-b border-gray-200 pb-4">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-4 h-4 text-yellow-400 fill-current"
-                        />
-                      ))}
-                    </div>
-                    <span className="font-medium text-gray-900">Mike R.</span>
-                    <span className="text-gray-500">1 mês atrás</span>
-                  </div>
-                  <p className="text-gray-700">
-                    Ótimo estilo de ensino e muito conhecedor. Minhas notas
-                    melhoraram significativamente após apenas algumas sessões.
+              <div className="space-y-4">
+                {avaliacoes.length === 0 && (
+                  <p className="text-gray-500 text-sm">
+                    Este professor ainda não possui avaliações.
                   </p>
-                </div>
+                )}
+
+                {avaliacoes.map((avaliacao) => (
+                  <div
+                    key={avaliacao.avaliacaoId}
+                    className="border-b border-gray-200 pb-4"
+                  >
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="flex items-center">
+                        {renderStars(avaliacao.nota)}
+                      </div>
+
+                      {/* Se futuramente vier nome do aluno */}
+                      <span className="font-medium text-gray-900">
+                        Aluno anônimo
+                      </span>
+                    </div>
+
+                    <p className="text-gray-700">
+                      {avaliacao.comentario}
+                    </p>
+                  </div>
+                ))}
               </div>
+
             </div>
           </div>
 
@@ -421,7 +445,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                   <div>
                     <div className="text-sm text-gray-600 font-medium">Idiomas</div>
                     <div className="text-gray-900">
-                      {professor.idiomas.join(", ")}
+                      {professor.idioma}
                     </div>
                   </div>
                 </div>
@@ -430,7 +454,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                   <Clock className="w-5 h-5 text-gray-400 mt-0.5" />
                   <div>
                     <div className="text-sm text-gray-600 font-medium">Experiência</div>
-                    <div className="text-gray-900">{professor.experiencia}</div>
+                    <div className="text-gray-900">{professor.tempoExperiencia}</div>
                   </div>
                 </div>
 
@@ -460,29 +484,30 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
               </h3>
               <div className="space-y-2">
                 {[
-                  "Segunda",
-                  "Terça",
-                  "Quarta",
-                  "Quinta",
-                  "Sexta",
-                  "Sábado",
-                  "Domingo",
-                ].map((dia) => (
-                  <div key={dia} className="flex items-center justify-between">
-                    <span className="text-gray-700">{dia}</span>
-                    <span
-                      className={`text-sm font-medium px-2 py-1 rounded-full ${
-                        professor.disponibilidade.includes(dia)
-                          ? "text-green-700 bg-green-100"
-                          : "text-gray-500 bg-gray-100"
-                      }`}
-                    >
-                      {professor.disponibilidade.includes(dia)
-                        ? "Disponível"
-                        : "Indisponível"}
-                    </span>
-                  </div>
-                ))}
+  "Segunda",
+  "Terça",
+  "Quarta",
+  "Quinta",
+  "Sexta",
+  "Sábado",
+  "Domingo",
+].map((dia) => (
+  <div key={dia} className="flex items-center justify-between">
+    <span className="text-gray-700">{dia}</span>
+    <span
+      className={`text-sm font-medium px-2 py-1 rounded-full ${
+        disponibilidade.includes(dia)
+          ? "text-green-700 bg-green-100"
+          : "text-gray-500 bg-gray-100"
+      }`}
+    >
+      {disponibilidade.includes(dia)
+        ? "Disponível"
+        : "Indisponível"}
+    </span>
+  </div>
+))}
+
               </div>
             </div>
 
@@ -505,7 +530,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
             </div>
           </div>
         </div>
-
+{/* 
         <ModalAgendamento
           professor={professor}
           aberto={agendamentoAberto}
@@ -516,7 +541,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
           professor={professor}
           aberto={chatAberto}
           aoFechar={() => setChatAberto(false)}
-        />
+        /> */}
 
         <ModalLogin
           aberto={modalLoginAberto}

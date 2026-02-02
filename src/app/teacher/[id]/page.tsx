@@ -1,10 +1,10 @@
 import PerfilProfessor from "@/components/PerfilProfessor";
 
-export default async function ProfessorPage({
+export default function ProfessorPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const { id } = await params;
+  const { id } = params;
   return <PerfilProfessor id={id} />;
 }
