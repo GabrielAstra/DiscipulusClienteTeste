@@ -3,8 +3,8 @@ export interface Professor {
   nome: string;
   avatar: string;
   materias: string[];
-  avaliacao: number;
-  numeroAvaliacoes: number;
+  mediaAvaliacoes: number;
+  totalAvaliacoes: number;
   valorHora: number;
   experiencia: string;
   biografia: string;
@@ -12,6 +12,7 @@ export interface Professor {
   disponibilidade: string[];
   verificado: boolean;
 }
+
 
 
 

@@ -76,13 +76,13 @@ export default function CatalogoProfessoresPage() {
     filtrados.sort((a, b) => {
       switch (ordenarPor) {
         case "avaliacao":
-          return b.avaliacao - a.avaliacao;
+          return b.totalAvaliacoes - a.totalAvaliacoes;
         case "preco-baixo":
           return a.valorHora - b.valorHora;
         case "preco-alto":
           return b.valorHora - a.valorHora;
         case "avaliacoes":
-          return b.numeroAvaliacoes - a.numeroAvaliacoes;
+          return b.mediaAvaliacoes - a.mediaAvaliacoes;
         default:
           return 0;
       }

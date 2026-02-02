@@ -41,11 +41,11 @@ export default function CartaoProfessor({
             <div className="flex items-center justify-end space-x-1 mb-1">
               <Star className="w-4 h-4 text-amber-400 fill-current" />
               <span className="text-lg font-bold text-gray-900">
-                {professor.avaliacao}
+                {professor.mediaAvaliacoes}
               </span>
             </div>
             <div className="text-sm text-gray-500">
-              {professor.numeroAvaliacoes} avaliações
+              {professor.totalAvaliacoes} avaliações
             </div>
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function CartaoProfessor({
           </div>
           <div className="flex items-center text-gray-600">
             <Users className="w-4 h-4 mr-1" />
-            <span>{professor.numeroAvaliacoes}</span>
+            <span>32 mocado</span>
           </div>
         </div>
 

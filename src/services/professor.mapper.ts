@@ -10,15 +10,15 @@ export function mapProfessorFromApi(apiProfessor: any, index: number): Professor
     return {
         id: apiProfessor.professorId,
         nome: apiProfessor.nome,
-        avatar: AVATARES_MOCK[index % AVATARES_MOCK.length], // mock
+        avatar: AVATARES_MOCK[index % AVATARES_MOCK.length], 
         materias: apiProfessor.habilidades?.$values ?? [],
-        avaliacao: apiProfessor.mediaAvaliacoes ?? 0,
-        numeroAvaliacoes: 0, // mock
+        mediaAvaliacoes: apiProfessor.mediaAvaliacoes ?? 0,
+        totalAvaliacoes: apiProfessor.totalAvaliacoes, 
         valorHora: apiProfessor.precoHoraAula ?? 0,
         experiencia: `${apiProfessor.tempoExperiencia} anos`,
         biografia: apiProfessor.sobreMim ?? "Professor sem biografia cadastrada.",
-        idiomas: apiProfessor.idiomas?.$values ?? [], // mock
-        disponibilidade: [], // mock
-        verificado: true, // mock
+        idiomas: apiProfessor.idiomas?.$values ?? [], 
+        disponibilidade: [], 
+        verificado: true, 
     };
 }

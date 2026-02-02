@@ -193,7 +193,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                     </h1>
                     <div className="flex items-center justify-center md:justify-start space-x-1 text-gray-600 mb-2">
                       <MapPin className="w-4 h-4" />
-                      <span>São Paulo, SP</span>
+                      <span>{professor.localizacao || "Localização não informada"}</span>
                     </div>
                     <div className="flex items-center justify-center md:justify-start space-x-4 text-gray-600 mb-4">
                       <div className="flex items-center space-x-1">
@@ -472,7 +472,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                   <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
                   <div>
                     <div className="text-sm text-gray-600 font-medium">Localização</div>
-                    <div className="text-gray-900">São Paulo, SP</div>
+                    <div className="text-gray-900">{professor.localizacao || "Localização não informada"}</div>
                   </div>
                 </div>
               </div>
@@ -530,7 +530,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
             </div>
           </div>
         </div>
-{/* 
+
         <ModalAgendamento
           professor={professor}
           aberto={agendamentoAberto}
@@ -541,7 +541,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
           professor={professor}
           aberto={chatAberto}
           aoFechar={() => setChatAberto(false)}
-        /> */}
+        />
 
         <ModalLogin
           aberto={modalLoginAberto}

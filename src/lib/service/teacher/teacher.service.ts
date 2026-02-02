@@ -11,6 +11,7 @@ export interface PerfilProfessor {
     sobrenome: string;
     biografia: string;
     sobreMim: string;
+    localizacao: string;
     idioma: string;
     email: string;
     celular: string | null;
