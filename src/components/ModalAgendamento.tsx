@@ -41,7 +41,7 @@ export default function ModalAgendamento({
       data.setDate(hoje.getDate() + i);
       const nomeDia = nomesDias[data.getDay()];
 
-      if (professor.disponibilidade.includes(nomeDia)) {
+if (disponibilidadeMock.includes(nomeDia)) {
         datas.push({
           data: data.toISOString().split("T")[0],
           exibicao: data.toLocaleDateString("pt-BR", {
@@ -55,6 +55,14 @@ export default function ModalAgendamento({
     }
     return datas;
   };
+// MOCK TEMPORÁRIO
+const disponibilidadeMock = [
+  "Segunda",
+  "Terça",
+  "Quarta",
+  "Quinta",
+  "Sexta",
+];
 
   const obterHorariosDisponiveis = () => {
     const horarios = [];
