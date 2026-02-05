@@ -17,17 +17,15 @@ export default function ChatWindow({
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
+  // rola para baixo sempre que mensagens mudam
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // envia mensagem usando função passada pelo pai
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
-    onSendMessage(newMessage);
+    onSendMessage(newMessage); // envia para o pai (Messages.tsx)
     setNewMessage('');
   };
 
@@ -47,6 +45,7 @@ export default function ChatWindow({
 
   return (
     <div className="flex-1 flex flex-col bg-white">
+      {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
         <div className="flex items-center space-x-3">
           <div className="relative">
@@ -70,13 +69,12 @@ export default function ChatWindow({
         </div>
       </div>
 
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${
-              message.sender === 'user' ? 'justify-end' : 'justify-start'
-            }`}
+            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
               className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
@@ -86,11 +84,7 @@ export default function ChatWindow({
               }`}
             >
               <p className="text-sm">{message.text}</p>
-              <p
-                className={`text-xs mt-1 ${
-                  message.sender === 'user' ? 'text-blue-200' : 'text-gray-500'
-                }`}
-              >
+              <p className={`text-xs mt-1 ${message.sender === 'user' ? 'text-blue-200' : 'text-gray-500'}`}>
                 {formatTime(message.timestamp)}
               </p>
             </div>
@@ -102,21 +96,17 @@ export default function ChatWindow({
             <div className="bg-white text-gray-900 px-4 py-2 rounded-2xl border border-gray-200">
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div
-                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                  style={{ animationDelay: '0.1s' }}
-                ></div>
-                <div
-                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                  style={{ animationDelay: '0.2s' }}
-                ></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
             </div>
           </div>
         )}
+
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Actions */}
       <div className="px-4 py-2 border-t border-gray-100 bg-white">
         <div className="flex space-x-2">
           <button className="flex-1 bg-blue-50 text-blue-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors flex items-center justify-center space-x-2">
@@ -130,6 +120,7 @@ export default function ChatWindow({
         </div>
       </div>
 
+      {/* Input */}
       <div className="p-4 border-t border-gray-200 bg-white">
         <div className="flex items-center space-x-2">
           <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">

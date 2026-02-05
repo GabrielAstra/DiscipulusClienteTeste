@@ -1,8 +1,9 @@
 export interface Message {
     id: string;
     text: string;
-    sender: 'user' | 'other';
+    sender?: 'user' | 'other';
     timestamp: Date;
+    userRole?: string;
 }
 
 // export interface Conversation {
@@ -26,6 +27,7 @@ export interface Conversation {
     lastMessageTime: Date;
     online: boolean;
     unreadCount: number;
+    userRole: 'Professor' | 'Aluno';
 }
 
 export interface User {

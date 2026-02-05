@@ -5,7 +5,7 @@ import { PerfilProfessor } from "@/lib/service/teacher/teacher.service";
 import * as signalR from "@microsoft/signalr";
 import { useUsuario } from "@/context/UsuarioContext";
 
-interface Mensagem {
+interface Mensagem {  
   id: string;
   texto: string;
   remetente: "usuario" | "professor";
