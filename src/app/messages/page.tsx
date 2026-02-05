@@ -15,71 +15,77 @@ export default function Messages() {
   const [messagesData, setMessagesData] = useState<Record<string, Message[]>>({});
   const { usuario } = useUsuario();
   const connectionRef = useRef<signalR.HubConnection | null>(null);
-useEffect(() => {
-    if (!usuario) return;
-
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5156/chatHub", { withCredentials: true })
-      .withAutomaticReconnect()
-      .build();
-
-    connectionRef.current = connection;
-
-    connection.start().then(() => {
-      console.log("Conectado ao SignalR");
-    });
-
-    // Receber nova mensagem
-    connection.on("NovaMensagem", (msg: any) => {
-      const conversaId = msg.conversaId;
-      const novaMsg: Message = {
-        id: `m${Date.now()}`,
-        text: msg.conteudo,
-        userRole: usuario.role === 'Professor' ? 'Aluno' : 'Professor',
-        timestamp: new Date(),
-      };
-
-      setMessagesData((prev) => ({
-        ...prev,
-        [conversaId]: [...(prev[conversaId] || []), novaMsg],
-      }));
-    });
-
-    return () => {
-      connection.off("NovaMensagem");
-      connection.stop();
-    };
-  }, [usuario]);
-  const currentUserRole: 'teacher' | 'student' = 'teacher'; // depois vem do auth
   useEffect(() => {
-    const carregarMensagens = async () => {
-      if (!selectedConversationId || !usuario) return;
+      if (!usuario) return;
 
-      if (messagesData[selectedConversationId]) return;
+      const connection = new signalR.HubConnectionBuilder()
+        .withUrl("http://localhost:5156/chatHub", { withCredentials: true })
+        .withAutomaticReconnect()
+        .build();
 
-      try {
-        const mensagens = await listarMensagens(selectedConversationId, usuario.id);
+      connectionRef.current = connection;
+
+      connection.start().then(() => {
+        console.log("Conectado ao SignalR");
+      });
+
+      // Receber nova mensagem
+      connection.on("NovaMensagem", (msg: any) => {
+        const conversaId = msg.conversaId;
+
+        // Se a mensagem veio do usuário atual, ignorar (já adicionou no front)
+        if (msg.usuarioId === usuario.id) return;
+
+        const novaMsg: Message = {
+          id: `m${Date.now()}`,
+          text: msg.conteudo,
+          sender: 'other', 
+          userRole: usuario.role === 'Professor' ? 'Aluno' : 'Professor',
+          timestamp: new Date(),
+        };
 
         setMessagesData((prev) => ({
           ...prev,
-          [selectedConversationId]: mensagens,
+          [conversaId]: [...(prev[conversaId] || []), novaMsg],
         }));
-      } catch (error) {
-        console.error("Erro ao carregar mensagens", error);
-      }
-    };
+      });
 
-    carregarMensagens();
-  }, [selectedConversationId, usuario]);
-useEffect(() => {
-  if (!selectedConversationId || !connectionRef.current) return;
 
-  // Entrar no grupo da conversa
-  connectionRef.current
-    .invoke("EntrarConversa", selectedConversationId)
-    .then(() => console.log(`Entrou no grupo Conversa:${selectedConversationId}`))
-    .catch(console.error);
-}, [selectedConversationId]);
+      return () => {
+        connection.off("NovaMensagem");
+        connection.stop();
+      };
+    }, [usuario]);
+    const currentUserRole: 'teacher' | 'student' = 'teacher'; // depois vem do auth
+    useEffect(() => {
+      const carregarMensagens = async () => {
+        if (!selectedConversationId || !usuario) return;
+
+        if (messagesData[selectedConversationId]) return;
+
+        try {
+          const mensagens = await listarMensagens(selectedConversationId, usuario.id);
+
+          setMessagesData((prev) => ({
+            ...prev,
+            [selectedConversationId]: mensagens,
+          }));
+        } catch (error) {
+          console.error("Erro ao carregar mensagens", error);
+        }
+      };
+
+      carregarMensagens();
+    }, [selectedConversationId, usuario]);
+  useEffect(() => {
+    if (!selectedConversationId || !connectionRef.current) return;
+
+    // Entrar no grupo da conversa
+    connectionRef.current
+      .invoke("EntrarConversa", selectedConversationId)
+      .then(() => console.log(`Entrou no grupo Conversa:${selectedConversationId}`))
+      .catch(console.error);
+  }, [selectedConversationId]);
 
 
   useEffect(() => {
@@ -139,10 +145,11 @@ useEffect(() => {
       timestamp: new Date(),
     };
 
-    setMessagesData((prev: Record<string, Message[]>) => ({
+    setMessagesData(prev => ({
       ...prev,
       [selectedConversationId]: [...(prev[selectedConversationId] || []), newMessage],
     }));
+
   } catch (err) {
     console.error("Erro ao enviar mensagem", err);
   }
