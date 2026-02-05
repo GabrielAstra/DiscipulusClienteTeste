@@ -51,17 +51,6 @@ export default function Cabecalho({ usuario, aoFazerLogout }: PropriedadesCabeca
                   >
                     Minhas Aulas
                   </Link>
-                  <Link
-                    href="/messages"
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
-                      estaAtivo('/messages')
-                        ? 'text-blue-600 bg-blue-50'
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Mensagens</span>
-                  </Link>
                   {usuario.papel === 'Professor' && (
                     <Link
                       href="/teacher-dashboard"
@@ -74,6 +63,17 @@ export default function Cabecalho({ usuario, aoFazerLogout }: PropriedadesCabeca
                       Painel Professor
                     </Link>
                   )}
+                  <Link
+                    href="/messages"
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
+                      estaAtivo('/messages')
+                        ? 'text-blue-600 bg-blue-50'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Mensagens</span>
+                  </Link>
                 </>
               )}
             </nav>

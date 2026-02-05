@@ -1,19 +1,71 @@
 'use client';
 
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
 import ConversationList from '@/components/ConversationList';
 import ChatWindow from '@/components/ChatWindow';
-import { mockConversations, mockMessages } from '@/data/mockChatData';
-import { Message } from '@/types/chat';
-
+import { Message, Conversation } from '@/types/chat';
+import { listarMensagens } from "@/lib/service/chat/mensagens.service";
+import { useUsuario } from "@/context/UsuarioContext";
 export default function Messages() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
-  const [conversations] = useState(mockConversations);
-  const [messagesData, setMessagesData] = useState(mockMessages);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [messagesData, setMessagesData] = useState<Record<string, Message[]>>({});
+  const { usuario } = useUsuario();
 
-  const currentUserRole: 'teacher' | 'student' = 'teacher';
+  const currentUserRole: 'teacher' | 'student' = 'teacher'; // depois vem do auth
+  useEffect(() => {
+    const carregarMensagens = async () => {
+      if (!selectedConversationId || !usuario) return;
+
+      if (messagesData[selectedConversationId]) return;
+
+      try {
+        const mensagens = await listarMensagens(selectedConversationId, usuario.id);
+
+        setMessagesData((prev) => ({
+          ...prev,
+          [selectedConversationId]: mensagens,
+        }));
+      } catch (error) {
+        console.error("Erro ao carregar mensagens", error);
+      }
+    };
+
+    carregarMensagens();
+  }, [selectedConversationId, usuario]);
+
+
+  useEffect(() => {
+    const carregarConversas = async () => {
+      try {
+       
+        const response = await fetch("/api/chat");
+
+        const data = await response.json();
+
+        const conversasFormatadas: Conversation[] = data.$values.map((c: any) => {
+         
+          return {
+            id: c.conversaId,
+            userName: c.outroUsuarioNome,
+            userAvatar: '/avatar-default.jpg', 
+            lastMessage: c.ultimaMensagem ?? '',
+            lastMessageTime: new Date(c.dataUltimaMensagem),
+            unreadCount: 0,
+            online: true,
+            userRole: currentUserRole === 'teacher' ? 'student' : 'teacher',
+          };
+        });
+
+        setConversations(conversasFormatadas);
+      } catch (error) {
+        console.error('Erro ao carregar conversas', error);
+      }
+    };
+
+    carregarConversas();
+  }, [currentUserRole]);
 
   const selectedConversation = conversations.find(
     (conv) => conv.id === selectedConversationId

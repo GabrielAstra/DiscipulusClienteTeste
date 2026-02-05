@@ -5,6 +5,18 @@ export interface Message {
     timestamp: Date;
 }
 
+// export interface Conversation {
+//     id: string;
+//     userId: string;
+//     userName: string;
+//     userAvatar: string;
+//     lastMessage: string;
+//     lastMessageTime: Date;
+//     unreadCount: number;
+//     online: boolean;
+//     userRole: 'teacher' | 'student';
+// }
+
 export interface Conversation {
     id: string;
     userId: string;
@@ -12,9 +24,8 @@ export interface Conversation {
     userAvatar: string;
     lastMessage: string;
     lastMessageTime: Date;
-    unreadCount: number;
     online: boolean;
-    userRole: 'teacher' | 'student';
+    unreadCount: number;
 }
 
 export interface User {

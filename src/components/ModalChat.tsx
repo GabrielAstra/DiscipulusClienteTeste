@@ -106,7 +106,6 @@ async function carregarHistorico() {
   const lidarComEnviarMensagem = async () => {
   if (!novaMensagem.trim() || !connectionRef.current) return;
 
-  // const conversaId = `aluno-${professor.usuarioID}`; // mesmo ID do backend
 
   try {
     await connectionRef.current.invoke("EnviarMensagem", {
