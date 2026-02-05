@@ -1,7 +1,9 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { X, Send, Paperclip, Smile } from "lucide-react";
-import { Professor } from "@/types/professor";
+import { PerfilProfessor } from "@/lib/service/teacher/teacher.service";
+import * as signalR from "@microsoft/signalr";
+import { useUsuario } from "@/context/UsuarioContext";
 
 interface Mensagem {
   id: string;
@@ -11,7 +13,7 @@ interface Mensagem {
 }
 
 interface PropriedadesModalChat {
-  professor: Professor;
+  professor: PerfilProfessor;
   aberto: boolean;
   aoFechar: () => void;
 }
@@ -21,52 +23,104 @@ export default function ModalChat({
   aberto,
   aoFechar,
 }: PropriedadesModalChat) {
-  const [mensagens, setMensagens] = useState<Mensagem[]>([
-    {
-      id: "1",
-      texto: `Olá! Sou ${professor.nome}. Como posso ajudá-lo hoje?`,
-      remetente: "professor",
-      timestamp: new Date(Date.now() - 5 * 60 * 1000),
-    },
-  ]);
+ 
+  const [mensagens, setMensagens] = useState<Mensagem[]>([]);
   const [novaMensagem, setNovaMensagem] = useState("");
   const [digitando, setDigitando] = useState(false);
+
   const refFinalMensagens = useRef<HTMLDivElement>(null);
+  const connectionRef = useRef<signalR.HubConnection | null>(null);
+  const { usuario } = useUsuario();
+
+  const conversaId = usuario
+    ? `${usuario.id}_${professor.usuarioID}`
+    : "";
 
   const rolarParaBaixo = () => {
     refFinalMensagens.current?.scrollIntoView({ behavior: "smooth" });
   };
+useEffect(() => {
+  if (!aberto || !usuario) return;
+
+  const connection = new signalR.HubConnectionBuilder()
+    .withUrl("http://localhost:5156/chatHub", {
+      withCredentials: true,
+    })
+    .withAutomaticReconnect()
+    .build();
+
+  connectionRef.current = connection;
+
+  connection.start().then(async () => {
+    console.log("Conectado ao SignalR");
+
+    await connection.invoke("EntrarConversa", conversaId);
+  });
+
+  connection.on("NovaMensagem", (mensagem) => {
+  setMensagens((prev) => [
+  ...prev,
+  {
+    id: crypto.randomUUID(),
+    texto: mensagem.conteudo,
+    remetente: "usuario",
+    timestamp: new Date(),
+  },
+]);
+
+});
+
+
+  return () => {
+    connection.off("NovaMensagem");
+
+    connection.stop();
+  };
+}, [aberto, usuario, professor.usuarioID]);
+
+async function carregarHistorico() {
+  const response = await fetch(
+    `http://localhost:5156/api/chat/${conversaId}/mensagens`,
+    {
+      credentials: "include",
+    }
+  );
+
+  const data = await response.json();
+
+  setMensagens(
+    data.map((m: any) => ({
+      id: m.mensagemId,
+      texto: m.conteudo,
+      remetente:
+        m.usuarioId === usuario?.id ? "usuario" : "professor",
+      timestamp: new Date(m.dataCriacao),
+    }))
+  );
+}
 
   useEffect(() => {
     rolarParaBaixo();
   }, [mensagens]);
 
-  const lidarComEnviarMensagem = () => {
-    if (!novaMensagem.trim()) return;
+  const lidarComEnviarMensagem = async () => {
+  if (!novaMensagem.trim() || !connectionRef.current) return;
 
-    const mensagemUsuario: Mensagem = {
-      id: Date.now().toString(),
+  // const conversaId = `aluno-${professor.usuarioID}`; // mesmo ID do backend
+
+  try {
+    await connectionRef.current.invoke("EnviarMensagem", {
+      conversaId,
       texto: novaMensagem,
-      remetente: "usuario",
-      timestamp: new Date(),
-    };
+      usuarioRecebedorId: professor.usuarioID,
+    });
 
-    setMensagens((prev) => [...prev, mensagemUsuario]);
     setNovaMensagem("");
-    setDigitando(true);
+  } catch (err) {
+    console.error("Erro ao enviar mensagem", err);
+  }
+};
 
-    setTimeout(() => {
-      const respostaProfessor: Mensagem = {
-        id: (Date.now() + 1).toString(),
-        texto:
-          "Obrigado pela sua mensagem! Vou responder em breve. Enquanto isso, que tal agendar uma aula para discutirmos melhor?",
-        remetente: "professor",
-        timestamp: new Date(),
-      };
-      setMensagens((prev) => [...prev, respostaProfessor]);
-      setDigitando(false);
-    }, 2000);
-  };
 
   const lidarComTeclaPressionada = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -91,10 +145,11 @@ export default function ModalChat({
           <div className="flex items-center space-x-3">
             <div className="relative">
               <img
-                src={professor.avatar}
+                src="https://i.pravatar.cc/150?img=12"
                 alt={professor.nome}
                 className="w-10 h-10 rounded-full object-cover"
               />
+
               <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
             </div>
             <div>

@@ -535,13 +535,13 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
           professor={professor}
           aberto={agendamentoAberto}
           aoFechar={() => setAgendamentoAberto(false)}
-        />
+        /> */}
 
         <ModalChat
           professor={professor}
           aberto={chatAberto}
           aoFechar={() => setChatAberto(false)}
-        /> */}
+        />
 
         <ModalLogin
           aberto={modalLoginAberto}
