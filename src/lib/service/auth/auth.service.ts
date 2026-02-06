@@ -1,4 +1,3 @@
-import { environment } from "@/lib/environment/environment";
 import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
 import { IServiceResponse } from "@/types/response";
 
@@ -16,8 +15,8 @@ export async function login(
   try {
 
     const resposta = await fetch(
-      
-      `${environment.DISCIPULUS_API_URL}/Home/Login`,
+
+      `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Home/Login`,
       {
         method: "POST",
         headers: {
@@ -61,7 +60,7 @@ export async function signup(
 ): Promise<IServiceResponse<ICadastroResponse>> {
   try {
     const resposta = await fetch(
-      `${environment.DISCIPULUS_API_URL}/Home/Registro`,
+      `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Home/Registro`,
       {
         method: "POST",
         headers: {

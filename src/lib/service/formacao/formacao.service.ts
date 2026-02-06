@@ -21,7 +21,7 @@ export interface FormacaoDTO {
 export async function listarFormacoes(token: string): Promise<IServiceResponse<FormacaoDTO[]>> {
   try {
     const response = await fetch(
-      `${environment.DISCIPULUS_API_URL}/Formacao/Listar`,
+      `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Formacao/Listar`,
       {
         method: "GET",
         headers: {
@@ -60,7 +60,7 @@ export async function listarFormacoes(token: string): Promise<IServiceResponse<F
 
 export async function excluirFormacao(id: string, token: string): Promise<IServiceResponse<null>> {
   try {
-    const response = await fetch(`${environment.DISCIPULUS_API_URL}/Formacao/Excluir?formacaoId=${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Formacao/Excluir?formacaoId=${id}`, {
       method: "DELETE",
       headers: {
         "Authorization": `Bearer ${token}`,

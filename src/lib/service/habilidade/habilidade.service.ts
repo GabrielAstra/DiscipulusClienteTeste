@@ -14,7 +14,7 @@ export async function listarHabilidades(
 ): Promise<IServiceResponse<Habilidade[]>> {
   try {
     const response = await fetch(
-      `${environment.DISCIPULUS_API_URL}/Habilidade/Listar`,
+      `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Habilidade/Listar`,
       {
         method: "POST",
         headers: {
@@ -29,7 +29,7 @@ export async function listarHabilidades(
     const habilidades: Habilidade[] = [];
     dtos.forEach((dto) => {
       habilidades.push({
-        id: Number.parseInt(dto.habilidadeID),
+        id: dto.habilidadeID,
         nome: dto.nomeHabilidade,
       });
     });

@@ -70,7 +70,6 @@ export default function Messages() {
   useEffect(() => {
   if (!selectedConversationId || !connection) return;
 
-    // Entrar no grupo da conversa
       connection
     .invoke("EntrarConversa", selectedConversationId)
     .then(() => console.log(`Entrou na conversa ${selectedConversationId}`))
@@ -131,7 +130,7 @@ if (!selectedConversationId || !connection || !usuario) return;
     const newMessage: Message = {
       id: `m${Date.now()}`,
       text,
-      sender: 'user',
+      sender: 'user', //lembrar de enviar qunado eu criar no backend o senderId
       timestamp: new Date(),
     };
 
@@ -161,7 +160,7 @@ if (!selectedConversationId || !connection || !usuario) return;
     <ChatWindow
   conversation={selectedConversation}
   messages={currentMessages}
-  onSendMessage={handleSendMessage} // função que conhece SignalR
+  onSendMessage={handleSendMessage} 
 />
 
 

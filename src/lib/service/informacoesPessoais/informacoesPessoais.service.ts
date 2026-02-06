@@ -36,7 +36,7 @@ export interface InformacoesPessoaisDTO {
 export async function listarInformacoesPessoais(token: string): Promise<IServiceResponse<InformacoesPessoaisDTO>> {
     try {
         const response = await fetch(
-            `${environment.DISCIPULUS_API_URL}/Perfil/MeuPerfilMin`,
+            `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Perfil/MeuPerfilMin`,
             {
                 method: "GET",
                 headers: {

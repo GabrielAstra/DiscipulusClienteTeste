@@ -28,7 +28,7 @@ export interface ExperienciaDTO {
 export async function listarExperiencias(token: string): Promise<IServiceResponse<ExperienciaDTO[]>> {
     try {
         const response = await fetch(
-            `${environment.DISCIPULUS_API_URL}/Experiencia/Listar`,
+            `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Experiencia/Listar`,
             {
                 method: "GET",
                 headers: {
@@ -69,7 +69,7 @@ export async function listarExperiencias(token: string): Promise<IServiceRespons
 
 export async function excluirExperiencia(id: string, token: string): Promise<IServiceResponse<null>> {
     try {
-        const response = await fetch(`${environment.DISCIPULUS_API_URL}/Experiencia/Excluir?experienciaId=${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Experiencia/Excluir?experienciaId=${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`,

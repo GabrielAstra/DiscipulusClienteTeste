@@ -38,7 +38,7 @@ export async function editarPerfilCompleto(
 ): Promise<IServiceResponse<null>> {
     try {
         const response = await fetch(
-            `${environment.DISCIPULUS_API_URL}/Perfil/EditarPerfilCompleto`,
+            `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Perfil/EditarPerfilCompleto`,
             {
                 method: "POST",
                 headers: {

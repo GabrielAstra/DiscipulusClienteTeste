@@ -18,9 +18,8 @@ export async function GET(request: Request) {
             },
         });
 
-        const raw = await res.text();   // <-- PRIMEIRO lê como texto
+        const raw = await res.text();
 
-        // Caso retorno não seja JSON
         if (!raw) {
             return NextResponse.json(
                 { success: false, message: "Resposta vazia da API!" },
@@ -59,7 +58,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: false, message: "Sem token!" }, { status: 401 });
     }
 
-    const res = await fetch(`${API_URL}/Salvar`, {
+    const res = await fetch(`${API_URL}/Agenda/Salvar`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

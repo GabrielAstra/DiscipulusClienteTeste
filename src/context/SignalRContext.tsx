@@ -20,7 +20,7 @@ export function SignalRProvider({ children }: { children: React.ReactNode }) {
     if (!usuario) return;
 
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl(process.env.NEXT_PUBLIC_DISCIPULUS_API_URL!, {
+      .withUrl(process.env.NEXT_PUBLIC_DISCIPULUS_API_URL_CHATHUB!, {
         withCredentials: true,
       })
       .withAutomaticReconnect()
