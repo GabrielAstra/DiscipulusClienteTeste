@@ -7,55 +7,45 @@ import ChatWindow from '@/components/ChatWindow';
 import { Message, Conversation } from '@/types/chat';
 import { listarMensagens } from "@/lib/service/chat/mensagens.service";
 import { useUsuario } from "@/context/UsuarioContext";
-import * as signalR from "@microsoft/signalr";
+import { useSignalR } from '@/context/SignalRContext';
 
 export default function Messages() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messagesData, setMessagesData] = useState<Record<string, Message[]>>({});
   const { usuario } = useUsuario();
-  const connectionRef = useRef<signalR.HubConnection | null>(null);
+  const { connection } = useSignalR();
+
   useEffect(() => {
-      if (!usuario) return;
+      if (!connection || !usuario) return;
 
-      const connection = new signalR.HubConnectionBuilder()
-        .withUrl("http://localhost:5156/chatHub", { withCredentials: true })
-        .withAutomaticReconnect()
-        .build();
-
-      connectionRef.current = connection;
-
-      connection.start().then(() => {
-        console.log("Conectado ao SignalR");
-      });
-
-      // Receber nova mensagem
-      connection.on("NovaMensagem", (msg: any) => {
+      const handler = (msg: any) => {
         const conversaId = msg.conversaId;
 
-        // Se a mensagem veio do usuário atual, ignorar (já adicionou no front)
         if (msg.usuarioId === usuario.id) return;
 
         const novaMsg: Message = {
           id: `m${Date.now()}`,
           text: msg.conteudo,
-          sender: 'other', 
+          sender: 'other',
           userRole: usuario.role === 'Professor' ? 'Aluno' : 'Professor',
           timestamp: new Date(),
         };
 
-        setMessagesData((prev) => ({
+        setMessagesData(prev => ({
           ...prev,
           [conversaId]: [...(prev[conversaId] || []), novaMsg],
         }));
-      });
+      };
 
+      connection.on("NovaMensagem", handler);
 
       return () => {
-        connection.off("NovaMensagem");
-        connection.stop();
+        connection.off("NovaMensagem", handler);
       };
-    }, [usuario]);
+    }, [connection, usuario]);
+
+
     const currentUserRole: 'teacher' | 'student' = 'teacher'; // depois vem do auth
     useEffect(() => {
       const carregarMensagens = async () => {
@@ -78,14 +68,14 @@ export default function Messages() {
       carregarMensagens();
     }, [selectedConversationId, usuario]);
   useEffect(() => {
-    if (!selectedConversationId || !connectionRef.current) return;
+  if (!selectedConversationId || !connection) return;
 
     // Entrar no grupo da conversa
-    connectionRef.current
-      .invoke("EntrarConversa", selectedConversationId)
-      .then(() => console.log(`Entrou no grupo Conversa:${selectedConversationId}`))
-      .catch(console.error);
-  }, [selectedConversationId]);
+      connection
+    .invoke("EntrarConversa", selectedConversationId)
+    .then(() => console.log(`Entrou na conversa ${selectedConversationId}`))
+    .catch(console.error);
+}, [selectedConversationId, connection]);
 
 
   useEffect(() => {
@@ -128,10 +118,10 @@ export default function Messages() {
     : [];
 
   const handleSendMessage = async (text: string) => {
-  if (!selectedConversationId || !connectionRef.current || !usuario) return;
+if (!selectedConversationId || !connection || !usuario) return;
 
   try {
-    await connectionRef.current.invoke("EnviarMensagem", {
+    await connection.invoke("EnviarMensagem", {
       conversaId: selectedConversationId,
       texto: text,
       usuarioRecebedorId: currentUserRole === 'teacher' ? 'student' : 'teacher',

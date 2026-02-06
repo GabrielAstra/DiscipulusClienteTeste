@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const API_URL = process.env.API_URL_BACKEND ?? "http://localhost:5156/Professor";
-
+const API_URL = process.env.NEXT_PUBLIC_DISCIPULUS_API_URL
 export async function POST(request: Request) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
@@ -19,7 +18,7 @@ export async function POST(request: Request) {
 
   try {
     const res = await fetch(
-      `${API_URL}/Listar?${searchParams.toString()}`,
+      `${API_URL}/Professor/Listar?${searchParams.toString()}`,
       {
         method: "POST",
         headers,

@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const API_URL = process.env.API_URL_BACKEND ?? "http://localhost:5156/Agenda";
-
+const API_URL = process.env.NEXT_PUBLIC_DISCIPULUS_API_URL
 export async function GET(request: Request) {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -12,7 +11,7 @@ export async function GET(request: Request) {
     }
 
     try {
-        const res = await fetch(`${API_URL}/Listar`, {
+        const res = await fetch(`${API_URL}/Agenda/Listar`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,

@@ -6,6 +6,8 @@ import CabecalhoClient from "@/components/cabecalho/CabecalhoClient";
 import { UsuarioProvider } from "../context/UsuarioContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { Toaster } from "sonner";
+import { SignalRProvider } from '@/context/SignalRContext';
+import { Sign } from "crypto";
 
 export const metadata: Metadata = {
   title: "Discipulus",
@@ -25,9 +27,11 @@ export default function RootLayout({
       <body className="bg-gray-50">
         <UsuarioProvider>
           <ToastProvider>
-            <CabecalhoClient />
-            {children}
-            <Toaster position="top-right" richColors />
+            <SignalRProvider>
+              <CabecalhoClient />
+                {children}
+              <Toaster position="top-right" richColors />
+            </SignalRProvider>
           </ToastProvider>
         </UsuarioProvider>
       </body>

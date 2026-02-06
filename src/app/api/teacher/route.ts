@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const API_URL =
-    process.env.API_URL_BACKEND ?? "http://localhost:5156/Professor";
+
+const API_URL = process.env.NEXT_PUBLIC_DISCIPULUS_API_URL
 
 export async function GET(request: Request) {
     const token = (await cookies()).get("token")?.value;
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
         );
     }
 
-    const res = await fetch(`${API_URL}/BuscarProfessor?id=${id}`, {
+    const res = await fetch(`${API_URL}/Professor/BuscarProfessor?id=${id}`, {
         headers,
     });
 

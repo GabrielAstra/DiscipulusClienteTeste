@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const API_URL = "http://localhost:5156/Chat/ListarConversas";
-
+const API_URL = process.env.NEXT_PUBLIC_DISCIPULUS_API_URL
 export async function GET() {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -14,7 +13,7 @@ export async function GET() {
         );
     }
 
-    const res = await fetch(API_URL, {
+    const res = await fetch(`${API_URL}/Chat/ListarConversas`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },

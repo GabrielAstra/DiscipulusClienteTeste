@@ -1,10 +1,12 @@
 "use client";
+
 import React, { useState, useRef, useEffect } from "react";
 import { X, Send, Paperclip, Smile } from "lucide-react";
 import { PerfilProfessor } from "@/lib/service/teacher/teacher.service";
-import * as signalR from "@microsoft/signalr";
 import { useUsuario } from "@/context/UsuarioContext";
 import { listarMensagens } from "@/lib/service/chat/mensagens.service";
+import { useSignalR } from "@/context/SignalRContext";
+
 interface Mensagem {  
   id: string;
   texto: string;
@@ -27,64 +29,33 @@ export default function ModalChat({
   const [mensagens, setMensagens] = useState<Mensagem[]>([]);
   const [novaMensagem, setNovaMensagem] = useState("");
   const [digitando, setDigitando] = useState(false);
-
+  const { connection } = useSignalR();
   const refFinalMensagens = useRef<HTMLDivElement>(null);
-  const connectionRef = useRef<signalR.HubConnection | null>(null);
+
   const { usuario } = useUsuario();
 
   const conversaId = usuario
-    ? `${usuario.id}_${professor.usuarioID}`
-    : "";
+      ? `${usuario.id}_${professor.usuarioID}`
+      : "";
 
-  const rolarParaBaixo = () => {
-    refFinalMensagens.current?.scrollIntoView({ behavior: "smooth" });
-  };
-  useEffect(() => {
-  if (!aberto || !usuario) return;
+    const rolarParaBaixo = () => {
+      refFinalMensagens.current?.scrollIntoView({ behavior: "smooth" });
+    };
+    useEffect(() => {
+      if (!aberto || !usuario) return;
 
-  carregarHistorico(); // ✅ agora funciona
+      carregarHistorico(); 
 
-}, [aberto, conversaId]);
+    }, [aberto, conversaId]);
 
-useEffect(() => {
-  if (!aberto || !usuario) return;
+    useEffect(() => {
+      if (!aberto || !connection || !conversaId) return;
 
+      connection
+        .invoke("EntrarConversa", conversaId)
+        .catch(console.error);
+    }, [aberto, connection, conversaId]);
 
-  const connection = new signalR.HubConnectionBuilder()
-    .withUrl("http://localhost:5156/chatHub", {
-      withCredentials: true,
-    })
-    .withAutomaticReconnect()
-    .build();
-
-  connectionRef.current = connection;
-
-  connection.start().then(async () => {
-    console.log("Conectado ao SignalR");
-
-    await connection.invoke("EntrarConversa", conversaId);
-  });
-
-  connection.on("NovaMensagem", (mensagem) => {
-  setMensagens((prev) => [
-  ...prev,
-  {
-    id: mensagem.mensagemId,
-    texto: mensagem.conteudo,
-    remetente: "usuario",
-    timestamp: new Date(),
-  },
-]);
-
-});
-
-
-  return () => {
-    connection.off("NovaMensagem");
-
-    connection.stop();
-  };
-}, [aberto, usuario, professor.usuarioID]);
 
   async function carregarHistorico() {
     const mensagens = await listarMensagens(conversaId, usuario!.id);
@@ -103,23 +74,44 @@ useEffect(() => {
   useEffect(() => {
     rolarParaBaixo();
   }, [mensagens]);
+  useEffect(() => {
+    if (!connection || !aberto) return;
+
+    const handler = (mensagem: any) => {
+      setMensagens((prev) => [
+        ...prev,
+        {
+          id: mensagem.mensagemId,
+          texto: mensagem.conteudo,
+          remetente:
+            mensagem.usuarioId === usuario?.id ? "usuario" : "professor",
+          timestamp: new Date(),
+        },
+      ]);
+    };
+
+    connection.on("NovaMensagem", handler);
+
+    return () => {
+      connection.off("NovaMensagem", handler);
+    };
+  }, [connection, aberto, usuario?.id]);
 
   const lidarComEnviarMensagem = async () => {
-    if (!novaMensagem.trim() || !connectionRef.current) return;
+  if (!novaMensagem.trim() || !connection) return;
 
+      try {
+        await connection.invoke("EnviarMensagem", {
+          conversaId,
+          texto: novaMensagem,
+          usuarioRecebedorId: professor.usuarioID,
+        });
 
-    try {
-      await connectionRef.current.invoke("EnviarMensagem", {
-        conversaId,
-        texto: novaMensagem,
-        usuarioRecebedorId: professor.usuarioID,
-      });
-
-      setNovaMensagem("");
-    } catch (err) {
-      console.error("Erro ao enviar mensagem", err);
-    }
-  };
+        setNovaMensagem("");
+      } catch (err) {
+        console.error("Erro ao enviar mensagem", err);
+      }
+    };
 
 
   const lidarComTeclaPressionada = (e: React.KeyboardEvent) => {

@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const API_URL = "http://localhost:5156/Chat/ObterMensagens";
+
+const API_URL = process.env.NEXT_PUBLIC_DISCIPULUS_API_URL
+
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -25,7 +27,7 @@ export async function GET(request: Request) {
     }
 
     const res = await fetch(
-        `${API_URL}?conversaId=${encodeURIComponent(conversaId)}`,
+        `${API_URL}/Chat/ObterMensagens?conversaId=${encodeURIComponent(conversaId)}`,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
