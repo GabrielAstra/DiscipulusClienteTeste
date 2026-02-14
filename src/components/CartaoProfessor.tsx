@@ -114,9 +114,9 @@ export default function CartaoProfessor({
               <span className="text-2xl font-bold text-gray-900">
                 R${professor.valorHora}
               </span>
-              <span className="text-sm text-gray-500">/hora</span>
+              <span className="text-sm text-gray-500">/aula</span>
             </div>
-            <div className="text-xs text-gray-500 mt-0.5">A partir de</div>
+            <div className="text-xs text-gray-500 mt-0.5">A partir de R${professor.valorHora}</div>
           </div>
 
           <Link

@@ -1,3 +1,11 @@
+interface DisponibilidadeHorario {
+  id: string;
+  idAgenda: string;
+  horaInicial: string;
+  horaFinal: string;
+  agendaDisponivelEnum: number;
+}
+
 export interface Professor {
   id: string;
   nome: string;
@@ -9,10 +17,13 @@ export interface Professor {
   experiencia: string;
   biografia: string;
   idiomas: string[];
-  disponibilidade: string[];
   verificado: boolean;
+
+  disponibilidade: {
+    $values: string[];
+  };
+
+  disponibilidadeHorario: {
+    $values: DisponibilidadeHorario[];
+  };
 }
-
-
-
-

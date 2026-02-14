@@ -215,7 +215,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                     <div className="text-3xl font-bold text-gray-900">
                       R${professor.horaAula}
                     </div>
-                    <div className="text-gray-600">por hora</div>
+                    <div className="text-gray-600">por aula</div>
                   </div>
                 </div>
 
@@ -531,11 +531,11 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
           </div>
         </div>
 
-        {/* <ModalAgendamento
+        <ModalAgendamento
           professor={professor}
           aberto={agendamentoAberto}
           aoFechar={() => setAgendamentoAberto(false)}
-        /> */}
+        />
 
         <ModalChat
           professor={professor}
