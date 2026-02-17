@@ -267,7 +267,7 @@ export default function Home() {
                     <img
                       src={card.img}
                       alt={card.titulo}
-                      className="w-28 h-28 mx-auto mb-6 object-contain"
+                      className="w-40 h-40 md:w-44 md:h-44 mx-auto mb-8 object-contain"
                     />
 
                     <h3 className="text-xl font-bold text-gray-900 mb-4">
@@ -320,7 +320,7 @@ export default function Home() {
                 <img
                   src={card.img}
                   alt={card.titulo}
-                  className="w-24 h-24 mx-auto absolute -top-12 left-1/2 -translate-x-1/2 object-contain"
+                  className="w-32 h-32 mx-auto absolute -top-16 left-1/2 -translate-x-1/2 object-contain"
                 />
 
                 {/* CONTEÚDO */}
