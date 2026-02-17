@@ -4,7 +4,13 @@ import { Metadata } from "next";
 import { ArrowRight, BookOpen, CheckCircle, Search, Star, Users, Clock, Shield, Award, ChevronDown, MessageCircle, Zap, Target } from 'lucide-react';
 import Link from "next/link";
 import { useState } from "react";
+import { Shrikhand } from 'next/font/google';
 
+const shrikhand = Shrikhand({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+});
 export default function Home() {
   const [faqAberto, setFaqAberto] = useState<number | null>(null);
 
@@ -147,59 +153,65 @@ export default function Home() {
     <div className="min-h-screen bg-white overflow-hidden">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-20 pb-32 overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse delay-1000"></div>
-          <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse delay-2000"></div>
-        </div>
+        {/* Background Elements continuam iguais */}
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-indigo-200 rounded-full px-6 py-2 mb-8 shadow-lg">
-              <Star className="w-4 h-4 text-indigo-600 mr-2" />
-              <span className="text-sm font-medium text-indigo-700">Plataforma #1 de Tutoria no Brasil</span>
+          
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+            
+            {/* LADO ESQUERDO (TEXTO) */}
+            <div className="lg:w-1/2 text-left">
+              
+              <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-indigo-200 rounded-full px-6 py-2 mb-8 shadow-lg">
+                <Star className="w-4 h-4 text-indigo-600 mr-2" />
+                <span className="text-sm font-medium text-indigo-700">
+                  Plataforma #1 de Tutoria no Brasil
+                </span>
+              </div>
+
+              <h1 className={`${shrikhand.className} text-5xl md:text-6xl font-extrabold text-gray-900 mb-8 leading-tight`}>
+                Encontre o Professor
+                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent block">
+                  Perfeito para Você
+                </span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed">
+                Conecte-se com professores especialistas para experiências de aprendizado personalizadas.
+                Domine qualquer matéria com orientação individual de profissionais verificados.
+              </p>
+
+             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+
+                <Link
+                  href="/catalog"
+                  className="group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                >
+                  <Search className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <span>Encontrar Professores</span>
+                </Link>
+
+                <Link
+                  href="/register"
+                  className="group border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 backdrop-blur-sm bg-white/80 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  <span>Seja um Professor</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-8 leading-tight">
-              Encontre o Professor
-              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent block">
-                Perfeito para Você
-              </span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-              Conecte-se com professores especialistas para experiências de aprendizado personalizadas. 
-              Domine qualquer matéria com orientação individual de profissionais verificados.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-              <Link
-                href="/catalog"
-                className="group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
-              >
-                <Search className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span>Encontrar Professores</span>
-              </Link>
-              <Link
-                href="/register"
-                className="group border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 backdrop-blur-sm bg-white/80 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              >
-                <span>Seja um Professor</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
-              {estatisticas.map((estatistica, indice) => (
-                <div key={indice} className="group text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20">
-                  <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3 group-hover:scale-105 transition-transform">
-                    {estatistica.numero}
-                  </div>
-                  <div className="text-gray-700 font-semibold text-sm md:text-base">{estatistica.rotulo}</div>
-                </div>
-              ))}
+            {/* LADO DIREITO (IMAGEM) */}
+            <div className="lg:w-1/2 flex justify-center">
+              <img
+                src="/alunoNovo.png"
+                alt="Estudante aprendendo online"
+                className="w-full max-w-lg"
+              />
             </div>
+
           </div>
         </div>
       </section>

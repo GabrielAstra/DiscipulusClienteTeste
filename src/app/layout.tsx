@@ -8,6 +8,15 @@ import { ToastProvider } from "@/context/ToastContext";
 import { Toaster } from "sonner";
 import { SignalRProvider } from '@/context/SignalRContext';
 import { Sign } from "crypto";
+import { Inter, Shrikhand } from 'next/font/google'
+
+
+const shrikhand = Shrikhand({
+  subsets: ['latin'],
+  weight: '400', 
+  display: 'swap',
+});
+
 
 export const metadata: Metadata = {
   title: "Discipulus",
@@ -23,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body className="bg-gray-50">
         <UsuarioProvider>
           <ToastProvider>
