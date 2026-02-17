@@ -11,6 +11,7 @@ import {
   removerExperiencia,
   salvarPerfilCompleto
 } from '@/services/teacherApi';
+import { uploadAvatar } from "@/lib/service/avatar/avatar.service";
 
 import { listarAgenda } from "@/lib/service/agenda/agenda.service";
 import { mapearAgendaParaPerfil } from "@/utils/mapAgenda";
@@ -43,6 +44,7 @@ export function useProfile() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [todasHabilidades, setTodasHabilidades] = useState<Habilidade[]>([]);
   const { showError, showSuccess } = useToast();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   // 1. Buscar informações pessoais
   useEffect(() => {
@@ -155,6 +157,24 @@ export function useProfile() {
       setSalvandoPerfil(false);
     }
   };
+  const handleFileUpload = async (file: File) => {
+    setUploadingPhoto(true);
+
+    try {
+      // Envia IMEDIATAMENTE para o backend
+      await uploadAvatar(file);
+
+      // Atualiza preview
+      setAvatarUrl(`/api/avatar?t=${Date.now()}`);
+
+
+    } catch (error) {
+      alert("Erro ao enviar foto");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
 
   useEffect(() => {
     async function carregarAgenda() {
@@ -207,6 +227,7 @@ export function useProfile() {
     salvandoPerfil,
     uploadingPhoto,
     todasHabilidades,
+    handleFileUpload,
     lidarComSalvarPerfil,
     handleRemoverFormacao,
     handleRemoverExperiencia,

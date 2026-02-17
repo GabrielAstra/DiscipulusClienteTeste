@@ -17,7 +17,8 @@ interface ProfileHeaderProps {
   uploadingPhoto: boolean;
   todasHabilidades: Habilidade[];
   onSalvar: () => void;
-  // onFileUpload: (file: File) => void;
+  onFileUpload: (file: File) => void; // ✅ adicionar
+  avatarUrl: string | null;
   onShowPreview: () => void;
 }
 
@@ -29,22 +30,24 @@ export function ProfileHeader({
   salvandoPerfil,
   uploadingPhoto,
   onSalvar,
-  // onFileUpload,
+   onFileUpload, 
+  avatarUrl,
   onShowPreview
 }: ProfileHeaderProps) {
   const [dragOver, setDragOver] = useState(false);
   const [filtroIdioma, setFiltroIdioma] = useState("");
   const [idiomasFiltrados, setIdiomasFiltrados] = useState<string[]>(idiomasDisponiveis);
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragOver(false);
+const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  e.preventDefault();
+  setDragOver(false);
 
-    // const files = e.dataTransfer.files;
-    // if (files.length > 0) {
-    //   onFileUpload(files[0]);
-    // }
-  };
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    onFileUpload(files[0]);
+  }
+};
+
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -145,7 +148,7 @@ export function ProfileHeader({
             <div className="flex items-center space-x-6">
               <div className="relative">
                 <img
-                  src={perfil.avatar}
+                  src={avatarUrl || "/api/avatar"}
                   alt={perfil.nome}
                   className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
                 />
@@ -169,15 +172,16 @@ export function ProfileHeader({
                     }`}
                   >
                     <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        // const file = e.target.files?.[0];
-                        // if (file) onFileUpload(file);
-                      }}
-                      className="hidden"
-                      id="photo-upload"
-                    />
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) onFileUpload(file);
+                    }}
+                    className="hidden"
+                    id="photo-upload"
+                  />
+
                     <label
                       htmlFor="photo-upload"
                       className="cursor-pointer flex flex-col items-center space-y-2"

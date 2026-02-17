@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
   responseBody = IResponse.ok(message);
   const res = NextResponse.json(responseBody);
 
-  console.log(data);
 
   // Set HttpOnly cookie for token
   res.cookies.set("token", data?.token!, {

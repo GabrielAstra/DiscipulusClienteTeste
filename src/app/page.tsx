@@ -262,15 +262,19 @@ export default function Home() {
                 ].map((card, i) => (
                   <div
                     key={i}
-                    className="bg-white rounded-2xl border border-indigo-200 shadow-[0_10px_25px_rgba(99,102,241,0.15)] p-10 text-center hover:shadow-[0_15px_35px_rgba(99,102,241,0.25)] transition-all duration-300"
+                    className="bg-white rounded-2xl border border-indigo-200 
+                              shadow-[0_8px_20px_rgba(99,102,241,0.12)] 
+                              p-8 text-center 
+                              hover:shadow-[0_12px_28px_rgba(99,102,241,0.20)] 
+                              transition-all duration-300"
                   >
                     <img
                       src={card.img}
                       alt={card.titulo}
-                      className="w-40 h-40 md:w-44 md:h-44 mx-auto mb-8 object-contain"
+                      className="w-28 h-28 md:w-32 md:h-32 mx-auto mb-6 object-contain"
                     />
 
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    <h3 className="text-lg font-bold text-gray-900 mb-3">
                       {card.titulo}
                     </h3>
 
@@ -278,6 +282,7 @@ export default function Home() {
                       {card.descricao}
                     </p>
                   </div>
+
                 ))}
               </div>
 

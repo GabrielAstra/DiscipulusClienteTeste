@@ -115,7 +115,6 @@ export default function MinhaAgenda() {
 
   const confirmarCancelarAula = () => {
     if (aulaParaCancelar) {
-      console.log("Cancelando aula:", aulaParaCancelar.id);
       alert("Aula cancelada testando");
       setMostrarModalCancelar(false);
       setAulaParaCancelar(null);
@@ -123,7 +122,6 @@ export default function MinhaAgenda() {
   };
 
   const lidarComReagendarAula = (aula: AulaAgendada) => {
-    console.log("Reagendando aula:", aula.id);
     alert("Testando");
     setMenuAbertoId(null);
   };

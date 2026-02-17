@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User, DollarSign } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { DadosCarteira } from "@/types/teacher";
@@ -12,12 +12,14 @@ import { WalletOverview } from "./WalletOverview";
 import { TransactionHistory } from "./TransactionHistory";
 import { WithdrawalModal } from "./WithdrawalModal";
 import { ProfilePreviewModal } from "./ProfilePreviewModal";
+import { uploadAvatar } from "@/lib/service/avatar/avatar.service";
 
 export default function PainelProfessor() {
   const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira">("perfil");
   const [mostrarModalSaque, setMostrarModalSaque] = useState(false);
   const [mostrarModalPreview, setMostrarModalPreview] = useState(false);
   const [horariosRemovidos, setHorariosRemovidos] = useState<string[]>([]);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const {
     perfil,
@@ -28,10 +30,17 @@ export default function PainelProfessor() {
     uploadingPhoto,
     todasHabilidades,
     lidarComSalvarPerfil,
-    // handleFileUpload,
     handleRemoverFormacao,
     handleRemoverExperiencia,
   } = useProfile();
+
+  const handleUploadAvatar = async (file: File) => {
+    const preview = URL.createObjectURL(file);
+    setAvatarUrl(preview);
+
+    await uploadAvatar(file);
+  };
+
 
   const [dadosCarteira] = useState<DadosCarteira>({
     saldo: 1250.5,
@@ -65,6 +74,8 @@ export default function PainelProfessor() {
       },
     ],
   });
+  
+
 
   const lidarComSaque = (valor: number, metodo: string) => {
     console.log("Solicitação de saque:", { valor, metodo });
@@ -121,7 +132,8 @@ export default function PainelProfessor() {
               uploadingPhoto={uploadingPhoto}
               todasHabilidades={todasHabilidades}
               onSalvar={lidarComSalvarPerfil}
-              // onFileUpload={handleFileUpload}
+              onFileUpload={handleUploadAvatar}
+               avatarUrl={avatarUrl}
               onShowPreview={() => setMostrarModalPreview(true)}
             />
 
