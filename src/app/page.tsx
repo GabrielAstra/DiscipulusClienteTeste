@@ -160,45 +160,55 @@ export default function Home() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             
             {/* LADO ESQUERDO (TEXTO) */}
-            <div className="lg:w-1/2 text-left">
-              
-              <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-indigo-200 rounded-full px-6 py-2 mb-8 shadow-lg">
-                <Star className="w-4 h-4 text-indigo-600 mr-2" />
-                <span className="text-sm font-medium text-indigo-700">
-                  Plataforma #1 de Tutoria no Brasil
-                </span>
+              <div className="lg:w-1/2 text-left">
+                
+                <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-indigo-200 rounded-full px-6 py-2 mb-8 shadow-lg">
+                  <Star className="w-4 h-4 text-indigo-600 mr-2" />
+                  <span className="text-sm font-medium text-indigo-700">
+                    Plataforma #1 de Tutoria no Brasil
+                  </span>
+                </div>
+
+                <h1 className={`${shrikhand.className} text-5xl md:text-6xl font-extrabold text-gray-900 mb-8 leading-tight`}>
+                  Encontre o Professor
+                  <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent block">
+                    Perfeito para Você
+                  </span>
+                </h1>
+
+                <p className="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed">
+                  Conecte-se com professores especialistas para experiências de aprendizado personalizadas.
+                  Domine qualquer matéria com orientação individual de profissionais verificados.
+                </p>
+
+              <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+
+                  <Link
+                    href="/catalog"
+                    className="group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                  >
+                    <Search className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    <span>Encontrar Professores</span>
+                  </Link>
+
+                  <Link
+                    href="/register"
+                    className="group border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 backdrop-blur-sm bg-white/80 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  >
+                    <span>Seja um Professor</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+
               </div>
-
-              <h1 className={`${shrikhand.className} text-5xl md:text-6xl font-extrabold text-gray-900 mb-8 leading-tight`}>
-                Encontre o Professor
-                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent block">
-                  Perfeito para Você
-                </span>
-              </h1>
-
-              <p className="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed">
-                Conecte-se com professores especialistas para experiências de aprendizado personalizadas.
-                Domine qualquer matéria com orientação individual de profissionais verificados.
-              </p>
-
-             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-
-                <Link
-                  href="/catalog"
-                  className="group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
-                >
-                  <Search className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span>Encontrar Professores</span>
-                </Link>
-
-                <Link
-                  href="/register"
-                  className="group border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 backdrop-blur-sm bg-white/80 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                >
-                  <span>Seja um Professor</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+              {estatisticas.map((estatistica, indice) => (
+                <div key={indice} className="group text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20">
+                  <div className={`${shrikhand.className} text-[20px] bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3 group-hover:scale-105 transition-transform`}>
+                    {estatistica.numero}
+                  </div>
+                  <div className={`text-gray-700 font-semibold text-sm md:text-base`}>{estatistica.rotulo}</div>
+                </div>
+              ))}
             </div>
 
             </div>
@@ -217,60 +227,127 @@ export default function Home() {
       </section>
 
       {/* Recursos Section */}
-      <section className="py-24 bg-white relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Por que Escolher o
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"> Discipulus?</span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Tornamos o aprendizado acessível, eficaz e prazeroso para estudantes de todos os níveis.
-            </p>
-          </div>
+      <section className="py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="grid md:grid-cols-3 gap-8 mb-20">
-            {recursos.map((recurso, indice) => (
-              <div key={indice} className="group bg-white rounded-3xl p-10 shadow-lg hover:shadow-2xl border border-gray-100 text-center transition-all duration-500 hover:-translate-y-2">
-                <div className={`w-20 h-20 bg-gradient-to-br ${
-                  recurso.cor === 'indigo' ? 'from-indigo-100 to-indigo-200' :
-                  recurso.cor === 'purple' ? 'from-purple-100 to-purple-200' :
-                  'from-blue-100 to-blue-200'
-                } rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300`}>
-                  <recurso.icone className={`w-10 h-10 ${
-                    recurso.cor === 'indigo' ? 'text-indigo-600' :
-                    recurso.cor === 'purple' ? 'text-purple-600' :
-                    'text-blue-600'
-                  }`} />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  {recurso.titulo}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {recurso.descricao}
-                </p>
+            {/* Título */}
+            <div className="text-center mb-20">
+              <h2 className={`${shrikhand.className} text-4xl md:text-5xl font-bold text-gray-900 mb-6`}>
+                Por que Escolher o{" "}
+                <span className="text-indigo-600">Discipulus?</span>
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Tornamos o aprendizado acessível, eficaz e prazeroso para estudantes de todos os níveis.
+              </p>
+            </div>
+
+            {/* CARDS PRINCIPAIS */}
+            <div className="grid md:grid-cols-3 gap-10 mb-16">
+                {[
+                  {
+                    img: "/genio.png",
+                    titulo: "Professores Especialistas",
+                    descricao: "Conecte-se com professores verificados e experientes em todas as matérias"
+                  },
+                  {
+                    img: "/livros.png",
+                    titulo: "Todas as Matérias",
+                    descricao: "De exatas a humanas, encontre ajuda em qualquer matéria que precisar"
+                  },
+                  {
+                    img: "/professorEstrela.png",
+                    titulo: "Qualidade Garantida",
+                    descricao: "Todos os professores são avaliados por estudantes como você"
+                  }
+                ].map((card, i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-2xl border border-indigo-200 shadow-[0_10px_25px_rgba(99,102,241,0.15)] p-10 text-center hover:shadow-[0_15px_35px_rgba(99,102,241,0.25)] transition-all duration-300"
+                  >
+                    <img
+                      src={card.img}
+                      alt={card.titulo}
+                      className="w-28 h-28 mx-auto mb-6 object-contain"
+                    />
+
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">
+                      {card.titulo}
+                    </h3>
+
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      {card.descricao}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Recursos Adicionais */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {recursos2.map((recurso, indice) => (
-              <div key={indice} className="group bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 hover:border-indigo-300 transition-all duration-300 hover:shadow-lg">
-                <recurso.icone className="w-8 h-8 text-indigo-600 mb-4 group-hover:scale-110 transition-transform" />
-                <h4 className="font-semibold text-gray-900 mb-2">{recurso.titulo}</h4>
-                <p className="text-sm text-gray-600">{recurso.descricao}</p>
+              {/* CARDS MENORES */}
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                img: "/relogio.png",
+                icone: Clock,
+                titulo: "Horários Flexíveis",
+                descricao: "Agende suas aulas quando for mais conveniente para você"
+              },
+              {
+                img: "/seguro.png",
+                icone: Shield,
+                titulo: "100% Seguro",
+                descricao: "Pagamentos protegidos e dados criptografados"
+              },
+              {
+                img: "/professorPremiado.png",
+                icone: Award,
+                titulo: "Professores Premiados",
+                descricao: "Educadores reconhecidos e com excelência comprovada"
+              },
+              {
+                img: "/foguete.png",
+                icone: Zap,
+                titulo: "Resultados Rápidos",
+                descricao: "Veja melhorias em suas notas já nas primeiras aulas"
+              }
+            ].map((card, i) => (
+              <div
+                key={i}
+                className="relative bg-white rounded-2xl border-2 border-indigo-300 
+                          shadow-[0_10px_25px_rgba(99,102,241,0.18)] 
+                          p-6 pt-14 transition-all duration-300 
+                          hover:shadow-[0_15px_35px_rgba(99,102,241,0.28)]"
+              >
+                {/* ILUSTRAÇÃO PNG GRANDE */}
+                <img
+                  src={card.img}
+                  alt={card.titulo}
+                  className="w-24 h-24 mx-auto absolute -top-12 left-1/2 -translate-x-1/2 object-contain"
+                />
+
+                {/* CONTEÚDO */}
+                <div className="mt-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <card.icone className="w-5 h-5 text-indigo-600" />
+                    <h4 className="font-semibold text-gray-900">
+                      {card.titulo}
+                    </h4>
+                  </div>
+
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {card.descricao}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+
       {/* Como Funciona */}
       <section className="py-24 bg-gradient-to-br from-gray-50 to-indigo-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className={`${shrikhand.className} text-4xl md:text-5xl font-bold text-gray-900 mb-6 `}>
               Como Funciona
             </h2>
             <p className="text-xl text-gray-600">
@@ -342,7 +419,7 @@ export default function Home() {
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className={`${shrikhand.className} text-4xl md:text-5xl font-bold text-gray-900 mb-6`}>
               O que Nossos Estudantes Dizem
             </h2>
             <p className="text-xl text-gray-600">
@@ -384,7 +461,7 @@ export default function Home() {
       <section className="py-24 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className={`${shrikhand.className} text-4xl md:text-5xl font-bold text-gray-900 mb-6`}>
               Perguntas Frequentes
             </h2>
             <p className="text-xl text-gray-600">
