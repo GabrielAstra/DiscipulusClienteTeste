@@ -168,7 +168,7 @@ export default function PaginaPagamento({
                       <span className="text-gray-500 text-sm font-semibold">
                         QR Code PIX
                       </span>
-                    </div>
+                    </div>  
                   </div>
                   <p className="text-gray-700 font-semibold mb-4">
                     Escaneie o QR Code com seu app do banco

@@ -2,7 +2,6 @@
 import { useToast } from "@/context/ToastContext";
 import { useUsuario } from "@/context/UsuarioContext";
 import { ILoginRequest } from "@/lib/service/auth/auth.service";
-import { professores } from "@/types/mock/professor-mock";
 import { useRouter } from "next/navigation";
 import {
   Calendar,
@@ -17,28 +16,15 @@ import {
   MapPin,
   Star,
 } from "lucide-react";
-import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import ModalAgendamento from "./ModalAgendamento";
 import ModalChat from "./ModalChat";
 import ModalLogin from "./ModalLogin";
-import { PerfilProfessor as PerfilDTO, Experiencia, Formacao } from "@/lib/service/teacher/teacher.service";
+import { Professor } from "@/types/professor";
+
 import { listarProfessor } from "@/lib/service/teacher/teacher.service";
 
-interface FormacaoDTO {
-  titulo: string;
-  instituicao: string;
-  dtInicio: string;
-  dtConclusao: string;
-}
 
-interface ExperienciaDTO {
-  titulo: string;
-  instituicao: string;
-  inicio: string;
-  fim: string;
-  descricao: string;
-}
 
 interface PropriedadesPerfilProfessor {
   id: string;
@@ -48,7 +34,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
   const { usuario, realizarLogin } = useUsuario();
   const { showError, showSuccess } = useToast();
 
-  const [professor, setProfessor] = useState<PerfilDTO | null>(null);
+  const [professor, setProfessor] = useState<Professor | null>(null);
   const [loading, setLoading] = useState(true);
   const [agendamentoAberto, setAgendamentoAberto] = useState(false);
   const [chatAberto, setChatAberto] = useState(false);
@@ -178,7 +164,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                 alt={professor.nome}
                 className="w-32 h-32 rounded-full object-cover mx-auto md:mx-0"
                 onError={(e) => {
-                  e.currentTarget.src = "/default-avatar.png";
+                  e.currentTarget.src = "/avatar.png";
                 }}
               />
 
@@ -351,31 +337,6 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                 ))}
               </div>
             </div>
-
-            {/* Certifications */}
-            {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center space-x-2 mb-6">
-                <Award className="w-6 h-6 text-amber-600" />
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Certificações e Especializações
-                </h2>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {professor..map((certificacao, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center space-x-3 p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg border border-amber-100 hover:shadow-sm transition-shadow"
-                  >
-                    <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
-                      <Award className="w-4 h-4 text-amber-600" />
-                    </div>
-                    <span className="font-medium text-gray-900 text-sm">
-                      {certificacao}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div> */}
 
             {/* Subject Areas */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

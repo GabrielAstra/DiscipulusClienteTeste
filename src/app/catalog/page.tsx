@@ -5,10 +5,10 @@ import { useEffect,useMemo, useState } from "react";
 import CartaoProfessor from "@/components/CartaoProfessor";
 import { materias } from "@/types/mock/materia-mock";
 import FiltroMateria from "@/components/FiltroMateria";
-// import { professores } from "@/types/mock/professor-mock";
 import { Professor } from "@/types/professor";
 import { listarProfessores } from "@/lib/service/catalog/catalog.service";
-import { mapProfessorFromApi } from "@/services/professor.mapper";
+import { mapProfessorFromApi } from "@/lib/mappers/professor.mapper";
+
 export default function CatalogoProfessoresPage() {
   const [termoBusca, setTermoBusca] = useState("");
   const [categoriaSelecionada, setCategoriaSelecionada] = useState("Todas");

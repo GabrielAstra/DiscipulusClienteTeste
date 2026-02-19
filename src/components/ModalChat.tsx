@@ -2,10 +2,10 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { X, Send, Paperclip, Smile } from "lucide-react";
-import { PerfilProfessor } from "@/lib/service/teacher/teacher.service";
 import { useUsuario } from "@/context/UsuarioContext";
 import { listarMensagens } from "@/lib/service/chat/mensagens.service";
 import { useSignalR } from "@/context/SignalRContext";
+import { Professor } from "@/types/professor";
 
 interface Mensagem {  
   id: string;
@@ -15,7 +15,7 @@ interface Mensagem {
 }
 
 interface PropriedadesModalChat {
-  professor: PerfilProfessor;
+  professor: Professor;
   aberto: boolean;
   aoFechar: () => void;
 }
@@ -136,10 +136,14 @@ export default function ModalChat({
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
             <div className="relative">
-              <img
-                src="https://i.pravatar.cc/150?img=12"
+          
+                 <img
+                src={`/api/avatar/${professor.usuarioID}`}
                 alt={professor.nome}
                 className="w-10 h-10 rounded-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "/avatar.png";
+                }}
               />
 
               <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>

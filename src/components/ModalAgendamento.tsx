@@ -33,6 +33,7 @@ export default function ModalAgendamento({
   professor,
   aberto,
   aoFechar,
+  aoIrParaPagamento,
 }: PropriedadesModalAgendamento) {
   const [passo, setPasso] = useState(1);
   const [dataSelecionada, setDataSelecionada] = useState("");
@@ -173,7 +174,7 @@ export default function ModalAgendamento({
       precoTotal,
     };
 
-    router.push("/checkout");
+  aoIrParaPagamento(dadosAgendamento);
     setPasso(1);
     setDataSelecionada("");
     setHorarioSelecionado("");
@@ -193,13 +194,14 @@ export default function ModalAgendamento({
       <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
           <div className="flex items-center space-x-4">
-            {urlFoto && (
-              <img
-                src={urlFoto}
+                <img
+                src={`/api/avatar/${professor.usuarioID}`}
                 alt={professor.nome}
                 className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md"
+                onError={(e) => {
+                  e.currentTarget.src = "/avatar.png";
+                }}
               />
-            )}
             <div>
               <h2 className="text-xl font-bold text-gray-900">
                 Agendar Aula com {professor.nome}
@@ -349,7 +351,18 @@ export default function ModalAgendamento({
                       {slotsDisponiveis.map((slot) => (
                         <button
                           key={slot.inicio}
-                          onClick={() => setHorarioSelecionado(slot.inicio)}
+                          onClick={() => {
+                            setHorarioSelecionado(slot.inicio);
+
+                            const [hInicio, mInicio] = slot.inicio.split(":").map(Number);
+                            const [hFim, mFim] = slot.fim.split(":").map(Number);
+
+                            const minutosInicio = hInicio * 60 + mInicio;
+                            const minutosFim = hFim * 60 + mFim;
+
+                            setDuracao(minutosFim - minutosInicio);
+                          }}
+
                           className={`p-3 rounded-lg border-2 text-center transition-all ${
                             horarioSelecionado === slot.inicio
                               ? "border-blue-600 bg-blue-600 text-white shadow-md scale-105"
@@ -390,30 +403,7 @@ export default function ModalAgendamento({
                 </h3>
 
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Duração da Aula
-                    </label>
-                    <select
-                      value={duracao}
-                      onChange={(e) => setDuracao(Number(e.target.value))}
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                    >
-                      <option value={30}>
-                        30 minutos - R${((valorHora * 0.5).toFixed(2))}
-                      </option>
-                      <option value={60}>
-                        1 hora - R${valorHora.toFixed(2)}
-                      </option>
-                      <option value={90}>
-                        1h 30min - R${((valorHora * 1.5).toFixed(2))}
-                      </option>
-                      <option value={120}>
-                        2 horas - R${((valorHora * 2).toFixed(2))}
-                      </option>
-                    </select>
-                  </div>
-
+                  
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Observações (opcional)

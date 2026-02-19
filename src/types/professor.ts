@@ -1,4 +1,4 @@
-interface DisponibilidadeHorario {
+export interface DisponibilidadeHorario {
   id: string;
   idAgenda: string;
   horaInicial: string;
@@ -9,21 +9,56 @@ interface DisponibilidadeHorario {
 export interface Professor {
   id: string;
   nome: string;
-  avatar: string;
+  usuarioID: string;
+  horaAula: number;
+  tempoExperiencia: number;
+  localizacao?: string;
+  biografia: string;
+  idioma: string;
   materias: string[];
   mediaAvaliacoes: number;
-  totalAvaliacoes: number;
   valorHora: number;
-  experiencia: string;
-  biografia: string;
-  idiomas: string[];
-  verificado: boolean;
+  totalAvaliacoes: number;
+  habilidades?: {
+    $values: {
+      habilidadeID: string;
+      nomeHabilidade: string;
+    }[];
+  };
 
-  disponibilidade: {
+  formacoes?: {
+    $values: {
+      id?: string;
+      titulo: string;
+      instituicao: string;
+      dtInicio: string;
+      dtConclusao: string;
+    }[];
+  };
+
+  experiencias?: {
+    $values: {
+      titulo: string;
+      instituicao: string;
+      inicio: string;
+      fim: string;
+      descricao: string;
+    }[];
+  };
+
+  avaliacao?: {
+    $values: {
+      avaliacaoId: string;
+      nota: number;
+      comentario: string;
+    }[];
+  };
+
+  disponibilidade?: {
     $values: string[];
   };
 
-  disponibilidadeHorario: {
+  disponibilidadeHorario?: {
     $values: DisponibilidadeHorario[];
   };
 }

@@ -122,8 +122,8 @@ const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
               uploadingPhoto={uploadingPhoto}
               todasHabilidades={todasHabilidades}
               onSalvar={lidarComSalvarPerfil}
-             onFileUpload={handleFileUpload}  // 👈 use o que já existe
-  avatarUrl={avatarUrl}
+              onFileUpload={handleFileUpload}  
+              avatarUrl={avatarUrl}
               onShowPreview={() => setMostrarModalPreview(true)}
             />
 
