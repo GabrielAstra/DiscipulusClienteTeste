@@ -17,6 +17,8 @@ export interface Professor {
   idioma: string;
   materias: string[];
   mediaAvaliacoes: number;
+  urlFoto: string;
+  fotoPerfil: string;
   valorHora: number;
   totalAvaliacoes: number;
   habilidades?: {

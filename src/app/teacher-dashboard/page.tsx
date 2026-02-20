@@ -17,21 +17,21 @@ export default function PainelProfessor() {
   const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira">("perfil");
   const [mostrarModalSaque, setMostrarModalSaque] = useState(false);
   const [mostrarModalPreview, setMostrarModalPreview] = useState(false);
-const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  const {
-    perfil,
-    setPerfil,
-    editando,
-    setEditando,
-    salvandoPerfil,
-    uploadingPhoto,
-    todasHabilidades,
-    lidarComSalvarPerfil,
-    handleFileUpload,
-    handleRemoverFormacao,
-    handleRemoverExperiencia,
-  } = useProfile();
+ const {
+  perfil,
+  setPerfil,
+  editando,
+  setEditando,
+  salvandoPerfil,
+  uploadingPhoto,
+  todasHabilidades,
+  lidarComSalvarPerfil,
+  handleSelecionarAvatar, // 👈 ADICIONE AQUI
+  handleRemoverFormacao,
+  handleRemoverExperiencia,
+  avatarUrl, // 👈 se você criou no hook
+} = useProfile();
 
   const [dadosCarteira] = useState<DadosCarteira>({
     saldo: 1250.5,
@@ -122,7 +122,7 @@ const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
               uploadingPhoto={uploadingPhoto}
               todasHabilidades={todasHabilidades}
               onSalvar={lidarComSalvarPerfil}
-              onFileUpload={handleFileUpload}  
+              onFileUpload={handleSelecionarAvatar}
               avatarUrl={avatarUrl}
               onShowPreview={() => setMostrarModalPreview(true)}
             />

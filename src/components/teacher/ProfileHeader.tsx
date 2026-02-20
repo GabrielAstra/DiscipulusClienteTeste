@@ -4,10 +4,8 @@ import { useState } from 'react';
 import { PerfilProfessor, Habilidade } from '@/types/teacher';
 import { capitais, idiomasDisponiveis } from '@/constants/teacher';
 import { aplicarMascaraTelefone } from '@/utils/formatters';
-import { salvarAgenda } from '@/lib/service/agenda/agenda.service';
 import { Edit3, Save, X, Camera, Upload, Eye, Globe } from 'lucide-react';
-import { AgendaDiaPayload } from '@/types/teacher';
-import {mapaDiasSemana} from '@/utils/mapaDiasSemana'
+
 interface ProfileHeaderProps {
   perfil: PerfilProfessor;
   setPerfil: (perfil: PerfilProfessor) => void;
@@ -17,8 +15,8 @@ interface ProfileHeaderProps {
   uploadingPhoto: boolean;
   todasHabilidades: Habilidade[];
   onSalvar: () => void;
-  onFileUpload: (file: File) => void; // ✅ adicionar
-  avatarUrl: string | null;
+  onFileUpload: (file: File) => void; // ✅ tipo correto
+  avatarUrl: string | null;           // ✅ tipo correto
   onShowPreview: () => void;
 }
 
@@ -67,23 +65,7 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     setIdiomasFiltrados(filtered);
   };
 
-  const prepararPayloadAgenda = (): AgendaDiaPayload[] => {
-    if (!perfil.disponibilidadeHorarios) return [];
-
-    return perfil.disponibilidadeHorarios.map((d) => ({
-      diaSemana: mapaDiasSemana[d.dia],
-      horarios: d.horarios.map((h) => {
-        const horaInicial = `${h.HoraInicial}:00`;
-        const horaFinal = `${h.HoraFinal}:00`;
-
-        return {
-          horaInicial,
-          horaFinal,
-          agendaDisponivelEnum: 1,
-        };
-      }),
-    }));
-  };
+  
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -148,7 +130,7 @@ const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
             <div className="flex items-center space-x-6">
               <div className="relative">
                 <img
-                  src={avatarUrl || "/api/avatar"}
+                  src={avatarUrl ?? "/avatar.png"}
                   alt={perfil.nome}
                   className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
                 />

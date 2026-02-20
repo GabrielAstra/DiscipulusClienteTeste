@@ -159,14 +159,14 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
           <div className="p-8">
             <div className="flex flex-col md:flex-row gap-6">
               <div className="relative">
-                <img
-                src={`/api/avatar/${professor.usuarioID}`}
-                alt={professor.nome}
-                className="w-32 h-32 rounded-full object-cover mx-auto md:mx-0"
-                onError={(e) => {
-                  e.currentTarget.src = "/avatar.png";
-                }}
-              />
+               <img
+                  src={professor.urlFoto || "/avatar.png"}
+                  alt={professor.nome}
+                  className="w-32 h-32 rounded-full object-cover mx-auto md:mx-0"
+                  onError={(e) => {
+                    e.currentTarget.src = "/avatar.png";
+                  }}
+                />
 
                 {/* {professor.verificado && ( */}
                   <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">

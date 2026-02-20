@@ -19,6 +19,7 @@ export function mapProfessorFromApi(apiProfessor: any, index: number): Professor
         biografia: apiProfessor.sobreMim ?? "Professor sem biografia cadastrada.",
         idiomas: apiProfessor.idiomas?.$values ?? [],
         disponibilidade: [],
+        fotoPerfil: apiProfessor.fotoPerfil,
         verificado: true,
     };
 }

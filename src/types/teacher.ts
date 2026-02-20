@@ -32,6 +32,7 @@ export interface PerfilProfessor {
     email: string;
     avatar: string;
     biografia: string;
+    urlFoto?: string;
     materias: string[];
     valorHora: number;
     experiencia: ExperienciaDTO[];

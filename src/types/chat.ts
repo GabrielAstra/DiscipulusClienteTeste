@@ -6,17 +6,7 @@ export interface Message {
     userRole?: string;
 }
 
-// export interface Conversation {
-//     id: string;
-//     userId: string;
-//     userName: string;
-//     userAvatar: string;
-//     lastMessage: string;
-//     lastMessageTime: Date;
-//     unreadCount: number;
-//     online: boolean;
-//     userRole: 'teacher' | 'student';
-// }
+
 
 export interface Conversation {
     id: string;

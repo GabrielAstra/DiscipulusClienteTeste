@@ -184,9 +184,7 @@ export default function ModalAgendamento({
   const dataAtual = dataSelecionada
     ? diasDisponiveis.find((d) => d.data === dataSelecionada)
     : null;
-
-  const urlFoto = "https://i.pravatar.cc/150?img=12";
-
+    
   if (!aberto) return null;
 
   return (
@@ -195,7 +193,7 @@ export default function ModalAgendamento({
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
           <div className="flex items-center space-x-4">
                 <img
-                src={`/api/avatar/${professor.usuarioID}`}
+                src={professor.urlFoto}
                 alt={professor.nome}
                 className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md"
                 onError={(e) => {

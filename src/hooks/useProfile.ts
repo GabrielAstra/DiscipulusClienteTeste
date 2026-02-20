@@ -21,6 +21,7 @@ const initialPerfil: PerfilProfessor = {
   nome: "",
   email: "",
   avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400",
+  urlFoto: "",
   biografia: "",
   materias: [],
   valorHora: 45,
@@ -40,13 +41,21 @@ const initialPerfil: PerfilProfessor = {
 export function useProfile() {
   const [perfil, setPerfil] = useState<PerfilProfessor>(initialPerfil);
   const [editando, setEditando] = useState(false);
-  const [salvandoPerfil, setSalvandoPerfil] = useState(false);
+  const [salvandoPerfil, setSalvandoPerfil] = useState(false);''
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [todasHabilidades, setTodasHabilidades] = useState<Habilidade[]>([]);
   const { showError, showSuccess } = useToast();
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [arquivoAvatar, setArquivoAvatar] = useState<File | null>(null);
+  const handleSelecionarAvatar = (file: File) => {
+    setArquivoAvatar(file);
 
-  // 1. Buscar informações pessoais
+    // preview local
+    const preview = URL.createObjectURL(file);
+    setPerfil((prev) => ({
+      ...prev,
+      urlFoto: preview,
+    }));
+  };
   useEffect(() => {
     async function carregarInformacoesPessoais() {
       try {
@@ -65,7 +74,6 @@ export function useProfile() {
     carregarInformacoesPessoais();
   }, [showError]);
 
-  // 2. Formações
   useEffect(() => {
     async function carregarFormacoes() {
       try {
@@ -78,7 +86,6 @@ export function useProfile() {
     carregarFormacoes();
   }, [showError]);
 
-  // 3. Experiências
   useEffect(() => {
     async function carregarExperiencias() {
       try {
@@ -91,7 +98,6 @@ export function useProfile() {
     carregarExperiencias();
   }, [showError]);
 
-  // 4. Habilidades (quando clicou em editar)
   useEffect(() => {
     if (editando) {
       buscarHabilidades()
@@ -100,7 +106,6 @@ export function useProfile() {
     }
   }, [editando, showError]);
 
-  // ---------- SALVAR PERFIL ----------
 
 
   const lidarComSalvarPerfil = async () => {
@@ -108,6 +113,21 @@ export function useProfile() {
 
     try {
 
+      console.log("arquivoAvatar:", arquivoAvatar);
+      // 🔥 Se o usuário selecionou nova foto → faz upload agora
+      if (arquivoAvatar) {
+
+        setUploadingPhoto(true);
+        await uploadAvatar(arquivoAvatar);
+        setUploadingPhoto(false);
+        setArquivoAvatar(null);
+
+        // força recarregar avatar real do backend
+        setPerfil((prev) => ({
+          ...prev,
+          urlFoto: `/api/avatar?t=${Date.now()}`
+        }));
+      }
 
       if (perfil.disponibilidadeHorarios.length > 0) {
         const agendaPayload = perfil.disponibilidadeHorarios.map(dia => ({
@@ -131,49 +151,31 @@ export function useProfile() {
           sobreMim: perfil.biografia,
           status: 1,
           precoHoraAula: perfil.valorHora,
-          fotoPerfil: "",
           idiomas: perfil.idiomas.join(", "),
           localizacao: perfil.localizacao,
           tempoExperiencia: perfil.tempoExperiencia ?? null,
-
         },
         formacoes: perfil.formacao,
         experiencias: perfil.experiencia,
         habilidades: perfil.materias,
-        // ❌ NUNCA envie disponibilidade aqui
       };
 
       await salvarPerfilCompleto(payloadPerfil);
 
-      /* ---------------- 4. LIMPAR ESTADO ---------------- */
       setHorariosRemovidos([]);
       setEditando(false);
 
       showSuccess("Perfil salvo com sucesso!");
+
     } catch (error) {
       console.error("Erro ao salvar perfil + agenda", error);
       showError("Erro inesperado ao salvar perfil.");
     } finally {
       setSalvandoPerfil(false);
-    }
-  };
-  const handleFileUpload = async (file: File) => {
-    setUploadingPhoto(true);
-
-    try {
-      // Envia IMEDIATAMENTE para o backend
-      await uploadAvatar(file);
-
-      // Atualiza preview
-      setAvatarUrl(`/api/avatar?t=${Date.now()}`);
-
-
-    } catch (error) {
-      alert("Erro ao enviar foto");
-    } finally {
       setUploadingPhoto(false);
     }
   };
+
 
 
   useEffect(() => {
@@ -218,7 +220,7 @@ export function useProfile() {
   };
 
   const [horariosRemovidos, setHorariosRemovidos] = useState<string[]>([]);
-
+  const avatarUrl = perfil.urlFoto || perfil.avatar;
   return {
     perfil,
     setPerfil,
@@ -226,8 +228,9 @@ export function useProfile() {
     setEditando,
     salvandoPerfil,
     uploadingPhoto,
+    avatarUrl,
     todasHabilidades,
-    handleFileUpload,
+    handleSelecionarAvatar,
     lidarComSalvarPerfil,
     handleRemoverFormacao,
     handleRemoverExperiencia,

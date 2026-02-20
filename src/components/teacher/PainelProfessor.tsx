@@ -19,8 +19,7 @@ export default function PainelProfessor() {
   const [mostrarModalSaque, setMostrarModalSaque] = useState(false);
   const [mostrarModalPreview, setMostrarModalPreview] = useState(false);
   const [horariosRemovidos, setHorariosRemovidos] = useState<string[]>([]);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-
+ 
   const {
     perfil,
     setPerfil,
@@ -30,16 +29,15 @@ export default function PainelProfessor() {
     uploadingPhoto,
     todasHabilidades,
     lidarComSalvarPerfil,
+    handleSelecionarAvatar,
     handleRemoverFormacao,
     handleRemoverExperiencia,
+    avatarUrl,
   } = useProfile();
 
-  const handleUploadAvatar = async (file: File) => {
-    const preview = URL.createObjectURL(file);
-    setAvatarUrl(preview);
+ 
 
-    await uploadAvatar(file);
-  };
+
 
 
   const [dadosCarteira] = useState<DadosCarteira>({
@@ -132,8 +130,8 @@ export default function PainelProfessor() {
               uploadingPhoto={uploadingPhoto}
               todasHabilidades={todasHabilidades}
               onSalvar={lidarComSalvarPerfil}
-              onFileUpload={handleUploadAvatar}
-               avatarUrl={avatarUrl}
+             onFileUpload={handleSelecionarAvatar}
+avatarUrl={avatarUrl}
               onShowPreview={() => setMostrarModalPreview(true)}
             />
 

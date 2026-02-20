@@ -25,6 +25,7 @@ export async function buscarInformacoesPessoais(): Promise<Partial<PerfilProfess
       avatar: data.urlFoto,
       biografia: data.biografia,
       valorHora: data.horaAula,
+      urlFoto: data.urlFoto,
       telefone: data.celular || "",
       localizacao: data.localizacao || "",
       idiomas: idiomasArray,

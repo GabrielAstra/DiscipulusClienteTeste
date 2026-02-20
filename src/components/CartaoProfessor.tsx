@@ -1,10 +1,8 @@
 import React from "react";
 import {
   Star,
-  Clock,
   CheckCircle,
   Globe,
-  MapPin,
   Award,
   Users,
 } from "lucide-react";
@@ -24,11 +22,16 @@ export default function CartaoProfessor({
         <div className="flex items-start justify-between">
           <div className="relative">
             <div className="w-20 h-20 rounded-2xl overflow-hidden ring-4 ring-white shadow-lg">
-              <img
-                src={professor.avatar}
-                alt={professor.nome}
+             
+                <img
+                  src={professor.fotoPerfil || "/avatar.png"}
+                  alt={professor.nome}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
+                  onError={(e) => {
+                    e.currentTarget.src = "/avatar.png";
+                  }}
+                />
+
             </div>
             {professor.verificado && (
               <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full p-1.5 shadow-lg">
