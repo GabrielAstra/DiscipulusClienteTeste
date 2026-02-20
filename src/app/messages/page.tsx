@@ -46,7 +46,7 @@ export default function Messages() {
     }, [connection, usuario]);
 
 
-    const currentUserRole: 'teacher' | 'student' = 'teacher'; // depois vem do auth
+    const currentUserRole: 'teacher' | 'student' = 'teacher'; 
     useEffect(() => {
       const carregarMensagens = async () => {
         if (!selectedConversationId || !usuario) return;
@@ -90,7 +90,9 @@ export default function Messages() {
           return {
             id: c.conversaId,
             userName: c.outroUsuarioNome,
-            userAvatar: '/avatar-default.jpg', 
+            userAvatar: c.urlFotoPerfil 
+            ? c.urlFotoPerfil 
+            : '/avatar.png',
             lastMessage: c.ultimaMensagem ?? '',
             lastMessageTime: new Date(c.dataUltimaMensagem),
             unreadCount: 0,
@@ -126,11 +128,10 @@ if (!selectedConversationId || !connection || !usuario) return;
       usuarioRecebedorId: currentUserRole === 'teacher' ? 'student' : 'teacher',
     });
 
-    // Feedback imediato
     const newMessage: Message = {
       id: `m${Date.now()}`,
       text,
-      sender: 'user', //lembrar de enviar qunado eu criar no backend o senderId
+      sender: 'user',
       timestamp: new Date(),
     };
 
@@ -157,13 +158,11 @@ if (!selectedConversationId || !connection || !usuario) return;
           />
 
           {selectedConversation ? (
-    <ChatWindow
-  conversation={selectedConversation}
-  messages={currentMessages}
-  onSendMessage={handleSendMessage} 
-/>
-
-
+              <ChatWindow
+            conversation={selectedConversation}
+            messages={currentMessages}
+            onSendMessage={handleSendMessage} 
+          />
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center bg-gray-50">
               <div className="text-center">

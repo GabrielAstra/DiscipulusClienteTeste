@@ -17,15 +17,13 @@ export default function ChatWindow({
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // rola para baixo sempre que mensagens mudam
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // envia mensagem usando função passada pelo pai
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
-    onSendMessage(newMessage); // envia para o pai (Messages.tsx)
+    onSendMessage(newMessage); 
     setNewMessage('');
   };
 
