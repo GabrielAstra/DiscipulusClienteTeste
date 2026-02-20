@@ -84,7 +84,6 @@ export default function ModalAgendamento({
 
   const gerarSlotsHorario = (dataString: string): SlotHorario[] => {
     const data = new Date(dataString + "T00:00:00");
-    
 
     const diaSemana = nomesDias[data.getDay()];
 
@@ -158,12 +157,10 @@ export default function ModalAgendamento({
     const dataAtual = diasDisponiveis.find((d) => d.data === dataSelecionada);
     const avaliacoes = calcularMediaAvaliacoes();
 
-    const urlFoto = "https://via.placeholder.com/150";
-
     const dadosAgendamento: DadosAgendamento = {
       professorId: professor.id,
       professorNome: professor.nome,
-      professorAvatar: urlFoto,
+      professorAvatar: professor.urlFoto || "https://via.placeholder.com/150",
       professorValorHora: valorHora,
       professorAvaliacao: avaliacoes.total > 0 ? avaliacoes : undefined,
       dataSelecionada,
@@ -174,7 +171,12 @@ export default function ModalAgendamento({
       precoTotal,
     };
 
-  aoIrParaPagamento(dadosAgendamento);
+    sessionStorage.setItem("dadosAgendamento", JSON.stringify(dadosAgendamento));
+
+    aoIrParaPagamento(dadosAgendamento);
+
+    router.push("/checkout");
+
     setPasso(1);
     setDataSelecionada("");
     setHorarioSelecionado("");
@@ -184,7 +186,7 @@ export default function ModalAgendamento({
   const dataAtual = dataSelecionada
     ? diasDisponiveis.find((d) => d.data === dataSelecionada)
     : null;
-    
+
   if (!aberto) return null;
 
   return (
@@ -192,14 +194,14 @@ export default function ModalAgendamento({
       <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
           <div className="flex items-center space-x-4">
-                <img
-                src={professor.urlFoto}
-                alt={professor.nome}
-                className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md"
-                onError={(e) => {
-                  e.currentTarget.src = "/avatar.png";
-                }}
-              />
+            <img
+              src={professor.urlFoto}
+              alt={professor.nome}
+              className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md"
+              onError={(e) => {
+                e.currentTarget.src = "/avatar.png";
+              }}
+            />
             <div>
               <h2 className="text-xl font-bold text-gray-900">
                 Agendar Aula com {professor.nome}
@@ -360,7 +362,6 @@ export default function ModalAgendamento({
 
                             setDuracao(minutosFim - minutosInicio);
                           }}
-
                           className={`p-3 rounded-lg border-2 text-center transition-all ${
                             horarioSelecionado === slot.inicio
                               ? "border-blue-600 bg-blue-600 text-white shadow-md scale-105"
@@ -401,7 +402,6 @@ export default function ModalAgendamento({
                 </h3>
 
                 <div className="space-y-4">
-                  
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Observações (opcional)

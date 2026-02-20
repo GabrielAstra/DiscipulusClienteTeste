@@ -41,7 +41,6 @@ export interface PerfilProfessor {
     disponibilidadeHorarios: DisponibilidadeDia[];
     diasBloqueados?: string[];
     formacao: FormacaoDTO[];
-    certificacoes: string[];
     telefone: string;
     localizacao: string;
     tempoExperiencia: number;

@@ -8,7 +8,7 @@ interface ProfessionalExperienceProps {
   perfil: PerfilProfessor;
   setPerfil: (perfil: PerfilProfessor) => void;
   editando: boolean;
-  onRemoverExperiencia: (id: string, index: number) => void;
+  onRemoverExperiencia: (id: string) => void;
 }
 
 export function ProfessionalExperience({ 
@@ -72,7 +72,7 @@ export function ProfessionalExperience({
       <div className="space-y-6">
         {perfil.experiencia.map((exp, index) => (
           <div
-            key={index}
+            key={exp.id || `temp-${index}`}
             className="border border-gray-200 rounded-lg p-4 bg-gray-50"
           >
             {editando ? (
@@ -82,7 +82,7 @@ export function ProfessionalExperience({
                     Experiência #{index + 1}
                   </h4>
                   <button
-                    onClick={() => onRemoverExperiencia(exp.id, index)}
+                    onClick={() => onRemoverExperiencia(exp.id)}
                     className="text-red-600 hover:text-red-800 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />

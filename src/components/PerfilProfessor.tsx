@@ -500,6 +500,8 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
           professor={professor}
           aberto={agendamentoAberto}
           aoFechar={() => setAgendamentoAberto(false)}
+          aoIrParaPagamento={(dados) => {
+        }}
         />
 
         <ModalChat

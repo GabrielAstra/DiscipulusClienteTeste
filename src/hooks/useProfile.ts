@@ -20,20 +20,16 @@ const initialPerfil: PerfilProfessor = {
   id: "1",
   nome: "",
   email: "",
-  avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400",
+  avatar: "/avatar.png",
   urlFoto: "",
   biografia: "",
   materias: [],
-  valorHora: 45,
+  valorHora: 0,
   experiencia: [],
   idiomas: [],
   disponibilidadeHorarios: [],
   tempoExperiencia: 0,
   formacao: [],
-  certificacoes: [
-    "Certificação em Ensino Online",
-    "Especialização em Didática",
-  ],
   telefone: "",
   localizacao: "",
 };
@@ -41,7 +37,7 @@ const initialPerfil: PerfilProfessor = {
 export function useProfile() {
   const [perfil, setPerfil] = useState<PerfilProfessor>(initialPerfil);
   const [editando, setEditando] = useState(false);
-  const [salvandoPerfil, setSalvandoPerfil] = useState(false);''
+  const [salvandoPerfil, setSalvandoPerfil] = useState(false); ''
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [todasHabilidades, setTodasHabilidades] = useState<Habilidade[]>([]);
   const { showError, showSuccess } = useToast();
@@ -114,7 +110,6 @@ export function useProfile() {
     try {
 
       console.log("arquivoAvatar:", arquivoAvatar);
-      // 🔥 Se o usuário selecionou nova foto → faz upload agora
       if (arquivoAvatar) {
 
         setUploadingPhoto(true);
@@ -162,6 +157,12 @@ export function useProfile() {
 
       await salvarPerfilCompleto(payloadPerfil);
 
+      const experienciasAtualizadas = await buscarExperiencias();
+      setPerfil((prev) => ({
+        ...prev,
+        experiencia: experienciasAtualizadas
+      }));
+
       setHorariosRemovidos([]);
       setEditando(false);
 
@@ -196,7 +197,6 @@ export function useProfile() {
   }, [showError]);
 
 
-  // ---------- Remoções ----------
   const handleRemoverFormacao = async (id: string, index: number) => {
     try {
       await removerFormacao(id);
@@ -208,11 +208,17 @@ export function useProfile() {
     }
   };
 
-  const handleRemoverExperiencia = async (id: string, index: number) => {
+  const handleRemoverExperiencia = async (id?: string) => {
     try {
-      await removerExperiencia(id);
-      const novas = perfil.experiencia.filter((_, i) => i !== index);
-      setPerfil({ ...perfil, experiencia: novas });
+      if (id) {
+        await removerExperiencia(id);
+      }
+
+      setPerfil(prev => ({
+        ...prev,
+        experiencia: prev.experiencia.filter(exp => exp.id !== id)
+      }));
+
       showSuccess("Experiência removida com sucesso!");
     } catch {
       showError("Erro ao remover experiência.");

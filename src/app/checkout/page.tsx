@@ -1,23 +1,27 @@
 "use client";
 
-
 import { DadosAgendamento } from "@/types/agendamento";
 import { Check, CreditCard, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-interface PropriedadesPaginaPagamento {
-  dadosAgendamento: DadosAgendamento;
-  aoVoltar: () => void;
-  aoConfirmar: () => void;
-}
-
-export default function PaginaPagamento({
-  dadosAgendamento,
-  aoVoltar,
-  aoConfirmar,
-}: PropriedadesPaginaPagamento) {
+export default function PaginaPagamento() {
+  const router = useRouter();
+  const [dadosAgendamento, setDadosAgendamento] = useState<DadosAgendamento | null>(null);
+  const [carregando, setCarregando] = useState(true);
   const [metodoPagamento, setMetodoPagamento] = useState("credito");
   const [processando, setProcessando] = useState(false);
+
+  useEffect(() => {
+    const dados = sessionStorage.getItem("dadosAgendamento");
+    if (dados) {
+      setDadosAgendamento(JSON.parse(dados));
+    } else {
+      // Sem dados, volta para home
+      router.replace("/");
+    }
+    setCarregando(false);
+  }, [router]);
 
   const lidarComPagamento = async () => {
     setProcessando(true);
@@ -29,12 +33,27 @@ export default function PaginaPagamento({
 
     setTimeout(() => {
       setProcessando(false);
+      sessionStorage.removeItem("dadosAgendamento");
       alert("Pagamento realizado com sucesso! Aula agendada.");
-      aoConfirmar();
+      router.push("/");
     }, 2000);
   };
 
-  const dataFormatada = new Date(dadosAgendamento.dataSelecionada).toLocaleDateString("pt-BR", {
+  const aoVoltar = () => {
+    router.back();
+  };
+
+  if (carregando) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+      </div>
+    );
+  }
+
+  if (!dadosAgendamento) return null;
+
+  const dataFormatada = new Date(dadosAgendamento.dataSelecionada + "T12:00:00").toLocaleDateString("pt-BR", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -168,7 +187,7 @@ export default function PaginaPagamento({
                       <span className="text-gray-500 text-sm font-semibold">
                         QR Code PIX
                       </span>
-                    </div>  
+                    </div>
                   </div>
                   <p className="text-gray-700 font-semibold mb-4">
                     Escaneie o QR Code com seu app do banco
@@ -195,6 +214,9 @@ export default function PaginaPagamento({
                   src={dadosAgendamento.professorAvatar}
                   alt={dadosAgendamento.professorNome}
                   className="w-20 h-20 rounded-xl object-cover shadow-md"
+                  onError={(e) => {
+                    e.currentTarget.src = "/avatar.png";
+                  }}
                 />
                 <div className="flex-1">
                   <h3 className="font-bold text-gray-900 text-lg">
@@ -227,7 +249,7 @@ export default function PaginaPagamento({
               <div className="space-y-3 mb-6 pb-6 border-b border-gray-200">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Data:</span>
-                  <span className="font-semibold text-gray-900 text-right">
+                  <span className="font-semibold text-gray-900 text-right capitalize">
                     {dataFormatada}
                   </span>
                 </div>

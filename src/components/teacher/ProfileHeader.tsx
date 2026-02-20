@@ -36,15 +36,15 @@ export function ProfileHeader({
   const [filtroIdioma, setFiltroIdioma] = useState("");
   const [idiomasFiltrados, setIdiomasFiltrados] = useState<string[]>(idiomasDisponiveis);
 
-const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-  e.preventDefault();
-  setDragOver(false);
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
 
-  const files = e.dataTransfer.files;
-  if (files.length > 0) {
-    onFileUpload(files[0]);
-  }
-};
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      onFileUpload(files[0]);
+    }
+  };
 
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
