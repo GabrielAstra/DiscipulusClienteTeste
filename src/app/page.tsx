@@ -564,7 +564,7 @@ export default function Home() {
                   <span className="text-sm font-bold">f</span>
                 </div>
                 <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
-                  <span className="text-sm font-bold">tw</span>
+                  <span className="text-sm font-bold">ig</span>
                 </div>
                 <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
                   <span className="text-sm font-bold">in</span>
@@ -576,8 +576,7 @@ export default function Home() {
               <h4 className="text-lg font-semibold mb-6">Para Estudantes</h4>
               <ul className="space-y-3">
                 <li><Link href="/catalog" className="text-gray-400 hover:text-white transition-colors">Encontrar Professores</Link></li>
-                <li><Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">Planos e Preços</Link></li>
-                <li><Link href="/how-it-works" className="text-gray-400 hover:text-white transition-colors">Como Funciona</Link></li>
+                <li><Link href="/demo" className="text-gray-400 hover:text-white transition-colors">Como Funciona</Link></li>
                 <li><Link href="/subjects" className="text-gray-400 hover:text-white transition-colors">Matérias</Link></li>
               </ul>
             </div>
