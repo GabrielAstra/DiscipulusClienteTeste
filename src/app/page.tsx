@@ -14,33 +14,7 @@ const shrikhand = Shrikhand({
 export default function Home() {
   const [faqAberto, setFaqAberto] = useState<number | null>(null);
 
-  const recursos = [
-    {
-      icone: Users,
-      titulo: 'Professores Especialistas',
-      descricao: 'Conecte-se com professores verificados e experientes em todas as matérias',
-      cor: 'indigo'
-    },
-    {
-      icone: BookOpen,
-      titulo: 'Todas as Matérias',
-      descricao: 'De exatas a humanas, encontre ajuda em qualquer matéria que precisar',
-      cor: 'purple'
-    },
-    {
-      icone: Star,
-      titulo: 'Qualidade Garantida',
-      descricao: 'Todos os professores são avaliados por estudantes como você',
-      cor: 'blue'
-    }
-  ];
-
-  const estatisticas = [
-    { numero: '1000+', rotulo: 'Professores Especialistas' },
-    { numero: '50+', rotulo: 'Matérias' },
-    { numero: '10k+', rotulo: 'Estudantes Satisfeitos' },
-    { numero: '4.9', rotulo: 'Avaliação Média' }
-  ];
+ 
 
   const testimonials = [
     {
@@ -66,47 +40,6 @@ export default function Home() {
     }
   ];
 
-  const planos = [
-    {
-      nome: "Essencial",
-      preco: "R$ 29",
-      periodo: "/mês",
-      recursos: [
-        "2 aulas por mês",
-        "Acesso a materiais básicos",
-        "Suporte por chat",
-        "Professores verificados"
-      ],
-      popular: false
-    },
-    {
-      nome: "Premium",
-      preco: "R$ 59",
-      periodo: "/mês",
-      recursos: [
-        "6 aulas por mês",
-        "Materiais exclusivos",
-        "Suporte prioritário",
-        "Aulas gravadas",
-        "Revisões ilimitadas"
-      ],
-      popular: true
-    },
-    {
-      nome: "Ilimitado",
-      preco: "R$ 99",
-      periodo: "/mês",
-      recursos: [
-        "Aulas ilimitadas",
-        "Todos os materiais",
-        "Suporte 24/7",
-        "Mentor dedicado",
-        "Garantia de aprovação"
-      ],
-      popular: false
-    }
-  ];
-
   const faq = [
     {
       pergunta: "Como funciona o processo de agendamento?",
@@ -126,28 +59,6 @@ export default function Home() {
     }
   ];
 
-  const recursos2 = [
-    {
-      icone: Clock,
-      titulo: "Horários Flexíveis",
-      descricao: "Agende suas aulas quando for mais conveniente para você"
-    },
-    {
-      icone: Shield,
-      titulo: "100% Seguro",
-      descricao: "Pagamentos protegidos e dados criptografados"
-    },
-    {
-      icone: Award,
-      titulo: "Professores Premiados",
-      descricao: "Educadores reconhecidos e com excelência comprovada"
-    },
-    {
-      icone: Zap,
-      titulo: "Resultados Rápidos",
-      descricao: "Veja melhorias em suas notas já nas primeiras aulas"
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-white overflow-hidden">
@@ -200,16 +111,7 @@ export default function Home() {
                   </Link>
 
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
-              {estatisticas.map((estatistica, indice) => (
-                <div key={indice} className="group text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20">
-                  <div className={`${shrikhand.className} text-[20px] bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3 group-hover:scale-105 transition-transform`}>
-                    {estatistica.numero}
-                  </div>
-                  <div className={`text-gray-700 font-semibold text-sm md:text-base`}>{estatistica.rotulo}</div>
-                </div>
-              ))}
-            </div>
+            
 
             </div>
 

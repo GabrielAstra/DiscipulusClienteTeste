@@ -8,6 +8,7 @@ export interface ILoginRequest {
 
 export interface ILoginResponse {
   token: string | undefined;
+  tokenRefresh: string;
 }
 export async function login(
   payload: ILoginRequest
@@ -31,7 +32,7 @@ export async function login(
     return {
       message: responseBody.mensagem,
       success: responseBody.flag,
-      data: { token: responseBody.token },
+      data: { token: responseBody.token, tokenRefresh: responseBody.tokenRefresh },
     };
   } catch (error) {
     console.error(error);

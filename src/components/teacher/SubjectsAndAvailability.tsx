@@ -71,12 +71,11 @@ const adicionarSegundos = (hora: string) => {
 useEffect(() => {
   if (!perfil.disponibilidadeHorarios) return;
 
-  // Checa se algum horário precisa de normalização
   const precisaNormalizar = perfil.disponibilidadeHorarios.some(d =>
     d.horarios.some(h => h.HoraInicial.length === 5 || h.HoraFinal.length === 5)
   );
 
-  if (!precisaNormalizar) return; // Não faz nada se já estiver normalizado
+  if (!precisaNormalizar) return; 
 
   const normalizados = perfil.disponibilidadeHorarios.map(d => ({
     ...d,

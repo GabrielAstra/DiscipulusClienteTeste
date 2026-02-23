@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   const response = await login(body);
 
   const { message, success, data } = response;
-  var responseBody: IResponse<void>;
+  let responseBody: IResponse<void>;
 
   if (!success) {
     responseBody = IResponse.fail(message);
@@ -17,13 +17,20 @@ export async function POST(req: NextRequest) {
   responseBody = IResponse.ok(message);
   const res = NextResponse.json(responseBody);
 
-
-  // Set HttpOnly cookie for token
   res.cookies.set("token", data?.token!, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
+    maxAge: 60 * 15,
+  });
+
+  res.cookies.set("refreshToken", data?.tokenRefresh!, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
   });
 
   return res;

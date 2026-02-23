@@ -1,6 +1,7 @@
 import { environment } from "@/lib/environment/environment";
 import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
 import { IServiceResponse } from "@/types/response";
+import { fetchWithAuth } from "@/lib/helper/fetchWithAuth";
 
 export interface InformacoesPessoaisResponse {
     usuarioID: string;
@@ -33,21 +34,19 @@ export interface InformacoesPessoaisDTO {
 }
 
 
-export async function listarInformacoesPessoais(token: string): Promise<IServiceResponse<InformacoesPessoaisDTO>> {
+export async function listarInformacoesPessoais(): Promise<IServiceResponse<InformacoesPessoaisDTO>> {
     try {
-        const response = await fetch(
+        const response = await fetchWithAuth(
             `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Perfil/MeuPerfilMin`,
             {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
                 },
             }
         );
 
         if (!response.ok) {
-            console.error(`Erro na API: ${response.status} - ${response.statusText}`);
             return { success: false, message: ERRO_REQUISICAO };
         }
 
@@ -68,6 +67,7 @@ export async function listarInformacoesPessoais(token: string): Promise<IService
         };
 
         return { success: true, data: informacoesPessoaisDTO };
+
     } catch (error) {
         console.error("Erro ao listar informações pessoais:", error);
         return { success: false, message: ERRO_REQUISICAO };

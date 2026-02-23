@@ -1,6 +1,7 @@
 import { environment } from "@/lib/environment/environment";
 import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
 import { IServiceResponse } from "@/types/response";
+import { fetchWithAuth } from "@/lib/helper/fetchWithAuth";
 
 export interface FormacaoResponse {
   id: string;
@@ -18,61 +19,48 @@ export interface FormacaoDTO {
   dtConclusao: string;
 }
 
-export async function listarFormacoes(token: string): Promise<IServiceResponse<FormacaoDTO[]>> {
+
+export async function listarFormacoes() {
+
+  const response = await fetchWithAuth(
+    `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Formacao/Listar`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    return { success: false, message: ERRO_REQUISICAO };
+  }
+
+  const body = await response.json();
+
+  const formacoes =
+    body.formacoesResponse?.formacao?.["$values"] || [];
+
+  return { success: true, data: formacoes };
+}
+
+
+export async function excluirFormacao(id: string): Promise<IServiceResponse<null>> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Formacao/Listar`,
+    const response = await fetchWithAuth(
+      `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Formacao/Excluir?formacaoId=${id}`,
       {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
+        method: "DELETE",
       }
     );
 
     if (!response.ok) {
-      console.error(`Erro na API: ${response.status} - ${response.statusText}`);
-      return { success: false, message: ERRO_REQUISICAO };
-    }
-
-    const body = await response.json();
-
-    const formacoes: FormacaoResponse[] = body.formacoesResponse?.formacao?.["$values"] || [];
-
-
-    const formacoesDTO: FormacaoDTO[] = formacoes.map((formacao: FormacaoResponse) => ({
-      id: formacao.id,
-      titulo: formacao.titulo,
-      instituicao: formacao.instituicao,
-      dtInicio: formacao.dtInicio,
-      dtConclusao: formacao.dtConclusao,
-    }));
-
-
-    return { success: true, data: formacoesDTO };
-  } catch (error) {
-    console.error("Erro ao listar formações:", error);
-    return { success: false, message: ERRO_REQUISICAO };
-  }
-}
-
-
-export async function excluirFormacao(id: string, token: string): Promise<IServiceResponse<null>> {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Formacao/Excluir?formacaoId=${id}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      console.error(`Erro ao excluir formacao: ${response.status} - ${response.statusText}`);
+      console.error(`Erro ao excluir formacao: ${response.status}`);
       return { success: false, message: ERRO_REQUISICAO };
     }
 
     return { success: true, data: null };
+
   } catch (error) {
     console.error("Erro ao excluir formacao:", error);
     return { success: false, message: ERRO_REQUISICAO };

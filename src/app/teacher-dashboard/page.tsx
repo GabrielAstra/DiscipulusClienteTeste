@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, DollarSign } from "lucide-react";
+import { User, DollarSign, CalendarDays } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { DadosCarteira } from "@/types/teacher";
 import { ProfileHeader } from "@/components/teacher/ProfileHeader";
@@ -12,9 +12,12 @@ import { WalletOverview } from "@/components/teacher/WalletOverview";
 import { TransactionHistory } from "@/components/teacher/TransactionHistory";
 import { WithdrawalModal } from "@/components/teacher/WithdrawalModal";
 import { ProfilePreviewModal } from "@/components/teacher/ProfilePreviewModal";
+import AgendaTab from "@/components/teacher/ClassSchedule";
+import { aulasMock } from "@/data/mockAulasAgendadas";
+
 
 export default function PainelProfessor() {
-  const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira">("perfil");
+const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira" | "agenda">("perfil");
   const [mostrarModalSaque, setMostrarModalSaque] = useState(false);
   const [mostrarModalPreview, setMostrarModalPreview] = useState(false);
 
@@ -27,10 +30,10 @@ export default function PainelProfessor() {
   uploadingPhoto,
   todasHabilidades,
   lidarComSalvarPerfil,
-  handleSelecionarAvatar, // 👈 ADICIONE AQUI
+  handleSelecionarAvatar, 
   handleRemoverFormacao,
   handleRemoverExperiencia,
-  avatarUrl, // 👈 se você criou no hook
+  avatarUrl, 
 } = useProfile();
 
   const [dadosCarteira] = useState<DadosCarteira>({
@@ -60,11 +63,13 @@ export default function PainelProfessor() {
         tipo: "saque",
         valor: -500.0,
         descricao: "Saque via PIX",
-        data: "2024-01-10",
+        data: "2025-01-10",
         status: "concluido",
       },
     ],
   });
+
+
 
   const lidarComSaque = (valor: number, metodo: string) => {
     console.log("Solicitação de saque:", { valor, metodo });
@@ -107,10 +112,25 @@ export default function PainelProfessor() {
                 <DollarSign className="w-5 h-5 inline mr-2" />
                 Carteira
               </button>
+              <button
+                  onClick={() => setAbaAtiva("agenda")}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    abaAtiva === "agenda"
+                      ? "border-indigo-500 text-indigo-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  <CalendarDays className="w-5 h-5 inline mr-2" />
+                  Agenda
+                </button>
             </nav>
           </div>
         </div>
-
+        {abaAtiva === "agenda" && (
+          <div className="space-y-8">
+            <AgendaTab aulas={aulasMock} />
+          </div>
+        )}
         {abaAtiva === "perfil" && (
           <div className="space-y-8">
             <ProfileHeader

@@ -15,8 +15,8 @@ interface ProfileHeaderProps {
   uploadingPhoto: boolean;
   todasHabilidades: Habilidade[];
   onSalvar: () => void;
-  onFileUpload: (file: File) => void; // ✅ tipo correto
-  avatarUrl: string | null;           // ✅ tipo correto
+  onFileUpload: (file: File) => void; 
+  avatarUrl: string | null;           
   onShowPreview: () => void;
 }
 

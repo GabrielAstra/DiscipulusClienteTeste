@@ -138,7 +138,7 @@ export default function ModalChat({
             <div className="relative">
           
                  <img
-                src={`/api/avatar/${professor.usuarioID}`}
+                src={professor.urlFoto}
                 alt={professor.nome}
                 className="w-10 h-10 rounded-full object-cover"
                 onError={(e) => {

@@ -37,9 +37,6 @@ export default function PainelProfessor() {
 
  
 
-
-
-
   const [dadosCarteira] = useState<DadosCarteira>({
     saldo: 1250.5,
     ganhosTotal: 8750.0,
@@ -130,8 +127,8 @@ export default function PainelProfessor() {
               uploadingPhoto={uploadingPhoto}
               todasHabilidades={todasHabilidades}
               onSalvar={lidarComSalvarPerfil}
-             onFileUpload={handleSelecionarAvatar}
-avatarUrl={avatarUrl}
+              onFileUpload={handleSelecionarAvatar}
+              avatarUrl={avatarUrl}
               onShowPreview={() => setMostrarModalPreview(true)}
             />
 

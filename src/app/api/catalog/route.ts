@@ -1,28 +1,22 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { fetchWithAuth } from "@/lib/helper/fetchWithAuth";
 
-const API_URL = process.env.NEXT_PUBLIC_DISCIPULUS_API_URL
+const API_URL = process.env.NEXT_PUBLIC_DISCIPULUS_API_URL;
+
 export async function POST(request: Request) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
 
   const { searchParams } = new URL(request.url);
 
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-  };
-
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
   try {
-    const res = await fetch(
+    const res = await fetchWithAuth(
       `${API_URL}/Professor/Listar?${searchParams.toString()}`,
       {
         method: "POST",
-        headers,
-      }
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+      false
     );
 
     const raw = await res.text();
@@ -35,6 +29,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(JSON.parse(raw));
+
   } catch (error) {
     console.error("ERRO AO LISTAR PROFESSORES:", error);
     return NextResponse.json(
