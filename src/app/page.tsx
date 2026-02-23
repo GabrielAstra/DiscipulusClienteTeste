@@ -62,15 +62,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white overflow-hidden">
-      {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-20 pb-32 overflow-hidden">
-        {/* Background Elements continuam iguais */}
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             
-            {/* LADO ESQUERDO (TEXTO) */}
               <div className="lg:w-1/2 text-left">
                 
                 <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-indigo-200 rounded-full px-6 py-2 mb-8 shadow-lg">
@@ -223,14 +220,12 @@ export default function Home() {
                           p-6 pt-14 transition-all duration-300 
                           hover:shadow-[0_15px_35px_rgba(99,102,241,0.28)]"
               >
-                {/* ILUSTRAÇÃO PNG GRANDE */}
                 <img
                   src={card.img}
                   alt={card.titulo}
                   className="w-32 h-32 mx-auto absolute -top-16 left-1/2 -translate-x-1/2 object-contain"
                 />
 
-                {/* CONTEÚDO */}
                 <div className="mt-6">
                   <div className="flex items-center gap-2 mb-2">
                     <card.icone className="w-5 h-5 text-indigo-600" />
@@ -250,7 +245,6 @@ export default function Home() {
       </section>
 
 
-      {/* Como Funciona */}
       <section className="py-24 bg-gradient-to-br from-gray-50 to-indigo-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
@@ -322,7 +316,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
@@ -364,7 +357,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="py-24 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
