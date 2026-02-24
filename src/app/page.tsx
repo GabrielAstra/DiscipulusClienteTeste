@@ -318,18 +318,6 @@ export default function Home() {
           </div>
           
         </div>
-        {/* <div className="absolute -bottom-1 left-0 w-full overflow-hidden leading-none">
-          <svg
-            viewBox="0 0 1440 320"
-            className="relative block w-full h-24"
-            preserveAspectRatio="none"
-          >
-            <path
-              fill="#ffffff"
-              d="M0,160L80,144C160,128,320,96,480,112C640,128,800,192,960,192C1120,192,1280,128,1360,96L1440,64V320H0Z"
-            />
-          </svg>
-        </div> */}
         <WaveDivider color="#ffffff" />
 
       </section>
@@ -506,7 +494,6 @@ export default function Home() {
               <h4 className="text-lg font-semibold mb-6">Para Professores</h4>
               <ul className="space-y-3">
                 <li><Link href="/register" className="text-gray-400 hover:text-white transition-colors">Cadastre-se</Link></li>
-                <li><Link href="/teacher-resources" className="text-gray-400 hover:text-white transition-colors">Recursos</Link></li>
                 <li><Link href="/teacher-guidelines" className="text-gray-400 hover:text-white transition-colors">Diretrizes</Link></li>
                 <li><Link href="/earnings" className="text-gray-400 hover:text-white transition-colors">Ganhos</Link></li>
               </ul>
@@ -517,7 +504,6 @@ export default function Home() {
               <ul className="space-y-3">
                 <li><Link href="/help" className="text-gray-400 hover:text-white transition-colors">Central de Ajuda</Link></li>
                 <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">Contato</Link></li>
-                <li><Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacidade</Link></li>
                 <li><Link href="/terms" className="text-gray-400 hover:text-white transition-colors">Termos de Uso</Link></li>
               </ul>
             </div>
