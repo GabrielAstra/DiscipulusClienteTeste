@@ -5,6 +5,7 @@ import { ArrowRight, BookOpen, CheckCircle, Search, Star, Users, Clock, Shield, 
 import Link from "next/link";
 import { useState } from "react";
 import { Shrikhand } from 'next/font/google';
+import WaveDivider from "@/components/WaveDivider";
 
 const shrikhand = Shrikhand({
   weight: '400',
@@ -63,7 +64,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white overflow-hidden">
       <section className="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-20 pb-32 overflow-hidden">
-
+        <WaveDivider color="#ffff" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
@@ -144,17 +145,17 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-10 mb-16">
                 {[
                   {
-                    img: "/genio.png",
+                    img: "/especialistasProfs.png",
                     titulo: "Professores Especialistas",
                     descricao: "Conecte-se com professores verificados e experientes em todas as matérias"
                   },
                   {
-                    img: "/livros.png",
+                    img: "/materias.png",
                     titulo: "Todas as Matérias",
                     descricao: "De exatas a humanas, encontre ajuda em qualquer matéria que precisar"
                   },
                   {
-                    img: "/professorEstrela.png",
+                    img: "/qualidade.png",
                     titulo: "Qualidade Garantida",
                     descricao: "Todos os professores são avaliados por estudantes como você"
                   }
@@ -170,7 +171,7 @@ export default function Home() {
                     <img
                       src={card.img}
                       alt={card.titulo}
-                      className="w-28 h-28 md:w-32 md:h-32 mx-auto mb-6 object-contain"
+                      className="w-32 h-32 md:w-50 md:h-50 mx-auto mb-6 object-contain scale-125"
                     />
 
                     <h3 className="text-lg font-bold text-gray-900 mb-3">
@@ -189,25 +190,25 @@ export default function Home() {
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
-                img: "/relogio.png",
+                img: "/flexivelAula.png",
                 icone: Clock,
                 titulo: "Horários Flexíveis",
                 descricao: "Agende suas aulas quando for mais conveniente para você"
               },
               {
-                img: "/seguro.png",
+                img: "/pagamentoVerificado.png",
                 icone: Shield,
                 titulo: "100% Seguro",
                 descricao: "Pagamentos protegidos e dados criptografados"
               },
               {
-                img: "/professorPremiado.png",
+                img: "/premiados.png",
                 icone: Award,
                 titulo: "Professores Premiados",
                 descricao: "Educadores reconhecidos e com excelência comprovada"
               },
               {
-                img: "/foguete.png",
+                img: "/resultados.png",
                 icone: Zap,
                 titulo: "Resultados Rápidos",
                 descricao: "Veja melhorias em suas notas já nas primeiras aulas"
@@ -223,7 +224,7 @@ export default function Home() {
                 <img
                   src={card.img}
                   alt={card.titulo}
-                  className="w-32 h-32 mx-auto absolute -top-16 left-1/2 -translate-x-1/2 object-contain"
+                  className="w-40 h-40 mx-auto absolute -top-16 left-1/2 -translate-x-1/2 object-contain"
                 />
 
                 <div className="mt-6">
@@ -246,6 +247,7 @@ export default function Home() {
 
 
       <section className="py-24 bg-gradient-to-br from-gray-50 to-indigo-50 relative">
+        <WaveDivider flip color="#ffffff" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className={`${shrikhand.className} text-4xl md:text-5xl font-bold text-gray-900 mb-6 `}>
@@ -289,21 +291,22 @@ export default function Home() {
             
             <div className="grid md:grid-cols-3 gap-8">
               {[
-                { icone: CheckCircle, titulo: "Professores Verificados", descricao: "Todos os professores passam por verificação rigorosa de identidade e qualificações.", cor: "green" },
-                { icone: Star, titulo: "Pagamento Seguro", descricao: "Transações protegidas com criptografia de ponta e sistemas de pagamento confiáveis.", cor: "blue" },
-                { icone: Users, titulo: "Suporte 24/7", descricao: "Nossa equipe está sempre disponível para ajudar você em qualquer situação.", cor: "purple" }
+                { 
+                  imagem: "/verificado.png", 
+                  titulo: "Professores Verificados", 
+                  descricao: "Todos os professores passam por verificação rigorosa de identidade e qualificações.", 
+                  cor: "green" 
+                },
+                {  imagem:"pagamentoSeguro.png",titulo: "Pagamento Seguro", descricao: "Transações protegidas com criptografia de ponta e sistemas de pagamento confiáveis.", cor: "blue" },
+                {  imagem: "/suporte24h.png",titulo: "Suporte 24/7", descricao: "Nossa equipe está sempre disponível para ajudar você em qualquer situação.", cor: "purple" }
               ].map((item, indice) => (
                 <div key={indice} className="text-center group">
-                  <div className={`w-20 h-20 ${
-                    item.cor === 'green' ? 'bg-gradient-to-br from-green-100 to-emerald-200' :
-                    item.cor === 'blue' ? 'bg-gradient-to-br from-blue-100 to-indigo-200' :
-                    'bg-gradient-to-br from-purple-100 to-pink-200'
-                  } rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <item.icone className={`w-10 h-10 ${
-                      item.cor === 'green' ? 'text-green-600' :
-                      item.cor === 'blue' ? 'text-blue-600' :
-                      'text-purple-600'
-                    }`} />
+                  <div className={`flex items-center justify-center mx-auto mb-6  `}>
+                    {item.imagem ? (
+                      <img src={item.imagem} alt={item.titulo} className="w-50 h-50" />
+                    ) : (
+                      <div className={`w-20 h-10`} />
+                    )}
                   </div>
                   <h4 className="text-xl font-bold text-gray-900 mb-3">{item.titulo}</h4>
                   <p className="text-gray-600 leading-relaxed">
@@ -313,8 +316,24 @@ export default function Home() {
               ))}
             </div>
           </div>
+          
         </div>
+        {/* <div className="absolute -bottom-1 left-0 w-full overflow-hidden leading-none">
+          <svg
+            viewBox="0 0 1440 320"
+            className="relative block w-full h-24"
+            preserveAspectRatio="none"
+          >
+            <path
+              fill="#ffffff"
+              d="M0,160L80,144C160,128,320,96,480,112C640,128,800,192,960,192C1120,192,1280,128,1360,96L1440,64V320H0Z"
+            />
+          </svg>
+        </div> */}
+        <WaveDivider color="#ffffff" />
+
       </section>
+      
 
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -358,6 +377,8 @@ export default function Home() {
       </section>
 
       <section className="py-24 bg-white">
+        
+        
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className={`${shrikhand.className} text-4xl md:text-5xl font-bold text-gray-900 mb-6`}>
@@ -387,10 +408,15 @@ export default function Home() {
             ))}
           </div>
         </div>
+        
       </section>
 
       {/* CTA Final */}
       <section className="py-24 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 relative overflow-hidden">
+          <WaveDivider color="rgb(16, 24, 40)" />
+          <WaveDivider flip color="#ffff" />
+
+
         <div className="absolute inset-0">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
@@ -442,6 +468,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+        
       </section>
 
       {/* Footer */}
