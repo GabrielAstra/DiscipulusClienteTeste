@@ -24,31 +24,28 @@ export interface ExperienciaDTO {
 
 
 
+import { fetchWithAuth } from "@/lib/helper/fetchWithAuth";
 
-export async function listarExperiencias(token: string): Promise<IServiceResponse<ExperienciaDTO[]>> {
+export async function listarExperiencias(): Promise<IServiceResponse<ExperienciaDTO[]>> {
     try {
-        const response = await fetch(
+        const response = await fetchWithAuth(
             `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Experiencia/Listar`,
             {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
                 },
             }
         );
 
         if (!response.ok) {
-            console.error(`Erro na API: ${response.status} - ${response.statusText}`);
             return { success: false, message: ERRO_REQUISICAO };
         }
 
         const body = await response.json();
-
         const experiencias: ExperienciaResponse[] = body["$values"] || [];
 
-
-        const experienciasDTO: ExperienciaDTO[] = experiencias.map((experiencia: ExperienciaResponse) => ({
+        const experienciasDTO: ExperienciaDTO[] = experiencias.map((experiencia) => ({
             id: experiencia.id,
             titulo: experiencia.titulo,
             instituicao: experiencia.instituicao,
@@ -57,33 +54,28 @@ export async function listarExperiencias(token: string): Promise<IServiceRespons
             descricao: experiencia.descricao
         }));
 
-
-
         return { success: true, data: experienciasDTO };
     } catch (error) {
-        console.error("Erro ao listar experiências:", error);
+        console.error(error);
         return { success: false, message: ERRO_REQUISICAO };
     }
 }
-
-
-export async function excluirExperiencia(id: string, token: string): Promise<IServiceResponse<null>> {
+export async function excluirExperiencia(id: string): Promise<IServiceResponse<null>> {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Experiencia/Excluir?experienciaId=${id}`, {
-            method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-            },
-        });
+        const response = await fetchWithAuth(
+            `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Experiencia/Excluir?experienciaId=${id}`,
+            {
+                method: "DELETE",
+            }
+        );
 
         if (!response.ok) {
-            console.error(`Erro ao excluir experiência: ${response.status} - ${response.statusText}`);
             return { success: false, message: ERRO_REQUISICAO };
         }
 
         return { success: true, data: null };
     } catch (error) {
-        console.error("Erro ao excluir experiência:", error);
+        console.error(error);
         return { success: false, message: ERRO_REQUISICAO };
     }
 }

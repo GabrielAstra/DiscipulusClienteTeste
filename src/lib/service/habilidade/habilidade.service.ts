@@ -1,7 +1,8 @@
-import { environment } from "@/lib/environment/environment";
 import { Habilidade } from "@/types/habilidade";
 import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
 import { IServiceResponse } from "@/types/response";
+
+import { fetchWithAuth } from "@/lib/helper/fetchWithAuth";
 
 interface HabilidadeResponse {
   habilidadeID: string;
@@ -13,7 +14,7 @@ export async function listarHabilidades(
   itensPorPagina = 150
 ): Promise<IServiceResponse<Habilidade[]>> {
   try {
-    const response = await fetch(
+    const response = await fetchWithAuth(
       `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Habilidade/Listar`,
       {
         method: "POST",
@@ -21,20 +22,24 @@ export async function listarHabilidades(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ pagina, itensPorPagina }),
-        next: { revalidate: 7200 }, //2h cache
+        next: { revalidate: 7200 },
       }
     );
+
+    if (!response.ok) {
+      return { success: false, message: ERRO_REQUISICAO };
+    }
+
     const body = await response.json();
     const dtos = body["$values"] as HabilidadeResponse[];
-    const habilidades: Habilidade[] = [];
-    dtos.forEach((dto) => {
-      habilidades.push({
-        id: dto.habilidadeID,
-        nome: dto.nomeHabilidade,
-      });
-    });
+
+    const habilidades: Habilidade[] = dtos.map(dto => ({
+      id: dto.habilidadeID,
+      nome: dto.nomeHabilidade,
+    }));
 
     return { success: true, data: habilidades };
+
   } catch (error) {
     console.error(error);
     return { success: false, message: ERRO_REQUISICAO };

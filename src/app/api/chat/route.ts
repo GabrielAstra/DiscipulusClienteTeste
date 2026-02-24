@@ -1,26 +1,15 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { listarConversasService } from "@/lib/service/chat/chat.service";
 
-const API_URL = process.env.NEXT_PUBLIC_DISCIPULUS_API_URL
 export async function GET() {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const result = await listarConversasService();
 
-    if (!token) {
+    if (!result.success) {
         return NextResponse.json(
-            { success: false, message: "Sem token" },
-            { status: 401 }
+            { success: false, message: result.message },
+            { status: 400 }
         );
     }
 
-    const res = await fetch(`${API_URL}/Chat/ListarConversas`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    const data = await res.json();
-    return NextResponse.json(data);
+    return NextResponse.json(result.data);
 }
-
-

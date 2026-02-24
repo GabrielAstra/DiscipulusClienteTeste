@@ -1,20 +1,19 @@
-import { Conversation } from "@/types/chat";
+import { fetchWithAuth } from "@/lib/helper/fetchWithAuth";
 
-export async function listarConversas(): Promise<Conversation[]> {
-    const res = await fetch("/api/chat/conversas", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        cache: "no-store",
-    });
+const API_URL = process.env.NEXT_PUBLIC_DISCIPULUS_API_URL;
 
-    if (!res.ok) {
-        throw new Error("Erro ao listar conversas");
+export async function listarConversasService() {
+    const response = await fetchWithAuth(
+        `${API_URL}/Chat/ListarConversas`,
+        {
+            method: "GET",
+        }
+    );
+
+    if (!response.ok) {
+        return { success: false, message: "Erro ao listar conversas" };
     }
 
-    return res.json();
+    const data = await response.json();
+    return { success: true, data };
 }
-
-
-
