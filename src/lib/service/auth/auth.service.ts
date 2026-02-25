@@ -4,10 +4,11 @@ import { IServiceResponse } from "@/types/response";
 export interface ILoginRequest {
   email: string;
   password: string;
+  lembrarLogin: boolean;
 }
 
 export interface ILoginResponse {
-  token: string | undefined;
+  token: string;
   tokenRefresh: string;
 }
 export async function login(

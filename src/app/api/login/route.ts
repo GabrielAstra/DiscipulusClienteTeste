@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const response = await login(body);
+  const { rememberMe } = body;
 
   const { message, success, data } = response;
   let responseBody: IResponse<void>;
@@ -16,7 +17,6 @@ export async function POST(req: NextRequest) {
 
   responseBody = IResponse.ok(message);
   const res = NextResponse.json(responseBody);
-
   res.cookies.set("token", data?.token!, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -26,11 +26,13 @@ export async function POST(req: NextRequest) {
   });
 
   res.cookies.set("refreshToken", data?.tokenRefresh!, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+  path: "/",
+    maxAge: rememberMe 
+      ? 60 * 60 * 24 * 30  
+      : 60 * 60 * 12,    
   });
 
   return res;

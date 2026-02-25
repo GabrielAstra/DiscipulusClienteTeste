@@ -11,7 +11,7 @@ interface MensagemDTO {
 
 export async function listarMensagens(
     conversaId: string,
-    usuarioId: string // id do usuário logado
+    usuarioId: string
 ): Promise<Message[]> {
     const res = await fetch(
         `/api/chat/messages?conversaId=${encodeURIComponent(conversaId)}`,

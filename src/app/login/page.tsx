@@ -13,13 +13,13 @@ export default function LoginPage() {
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const navegar = useRouter();
-
+  const [lembrarLogin, setLembrarLogin] = useState(false);
   const { realizarLogin, loading } = useUsuario();
   const { showError, showSuccess } = useToast();
 
   const lidarComEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
-    const request: ILoginRequest = { email, password: senha };
+    const request: ILoginRequest = { email, password: senha, lembrarLogin };
     const { success, data } = await realizarLogin(request);
     if (success) {
       showSuccess("Olá!", `Bem-vindo(a) de volta, ${data?.nome}!`);
@@ -123,6 +123,8 @@ export default function LoginPage() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
+                  checked={lembrarLogin}
+                  onChange={(e) => setLembrarLogin(e.target.checked)}
                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                 />
                 <label

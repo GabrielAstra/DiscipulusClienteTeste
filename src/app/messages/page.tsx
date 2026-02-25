@@ -119,7 +119,7 @@ export default function Messages() {
     : [];
 
   const handleSendMessage = async (text: string) => {
-if (!selectedConversationId || !connection || !usuario) return;
+  if (!selectedConversationId || !connection || !usuario) return;
 
   try {
     await connection.invoke("EnviarMensagem", {
