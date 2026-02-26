@@ -3,9 +3,12 @@
 import { ArrowRight, BookOpen, CheckCircle, Search, Star, Users, Clock, Shield, Award, ChevronDown, MessageCircle, Zap, Target, User, DollarSign, Lightbulb, UsersRound } from 'lucide-react';
 import Link from "next/link";
 import { useState } from "react";
-import { Shrikhand, Plus_Jakarta_Sans } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import WaveDivider from "@/components/WaveDivider";
 import Image from "next/image";
+import { features } from "@/data/features";
+import { testimonials } from "@/data/testimonials";
+import { faq } from "@/data/faq";
 
 const plusJakartaSpans = Plus_Jakarta_Sans({
   weight: '300',
@@ -23,77 +26,6 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export default function Home() {
   const [faqAberto, setFaqAberto] = useState<number | null>(null);
-
-
-  const features = [
-    {
-      icon: "/arquivos/communication.png",
-      title: "Aula exclusivamente para você",
-      description: "Tenha aulas 1 para 1, você obterá o foco total do professor!",
-      highlighted: false,
-    },
-    {
-      icon: "/arquivos/teacher.png",
-      title: "Melhores professores",
-      description: "Trabalhamos com um sistema de verificação para garantir um ensino de qualidade por parte dos professores",
-      highlighted: true,
-    },
-    {
-      icon: "/arquivos/light-bulb.png",
-      title: "Busque um aprendizado fácil",
-      description: "Encontre com facilidade um professor que se enquadra ao seu perfil desejado.",
-      highlighted: false,
-    },
-    {
-      icon: "/arquivos/donation.png",
-      title: "Segurança e melhores preços",
-      description: "Não aumentamos o valor das aulas, preço direto do professor. Pagamentos seguros e criptografados, com total suporte da plataforma!",
-      highlighted: false,
-    },
-  ];
-  const testimonials = [
-    {
-      nome: "Ana Silva",
-      curso: "Engenharia",
-      avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
-      texto: "O Discipulus mudou completamente minha experiência acadêmica. Consegui tirar 9.5 em Cálculo com a ajuda do Professor João!",
-      nota: 5
-    },
-    {
-      nome: "Carlos Mendes",
-      curso: "Medicina",
-      avatar: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
-      texto: "Professores incríveis e metodologia que realmente funciona. Recomendo para todos que querem melhorar suas notas.",
-      nota: 5
-    },
-    {
-      nome: "Maria Santos",
-      curso: "Direito",
-      avatar: "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
-      texto: "A plataforma é intuitiva e os professores são extremamente qualificados. Consegui aprovação no vestibular!",
-      nota: 5
-    }
-  ];
-
-  const faq = [
-    {
-      pergunta: "Como funciona o processo de agendamento?",
-      resposta: "Você escolhe o professor, seleciona data e horário disponíveis, realiza o pagamento e recebe confirmação com link da aula."
-    },
-    {
-      pergunta: "Posso cancelar ou remarcar uma aula?",
-      resposta: "Sim! Você pode cancelar ou remarcar até 24h antes da aula sem custo adicional."
-    },
-    {
-      pergunta: "Como são selecionados os professores?",
-      resposta: "Todos passam por verificação de diplomas, experiência comprovada e avaliação pedagógica rigorosa."
-    },
-    {
-      pergunta: "Existe garantia de satisfação?",
-      resposta: "Oferecemos garantia de 100% de satisfação. Se não ficar satisfeito, devolvemos seu dinheiro."
-    }
-  ];
-
 
   return (
     <div className="min-h-screen bg-white overflow-hidden">
