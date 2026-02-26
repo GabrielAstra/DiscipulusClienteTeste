@@ -230,7 +230,7 @@ export default function Home() {
             <div
               key={title}
               className={`rounded-2xl p-8 transition-all ${highlighted
-                ? "bg-lime text-accent-foreground shadow-lg shadow-lime/20 card-melhores-professores"
+                ? "bg-lime text-accent-foreground shadow-lg shadow-lime/20 efeito-vidro-roxo"
                 : "bg-background text-foreground"
                 }`}
             >
