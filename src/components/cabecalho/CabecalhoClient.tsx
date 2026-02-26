@@ -7,10 +7,10 @@ export default function CabecalhoClient() {
   const usuarioContext = useUsuario();
   const navegar = useRouter();
 
-  function aoFazerLogout(): void {
-    usuarioContext.realizarLogout();
-    navegar.push("/login");
-  }
+  async function aoFazerLogout() {
+  await usuarioContext.realizarLogout();
+  navegar.push("/login");
+}
 
   return (
     <Cabecalho usuario={usuarioContext.usuario} aoFazerLogout={aoFazerLogout} />

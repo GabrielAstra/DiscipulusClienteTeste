@@ -1,7 +1,6 @@
-import { environment } from "@/lib/environment/environment";
 import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
 import { IServiceResponse } from "@/types/response";
-
+import { fetchWithAuth } from "@/lib/helper/fetchWithAuth";
 
 
 export interface ExperienciaResponse {
@@ -23,8 +22,6 @@ export interface ExperienciaDTO {
 }
 
 
-
-import { fetchWithAuth } from "@/lib/helper/fetchWithAuth";
 
 export async function listarExperiencias(): Promise<IServiceResponse<ExperienciaDTO[]>> {
     try {

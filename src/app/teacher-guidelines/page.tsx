@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link";
-import { Shrikhand } from 'next/font/google';
+import { Shrikhand, Plus_Jakarta_Sans } from 'next/font/google';
 import {
   ArrowLeft,
   Shield,
@@ -12,6 +12,12 @@ import {
   CheckCircle
 } from '@phosphor-icons/react';import { useState } from "react";
 
+const plusJakarta = Plus_Jakarta_Sans({
+  weight: '800',
+  subsets:['latin'],
+  display: 'swap'
+
+})
 const shrikhand = Shrikhand({
   weight: '400',
   subsets: ['latin'],

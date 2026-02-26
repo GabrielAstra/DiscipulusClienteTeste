@@ -1,18 +1,33 @@
-import { IResponse } from "@/types/response";
 import { NextRequest, NextResponse } from "next/server";
+import { realizarLogout } from "@/lib/service/logout/logout.service";
 
 export async function POST(req: NextRequest) {
-  const responseBody = IResponse.ok("Logout successful");
+  try {
 
-  const res = NextResponse.json(responseBody);
+    const refreshToken = req.cookies.get("refreshToken")?.value;
 
-  res.cookies.set("token", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    expires: new Date(0), // 👈 expire the cookie immediately
-  });
+    const response = await realizarLogout(refreshToken ?? "");
 
-  return res;
+    const res = NextResponse.json(response);
+
+
+    res.cookies.set("token", "", {
+      expires: new Date(0),
+      path: "/",
+    });
+
+    res.cookies.set("refreshToken", "", {
+      expires: new Date(0),
+      path: "/",
+    });
+
+    return res;
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { success: false, message: "Erro ao realizar logout" },
+      { status: 500 }
+    );
+  }
 }

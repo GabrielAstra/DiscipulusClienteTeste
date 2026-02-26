@@ -9,11 +9,11 @@ import {
   Users,
   CreditCard,
   BookOpen,
-  EnvelopeIcon ,
+  EnvelopeIcon,
   WarningIcon,
-  CaretRightIcon 
-  
-} from '@phosphor-icons/react';import { useState } from "react";
+  CaretRightIcon
+
+} from '@phosphor-icons/react'; import { useState } from "react";
 
 const shrikhand = Shrikhand({
   weight: '400',
@@ -260,7 +260,7 @@ export default function TermosDeUso() {
                         {secao.titulo}
                       </h2>
                     </div>
-                    <CaretRightIcon  className={`w-5 h-5 text-gray-400 transition-transform duration-300 flex-shrink-0 ${secaoAtiva === secao.id ? 'rotate-90' : ''}`} />
+                    <CaretRightIcon className={`w-5 h-5 text-gray-400 transition-transform duration-300 flex-shrink-0 ${secaoAtiva === secao.id ? 'rotate-90' : ''}`} />
                   </button>
 
                   {/* Conteúdo - Expandível */}
@@ -323,7 +323,7 @@ export default function TermosDeUso() {
                   className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-4 rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 inline-flex items-center gap-2"
                 >
                   Encontrar Professores
-                  <CaretRightIcon  className="w-4 h-4" />
+                  <CaretRightIcon className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/privacy"
@@ -360,7 +360,7 @@ export default function TermosDeUso() {
                 </div>
               </div>
             </div>
-            
+
             <div>
               <h4 className="text-lg font-semibold mb-6">Para Estudantes</h4>
               <ul className="space-y-3">
@@ -369,7 +369,7 @@ export default function TermosDeUso() {
                 <li><Link href="/subjects" className="text-gray-400 hover:text-white transition-colors">Matérias</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="text-lg font-semibold mb-6">Para Professores</h4>
               <ul className="space-y-3">
@@ -379,7 +379,7 @@ export default function TermosDeUso() {
                 <li><Link href="/earnings" className="text-gray-400 hover:text-white transition-colors">Ganhos</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="text-lg font-semibold mb-6">Suporte</h4>
               <ul className="space-y-3">
@@ -390,7 +390,7 @@ export default function TermosDeUso() {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
             <p className="text-gray-400 text-sm">
               © 2025 Discipulus. Todos os direitos reservados.

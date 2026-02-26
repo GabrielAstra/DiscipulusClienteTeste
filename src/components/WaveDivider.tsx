@@ -4,6 +4,7 @@ interface WaveDividerProps {
 }
 
 export default function WaveDivider({ flip = false, color = "#ffffff" }: WaveDividerProps) {
+  
   return (
     <div
       className={`absolute ${flip ? "-top-1 rotate-180" : "-bottom-1"} left-0 w-full overflow-hidden leading-none`}

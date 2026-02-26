@@ -3,19 +3,25 @@
 import { LogOut, User, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Shrikhand, Plus_Jakarta_Sans } from 'next/font/google';
 
 interface PropriedadesCabecalho {
   usuario: any;
   aoFazerLogout: () => void;
 }
+const plusJakartaSpans = Plus_Jakarta_Sans({
+  weight: '300',
+  subsets: ['latin'],
+  display: 'swap'
 
+})
 export default function Cabecalho({ usuario, aoFazerLogout }: PropriedadesCabecalho) {
   const localizacao = usePathname();
 
   const estaAtivo = (caminho: string) => localizacao === caminho;
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="absolute top-0 left-0 w-full z-50 bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
@@ -31,11 +37,10 @@ export default function Cabecalho({ usuario, aoFazerLogout }: PropriedadesCabeca
             <nav className="hidden md:flex space-x-6">
               <Link
                 href="/catalog"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  estaAtivo('/catalog')
-                    ? 'text-blue-600 bg-blue-50'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                }`}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${estaAtivo('/catalog')
+                  ? 'text-blue-600 bg-blue-50'
+                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  }`}
               >
                 Encontrar Professores
               </Link>
@@ -43,33 +48,30 @@ export default function Cabecalho({ usuario, aoFazerLogout }: PropriedadesCabeca
                 <>
                   <Link
                     href="/schedule"
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      estaAtivo('/schedule')
-                        ? 'text-blue-600 bg-blue-50'
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                    }`}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${estaAtivo('/schedule')
+                      ? 'text-blue-600 bg-blue-50'
+                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                      }`}
                   >
                     Minhas Aulas
                   </Link>
                   {usuario.papel === 'Professor' && (
                     <Link
                       href="/teacher-dashboard"
-                      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                        estaAtivo('/teacher-dashboard')
-                          ? 'text-blue-600 bg-blue-50'
-                          : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                      }`}
+                      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${estaAtivo('/teacher-dashboard')
+                        ? 'text-blue-600 bg-blue-50'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                        }`}
                     >
                       Painel Professor
                     </Link>
                   )}
                   <Link
                     href="/messages"
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
-                      estaAtivo('/messages')
-                        ? 'text-blue-600 bg-blue-50'
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                    }`}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${estaAtivo('/messages')
+                      ? 'text-blue-600 bg-blue-50'
+                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                      }`}
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span>Mensagens</span>
@@ -100,13 +102,18 @@ export default function Cabecalho({ usuario, aoFazerLogout }: PropriedadesCabeca
               <div className="flex items-center space-x-3">
                 <Link
                   href="/login"
-                  className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="flex items-center space-x-3 border border-gray  
+                          text-white px-4 py-2 rounded-full 
+                          text-sm font-medium transition-all duration-200"
                 >
-                  Entrar
+                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-zinc-900" />
+                  </div>
+                  <span className={`${plusJakartaSpans} text-black`}>Entrar</span>
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-full py-3  text-sm font-medium transition-colors"
                 >
                   Cadastrar
                 </Link>

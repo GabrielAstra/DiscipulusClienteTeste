@@ -56,14 +56,17 @@ export function UsuarioProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function realizarLogout() {
-    await fetch("/api/logout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+  try {
+    await fetch('/api/logout', {
+      method: 'POST',
     });
+
     setUsuario(null);
+
+  } catch (error) {
+    console.error('Erro ao fazer logout', error);
   }
+}
 
   useEffect(() => {
     fetchUser();
