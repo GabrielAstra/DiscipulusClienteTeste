@@ -102,14 +102,18 @@ export default function Cabecalho({ usuario, aoFazerLogout }: PropriedadesCabeca
               <div className="flex items-center space-x-3">
                 <Link
                   href="/login"
-                  className="flex items-center space-x-3 border border-gray  
-                          text-white px-4 py-2 rounded-full 
-                          text-sm font-medium transition-all duration-200"
+                  className="flex items-center space-x-3
+                    border border-gray-300
+                    text-black
+                    px-4 py-2 rounded-full
+                    text-sm font-medium
+                    transition-all duration-200
+                    hover:bg-blue-600 hover:text-white"
                 >
                   <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                     <User className="w-4 h-4 text-zinc-900" />
                   </div>
-                  <span className={`${plusJakartaSpans} text-black`}>Entrar</span>
+                  <span className={`${plusJakartaSpans}`}>Entrar</span>
                 </Link>
                 <Link
                   href="/register"
