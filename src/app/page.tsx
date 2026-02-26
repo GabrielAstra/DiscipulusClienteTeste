@@ -220,6 +220,11 @@ export default function Home() {
       </section>
 
       <section className="bg-background rounded-t-[2.5rem] -mt-6 relative z-30 px-8 lg:px-16 py-16">
+        <div className='text-center'>
+          <h1 className={`$plusJakarta.className text-3xl font-bold mb-10  `}>
+            Por que escolher o Discipulus ?
+          </h1>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {features.map(({ icon, title, description, highlighted }) => (
             <div
