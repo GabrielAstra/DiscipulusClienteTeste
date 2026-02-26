@@ -41,30 +41,30 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
   const [modalLoginAberto, setModalLoginAberto] = useState(false);
   const router = useRouter();
 
-  
-    useEffect(() => {
-      async function carregarPerfil() {
-        try {
-          const data = await listarProfessor(id);
-          setProfessor(data);
-         
 
-        } catch (err) {
-          console.error("Erro ao carregar perfil do professor", err);
-          setProfessor(null);
-        } finally {
-          setLoading(false);
-        }
+  useEffect(() => {
+    async function carregarPerfil() {
+      try {
+        const data = await listarProfessor(id);
+        setProfessor(data);
+
+
+      } catch (err) {
+        console.error("Erro ao carregar perfil do professor", err);
+        setProfessor(null);
+      } finally {
+        setLoading(false);
       }
+    }
 
-      carregarPerfil();
-    }, [id]);
+    carregarPerfil();
+  }, [id]);
 
-    useEffect(() => {
-      if (!loading && !professor) {
-        router.push("/catalog");
-      }
-    }, [loading, professor, router]);
+  useEffect(() => {
+    if (!loading && !professor) {
+      router.push("/catalog");
+    }
+  }, [loading, professor, router]);
 
 
   const formatarData = (dataString: string) => {
@@ -79,11 +79,11 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
     const dataFim = new Date(fim);
     const diffAnos = dataFim.getFullYear() - dataInicio.getFullYear();
     const diffMeses = dataFim.getMonth() - dataInicio.getMonth();
-    
+
     const totalMeses = diffAnos * 12 + diffMeses;
     const anos = Math.floor(totalMeses / 12);
     const meses = totalMeses % 12;
-    
+
     if (anos > 0 && meses > 0) {
       return `${anos} ano${anos > 1 ? 's' : ''} e ${meses} ${meses > 1 ? 'meses' : 'mês'}`;
     } else if (anos > 0) {
@@ -109,29 +109,28 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
     }
   };
 
-    const lidarComSucessoLogin = async (dadosUsuario: ILoginRequest) => {
-      const { success, data } = await realizarLogin(dadosUsuario);
-      if (success) {
-        showSuccess("Olá!", `Bem-vindo(a) de volta, ${data?.nome}!`);
-      } else {
-        showError("Email e/ou senha inválidos!");
-      }
-      setModalLoginAberto(false);
-      setAgendamentoAberto(true);
-    };
-    const renderStars = (nota: number) => {
-      return [...Array(5)].map((_, i) => (
-        <Star
-          key={i}
-          className={`w-4 h-4 ${
-            i < nota ? "text-yellow-400 fill-current" : "text-gray-300"
+  const lidarComSucessoLogin = async (dadosUsuario: ILoginRequest) => {
+    const { success, data } = await realizarLogin(dadosUsuario);
+    if (success) {
+      showSuccess("Olá!", `Bem-vindo(a) de volta, ${data?.nome}!`);
+    } else {
+      showError("Email e/ou senha inválidos!");
+    }
+    setModalLoginAberto(false);
+    setAgendamentoAberto(true);
+  };
+  const renderStars = (nota: number) => {
+    return [...Array(5)].map((_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${i < nota ? "text-yellow-400 fill-current" : "text-gray-300"
           }`}
-        />
-      ));
-    };
-  
+      />
+    ));
+  };
+
   if (loading || !professor) {
-    return null; 
+    return null;
   }
   const disponibilidade =
     Array.isArray(professor.disponibilidade)
@@ -144,22 +143,22 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
   const mediaAvaliacoes =
     totalAvaliacoes > 0
       ? (
-          avaliacoes.reduce((acc, av) => acc + av.nota, 0) /
-          totalAvaliacoes
-        ).toFixed(1)
+        avaliacoes.reduce((acc, av) => acc + av.nota, 0) /
+        totalAvaliacoes
+      ).toFixed(1)
       : "0";
 
-  
+
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-15">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
           <div className="p-8">
             <div className="flex flex-col md:flex-row gap-6">
               <div className="relative">
-               <img
+                <img
                   src={professor.urlFoto || "/avatar.png"}
                   alt={professor.nome}
                   className="w-32 h-32 rounded-full object-cover mx-auto md:mx-0"
@@ -169,9 +168,9 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                 />
 
                 {/* {professor.verificado && ( */}
-                  <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
-                    <CheckCircle className="w-4 h-4 text-white" />
-                  </div>
+                <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
+                  <CheckCircle className="w-4 h-4 text-white" />
+                </div>
                 {/* )} */}
               </div>
 
@@ -267,37 +266,37 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                 </h2>
               </div>
               <div className="space-y-6">
-  {professor.formacoes?.$values.map((formacao, index) => (
-    <div
-      key={formacao.id ?? index}
-      className="relative pl-6 border-l-2 border-indigo-100 last:border-l-0"
-    >
-      <div className="absolute -left-2 top-2 w-4 h-4 bg-indigo-600 rounded-full"></div>
+                {professor.formacoes?.$values.map((formacao, index) => (
+                  <div
+                    key={formacao.id ?? index}
+                    className="relative pl-6 border-l-2 border-indigo-100 last:border-l-0"
+                  >
+                    <div className="absolute -left-2 top-2 w-4 h-4 bg-indigo-600 rounded-full"></div>
 
-      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-4 border border-indigo-100">
-        <h3 className="font-semibold text-gray-900 mb-1">
-          {formacao.titulo}
-        </h3>
+                    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-4 border border-indigo-100">
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        {formacao.titulo}
+                      </h3>
 
-        <p className="text-indigo-700 font-medium mb-2">
-          {formacao.instituicao}
-        </p>
+                      <p className="text-indigo-700 font-medium mb-2">
+                        {formacao.instituicao}
+                      </p>
 
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
-          <Calendar className="w-4 h-4" />
-          <span>
-            {formatarData(formacao.dtInicio)} -{" "}
-            {formatarData(formacao.dtConclusao)}
-          </span>
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          {formatarData(formacao.dtInicio)} -{" "}
+                          {formatarData(formacao.dtConclusao)}
+                        </span>
 
-          <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">
-            {calcularDuracao(formacao.dtInicio, formacao.dtConclusao)}
-          </span>
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
+                        <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">
+                          {calcularDuracao(formacao.dtInicio, formacao.dtConclusao)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
             </div>
 
@@ -449,29 +448,28 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
               </h3>
               <div className="space-y-2">
                 {[
-  "Segunda",
-  "Terça",
-  "Quarta",
-  "Quinta",
-  "Sexta",
-  "Sábado",
-  "Domingo",
-].map((dia) => (
-  <div key={dia} className="flex items-center justify-between">
-    <span className="text-gray-700">{dia}</span>
-    <span
-      className={`text-sm font-medium px-2 py-1 rounded-full ${
-        disponibilidade.includes(dia)
-          ? "text-green-700 bg-green-100"
-          : "text-gray-500 bg-gray-100"
-      }`}
-    >
-      {disponibilidade.includes(dia)
-        ? "Disponível"
-        : "Indisponível"}
-    </span>
-  </div>
-))}
+                  "Segunda",
+                  "Terça",
+                  "Quarta",
+                  "Quinta",
+                  "Sexta",
+                  "Sábado",
+                  "Domingo",
+                ].map((dia) => (
+                  <div key={dia} className="flex items-center justify-between">
+                    <span className="text-gray-700">{dia}</span>
+                    <span
+                      className={`text-sm font-medium px-2 py-1 rounded-full ${disponibilidade.includes(dia)
+                          ? "text-green-700 bg-green-100"
+                          : "text-gray-500 bg-gray-100"
+                        }`}
+                    >
+                      {disponibilidade.includes(dia)
+                        ? "Disponível"
+                        : "Indisponível"}
+                    </span>
+                  </div>
+                ))}
 
               </div>
             </div>
@@ -501,7 +499,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
           aberto={agendamentoAberto}
           aoFechar={() => setAgendamentoAberto(false)}
           aoIrParaPagamento={(dados) => {
-        }}
+          }}
         />
 
         <ModalChat

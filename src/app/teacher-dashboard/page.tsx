@@ -17,24 +17,24 @@ import { aulasMock } from "@/data/mockAulasAgendadas";
 
 
 export default function PainelProfessor() {
-const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira" | "agenda">("perfil");
+  const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira" | "agenda">("perfil");
   const [mostrarModalSaque, setMostrarModalSaque] = useState(false);
   const [mostrarModalPreview, setMostrarModalPreview] = useState(false);
 
- const {
-  perfil,
-  setPerfil,
-  editando,
-  setEditando,
-  salvandoPerfil,
-  uploadingPhoto,
-  todasHabilidades,
-  lidarComSalvarPerfil,
-  handleSelecionarAvatar, 
-  handleRemoverFormacao,
-  handleRemoverExperiencia,
-  avatarUrl, 
-} = useProfile();
+  const {
+    perfil,
+    setPerfil,
+    editando,
+    setEditando,
+    salvandoPerfil,
+    uploadingPhoto,
+    todasHabilidades,
+    lidarComSalvarPerfil,
+    handleSelecionarAvatar,
+    handleRemoverFormacao,
+    handleRemoverExperiencia,
+    avatarUrl,
+  } = useProfile();
 
   const [dadosCarteira] = useState<DadosCarteira>({
     saldo: 1250.5,
@@ -78,7 +78,7 @@ const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira" | "agenda">("perf
   const [horariosRemovidos, setHorariosRemovidos] = useState<string[]>([]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-15">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -92,37 +92,34 @@ const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira" | "agenda">("perf
             <nav className="-mb-px flex space-x-8">
               <button
                 onClick={() => setAbaAtiva("perfil")}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  abaAtiva === "perfil"
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${abaAtiva === "perfil"
                     ? "border-indigo-500 text-indigo-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 <User className="w-5 h-5 inline mr-2" />
                 Meu Perfil
               </button>
               <button
                 onClick={() => setAbaAtiva("carteira")}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  abaAtiva === "carteira"
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${abaAtiva === "carteira"
                     ? "border-indigo-500 text-indigo-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 <DollarSign className="w-5 h-5 inline mr-2" />
                 Carteira
               </button>
               <button
-                  onClick={() => setAbaAtiva("agenda")}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    abaAtiva === "agenda"
-                      ? "border-indigo-500 text-indigo-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                onClick={() => setAbaAtiva("agenda")}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${abaAtiva === "agenda"
+                    ? "border-indigo-500 text-indigo-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
-                >
-                  <CalendarDays className="w-5 h-5 inline mr-2" />
-                  Agenda
-                </button>
+              >
+                <CalendarDays className="w-5 h-5 inline mr-2" />
+                Agenda
+              </button>
             </nav>
           </div>
         </div>

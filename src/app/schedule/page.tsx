@@ -127,7 +127,7 @@ export default function MinhaAgenda() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-15">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -143,21 +143,19 @@ export default function MinhaAgenda() {
             <nav className="-mb-px flex space-x-8">
               <button
                 onClick={() => setAbaAtiva("proximas")}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  abaAtiva === "proximas"
-                    ? "border-indigo-500 text-indigo-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${abaAtiva === "proximas"
+                  ? "border-indigo-500 text-indigo-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
               >
                 Próximas Aulas ({aulasProximas.length})
               </button>
               <button
                 onClick={() => setAbaAtiva("concluidas")}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  abaAtiva === "concluidas"
-                    ? "border-indigo-500 text-indigo-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${abaAtiva === "concluidas"
+                  ? "border-indigo-500 text-indigo-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
               >
                 Aulas Concluídas ({aulasConcluidas.length})
               </button>
