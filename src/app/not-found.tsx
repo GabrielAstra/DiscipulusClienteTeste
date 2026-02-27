@@ -12,7 +12,7 @@ const shrikhand = Shrikhand({
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center overflow-hidden relative px-4">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center overflow-hidden relative px-4 pt-20 pb-32">
 
       <div className="absolute top-[-80px] left-[-80px] w-[350px] h-[350px] bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse" />
       <div className="absolute bottom-[-80px] right-[-80px] w-[350px] h-[350px] bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse" />
@@ -21,20 +21,19 @@ export default function NotFound() {
       <div className="relative z-10 max-w-2xl w-full text-center">
 
         <div className="flex flex-col items-center justify-center mb-6">
-  <span
-    className={`${shrikhand.className} select-none text-[160px] sm:text-[200px] font-extrabold bg-gradient-to-br from-indigo-200 via-purple-200 to-blue-200 bg-clip-text text-transparent leading-none`}
-    style={{ letterSpacing: '-0.04em' }}
-  >
-    404
-  </span>
+          <span
+            className={`${shrikhand.className} select-none text-[160px] sm:text-[200px] font-extrabold bg-gradient-to-br from-indigo-200 via-purple-200 to-blue-200 bg-clip-text text-transparent leading-none`}
+          >
+            404
+          </span>
 
-  <img
-    src="/404Image.png"
-    alt="Estudante confuso - Página não encontrada"
-    className="w-56 sm:w-72 drop-shadow-2xl -mt-6"
-    style={{ filter: 'drop-shadow(0 20px 40px rgba(99,102,241,0.25))' }}
-  />
-</div>
+          <img
+            src="/404Image.png"
+            alt="Estudante confuso - Página não encontrada"
+            className="w-56 sm:w-72 drop-shadow-2xl -mt-6"
+            style={{ filter: 'drop-shadow(0 20px 40px rgba(99,102,241,0.25))' }}
+          />
+        </div>
 
         <h1 className={`${shrikhand.className} text-4xl sm:text-5xl font-extrabold text-gray-900 mb-4 leading-tight`}>
           Página{" "}
@@ -44,8 +43,8 @@ export default function NotFound() {
         </h1>
 
         <p className="text-lg text-gray-500 mb-10 max-w-md mx-auto leading-relaxed">
-          Ops! Parece que essa página se perdeu assim como um aluno antes da prova. 
-          Vamos te ajudar a encontrar o caminho certo! 
+          Ops! Parece que essa página se perdeu assim como um aluno antes da prova.
+          Vamos te ajudar a encontrar o caminho certo!
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -57,7 +56,7 @@ export default function NotFound() {
             <span>Voltar ao Início</span>
           </Link>
 
-         
+
         </div>
 
         <div className="bg-white/70 backdrop-blur-sm border border-indigo-100 rounded-2xl px-8 py-6 shadow-lg inline-flex flex-wrap gap-x-8 gap-y-3 justify-center items-center">
@@ -82,10 +81,10 @@ export default function NotFound() {
           <span className="font-bold text-indigo-500">Discipulus</span>
           {" "}— A plataforma #1 de tutoria no Brasil
         </p>
-        
+
       </div>
-      
+
     </div>
-    
+
   );
 }
