@@ -3,8 +3,6 @@ import { Clock, BookOpen } from 'lucide-react';
 import { PerfilProfessor, Habilidade, HorarioDisponivel } from '@/types/teacher';
 import { diasSemana } from '@/constants/teacher';
 import { TimeSlotSelector } from './TimeSlotSelector';
-import { listarAgenda, removerAgenda } from "@/lib/service/agenda/agenda.service";
-import { mapearAgendaParaPerfil } from "@/utils/mapAgenda";
 
 interface SubjectsAndAvailabilityProps {
   perfil: PerfilProfessor;
@@ -223,14 +221,20 @@ const getHorariosPorDia = (dia: string): HorarioDisponivel[] => {
           <div className="space-y-4">
             {perfil.materias.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {perfil.materias.map((materia) => (
-                  <span
-                    key={materia}
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200"
-                  >
-                    {materia}
-                  </span>
-                ))}
+                {perfil.materias.map((materiaId) => {
+                  const habilidade = todasHabilidades.find(
+                    (hab) => hab.id.toString() === materiaId
+                  );
+
+                  return (
+                    <span
+                      key={materiaId}
+                      className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200"
+                    >
+                      {habilidade?.nome ?? materiaId}
+                    </span>
+                  );
+                })}
               </div>
             ) : (
               <p className="text-gray-500 text-sm italic">

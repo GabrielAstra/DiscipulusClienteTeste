@@ -3,19 +3,14 @@ import { PerfilProfessor, Habilidade } from '@/types/teacher';
 import { useToast } from '@/context/ToastContext';
 import { mapaDiasSemana } from '@/utils/mapaDiasSemana'
 import {
-  buscarInformacoesPessoais,
-  buscarFormacoes,
-  buscarExperiencias,
+  obterPerfilCompleto,
   buscarHabilidades,
   removerFormacao,
   removerExperiencia,
   salvarPerfilCompleto
 } from '@/services/teacherApi';
 import { uploadAvatar } from "@/lib/service/avatar/avatar.service";
-
-import { listarAgenda } from "@/lib/service/agenda/agenda.service";
-import { mapearAgendaParaPerfil } from "@/utils/mapAgenda";
-import { salvarAgenda, removerAgenda } from "@/lib/service/agenda/agenda.service";
+import { salvarAgenda } from "@/lib/service/agenda/agenda.service";
 const initialPerfil: PerfilProfessor = {
   id: "1",
   nome: "",
@@ -37,7 +32,7 @@ const initialPerfil: PerfilProfessor = {
 export function useProfile() {
   const [perfil, setPerfil] = useState<PerfilProfessor>(initialPerfil);
   const [editando, setEditando] = useState(false);
-  const [salvandoPerfil, setSalvandoPerfil] = useState(false); ''
+  const [salvandoPerfil, setSalvandoPerfil] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [todasHabilidades, setTodasHabilidades] = useState<Habilidade[]>([]);
   const { showError, showSuccess } = useToast();
@@ -53,54 +48,26 @@ export function useProfile() {
     }));
   };
   useEffect(() => {
-    async function carregarInformacoesPessoais() {
+    async function carregarPerfil() {
       try {
-        const info = await buscarInformacoesPessoais();
-        if (info) {
-          setPerfil((prev) => ({
-            ...prev,
-            ...info,
-            tempoExperiencia: info.tempoExperiencia ?? 0,
-          }));
+        const perfilCompleto = await obterPerfilCompleto();
+        if (perfilCompleto) {
+          setPerfil(perfilCompleto);
         }
       } catch {
-        showError("Erro ao buscar informações pessoais.");
+        showError("Erro ao carregar perfil.");
       }
     }
-    carregarInformacoesPessoais();
+    carregarPerfil();
   }, [showError]);
 
+  // Carrega todas as habilidades uma única vez para usar tanto na edição
+  // quanto na visualização (exibir nomes das matérias ao invés dos IDs).
   useEffect(() => {
-    async function carregarFormacoes() {
-      try {
-        const formacoes = await buscarFormacoes();
-        setPerfil((prev) => ({ ...prev, formacao: formacoes }));
-      } catch {
-        showError("Erro ao buscar formações acadêmicas.");
-      }
-    }
-    carregarFormacoes();
+    buscarHabilidades()
+      .then((res) => setTodasHabilidades(res))
+      .catch(() => showError("Erro ao buscar habilidades."));
   }, [showError]);
-
-  useEffect(() => {
-    async function carregarExperiencias() {
-      try {
-        const experiencias = await buscarExperiencias();
-        setPerfil((prev) => ({ ...prev, experiencia: experiencias }));
-      } catch {
-        showError("Erro ao buscar experiências.");
-      }
-    }
-    carregarExperiencias();
-  }, [showError]);
-
-  useEffect(() => {
-    if (editando) {
-      buscarHabilidades()
-        .then((res) => setTodasHabilidades(res))
-        .catch(() => showError("Erro ao buscar habilidades."));
-    }
-  }, [editando, showError]);
 
 
 
@@ -157,11 +124,10 @@ export function useProfile() {
 
       await salvarPerfilCompleto(payloadPerfil);
 
-      const experienciasAtualizadas = await buscarExperiencias();
-      setPerfil((prev) => ({
-        ...prev,
-        experiencia: experienciasAtualizadas
-      }));
+      const perfilAtualizado = await obterPerfilCompleto();
+      if (perfilAtualizado) {
+        setPerfil(perfilAtualizado);
+      }
 
       setHorariosRemovidos([]);
       setEditando(false);
@@ -177,24 +143,6 @@ export function useProfile() {
     }
   };
 
-
-
-  useEffect(() => {
-    async function carregarAgenda() {
-      try {
-        const agendaBackend = await listarAgenda();
-        const agendaPerfil = mapearAgendaParaPerfil(agendaBackend);
-        setPerfil((prev) => ({
-          ...prev,
-          disponibilidadeHorarios: agendaPerfil,
-        }));
-      } catch {
-        showError("Erro ao carregar agenda.");
-      }
-    }
-
-    carregarAgenda();
-  }, [showError]);
 
 
   const handleRemoverFormacao = async (id: string, index: number) => {

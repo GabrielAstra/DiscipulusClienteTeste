@@ -2,37 +2,21 @@ import { FormacaoDTO, ExperienciaDTO, PerfilProfessor, Habilidade } from '@/type
 import { IResponse } from '@/types/response';
 import { ERRO_REQUISICAO } from '@/types/messages/error-messages';
 
-export async function buscarInformacoesPessoais(): Promise<Partial<PerfilProfessor> | null> {
+export async function obterPerfilCompleto(): Promise<PerfilProfessor | null> {
   try {
-    const res = await fetch(`/api/informacoesPessoais`, {
+    const res = await fetch(`/api/perfilProfessor`, {
       method: "GET",
     });
 
-    const body = (await res.json()) as IResponse<any>;
+    const body = (await res.json()) as IResponse<PerfilProfessor>;
 
     if (!body.success) {
       throw new Error(body.message ?? ERRO_REQUISICAO);
     }
 
-    const data = body.data;
-    const idiomasArray = data.idiomas
-      ? data.idiomas.split(",").map((i: string) => i.trim()).filter(Boolean)
-      : [];
-
-    return {
-      nome: data.nome,
-      email: data.email,
-      avatar: data.urlFoto,
-      biografia: data.biografia,
-      valorHora: data.horaAula,
-      urlFoto: data.urlFoto,
-      telefone: data.celular || "",
-      localizacao: data.localizacao || "",
-      idiomas: idiomasArray,
-      tempoExperiencia: data.tempoExperiencia
-    };
+    return body.data ?? null;
   } catch (err) {
-    console.error("Erro ao buscar informações pessoais:", err);
+    console.error("Erro ao obter perfil completo:", err);
     throw err;
   }
 }
