@@ -17,7 +17,7 @@ interface AulaAgendada {
   id: string;
   nomeProfessor: string;
   avatarProfessor: string;
-  materia: string;
+  habilidade: string;
   data: string;
   horario: string;
   duracao: number;
@@ -42,7 +42,7 @@ export default function MinhaAgenda() {
       nomeProfessor: "Sarah Johnson",
       avatarProfessor:
         "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400",
-      materia: "Matemática",
+      habilidade: "Matemática",
       data: "2024-01-15",
       horario: "14:00",
       duracao: 60,
@@ -55,7 +55,7 @@ export default function MinhaAgenda() {
       nomeProfessor: "Michael Chen",
       avatarProfessor:
         "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400",
-      materia: "Programação",
+      habilidade: "Programação",
       data: "2024-01-12",
       horario: "16:30",
       duracao: 90,
@@ -191,7 +191,7 @@ export default function MinhaAgenda() {
                         />
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">
-                            {aula.materia} com {aula.nomeProfessor}
+                            {aula.habilidade} com {aula.nomeProfessor}
                           </h3>
                           <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
                             <div className="flex items-center space-x-1">
@@ -297,7 +297,7 @@ export default function MinhaAgenda() {
                         />
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">
-                            {aula.materia} com {aula.nomeProfessor}
+                            {aula.habilidade} com {aula.nomeProfessor}
                           </h3>
                           <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
                             <div className="flex items-center space-x-1">
@@ -366,7 +366,7 @@ export default function MinhaAgenda() {
               <div className="mb-6">
                 <p className="text-gray-700 mb-4">
                   Tem certeza que deseja cancelar a aula de{" "}
-                  <strong>{aulaParaCancelar.materia}</strong> com{" "}
+                  <strong>{aulaParaCancelar.habilidade}</strong> com{" "}
                   <strong>{aulaParaCancelar.nomeProfessor}</strong> agendada
                   para <strong>{formatarData(aulaParaCancelar.data)}</strong> às{" "}
                   <strong>{aulaParaCancelar.horario}</strong>?

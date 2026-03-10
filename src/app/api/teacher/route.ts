@@ -28,6 +28,15 @@ export async function GET(request: Request) {
 
 
 
-    const data = await res.json();
+    const raw = await res.json();
+    const habilidades = (raw.habilidades?.$values ?? []).map(
+        (h: { nomeHabilidade?: string; habilidadeID?: string }) =>
+            h.nomeHabilidade ?? String(h.habilidadeID ?? "")
+    );
+    const data = {
+        ...raw,
+        habilidades,
+        detalhesHabilidades: raw.habilidades,
+    };
     return NextResponse.json(data);
 }

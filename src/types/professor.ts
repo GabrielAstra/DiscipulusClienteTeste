@@ -1,9 +1,17 @@
 export interface DisponibilidadeHorario {
   id: string;
-  idAgenda: string;
+  idAgenda: string | null;
   horaInicial: string;
   horaFinal: string;
   agendaDisponivelEnum: number;
+}
+
+export interface DisponibilidadeDia {
+  agendaId: string;
+  diaSemana: number;
+  horarios: {
+    $values: DisponibilidadeHorario[];
+  };
 }
 
 export interface Professor {
@@ -15,13 +23,13 @@ export interface Professor {
   localizacao?: string;
   biografia: string;
   idioma: string;
-  materias: string[];
+  habilidades: string[];
   mediaAvaliacoes: number;
   urlFoto: string;
   fotoPerfil: string;
   valorHora: number;
   totalAvaliacoes: number;
-  habilidades?: {
+  detalhesHabilidades?: {
     $values: {
       habilidadeID: string;
       nomeHabilidade: string;
@@ -57,7 +65,7 @@ export interface Professor {
   };
 
   disponibilidade?: {
-    $values: string[];
+    $values: DisponibilidadeDia[];
   };
 
   disponibilidadeHorario?: {

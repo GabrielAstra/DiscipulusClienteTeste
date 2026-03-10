@@ -173,18 +173,18 @@ const getHorariosPorDia = (dia: string): HorarioDisponivel[] => {
                     >
                       <input
                         type="checkbox"
-                        checked={perfil.materias.includes(hab.id.toString())}
+                        checked={perfil.habilidades.includes(hab.id.toString())}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setPerfil({
                               ...perfil,
-                              materias: [...perfil.materias, hab.id.toString()],
+                              habilidades: [...perfil.habilidades, hab.id.toString()],
                             });
                           } else {
                             setPerfil({
                               ...perfil,
-                              materias: perfil.materias.filter(
-                                (m) => m !== hab.id.toString()
+                              habilidades: perfil.habilidades.filter(
+                                (id) => id !== hab.id.toString()
                               ),
                             });
                           }
@@ -219,19 +219,19 @@ const getHorariosPorDia = (dia: string): HorarioDisponivel[] => {
           </div>
         ) : (
           <div className="space-y-4">
-            {perfil.materias.length > 0 ? (
+            {perfil.habilidades.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {perfil.materias.map((materiaId) => {
+                {perfil.habilidades.map((habilidadeId) => {
                   const habilidade = todasHabilidades.find(
-                    (hab) => hab.id.toString() === materiaId
+                    (hab) => hab.id.toString() === habilidadeId
                   );
 
                   return (
                     <span
-                      key={materiaId}
+                      key={habilidadeId}
                       className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200"
                     >
-                      {habilidade?.nome ?? materiaId}
+                      {habilidade?.nome ?? habilidadeId}
                     </span>
                   );
                 })}

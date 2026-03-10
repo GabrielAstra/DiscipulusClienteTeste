@@ -16,6 +16,9 @@ interface PropriedadesCartaoProfessor {
 export default function CartaoProfessor({
   professor,
 }: PropriedadesCartaoProfessor) {
+  
+  const habilidades = professor.detalhesHabilidades?.$values?.map(h => h.nomeHabilidade) || professor.habilidades || [];
+  
   return (
     <div className="relative group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-indigo-100 transition-all duration-300 transform hover:-translate-y-1">
       <div className="relative p-6 pb-4">
@@ -66,21 +69,21 @@ export default function CartaoProfessor({
 
       <div className="px-6 pb-4">
         <div className="flex flex-wrap gap-2">
-          {professor.materias.slice(0, 3).map((materia, indice) => (
+          {habilidades.slice(0, 3).map((habilidade, indice) => (
             <span
-              key={materia}
+              key={`${habilidade}-${indice}`}
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                 indice === 0
                   ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
                   : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
               }`}
             >
-              {materia}
+              {habilidade}
             </span>
           ))}
-          {professor.materias.length > 3 && (
+          {habilidades.length > 3 && (
             <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
-              +{professor.materias.length - 3}
+              +{habilidades.length - 3}
             </span>
           )}
         </div>

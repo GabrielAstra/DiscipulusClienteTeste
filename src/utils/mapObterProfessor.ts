@@ -133,7 +133,7 @@ export function mapearObterProfessorParaPerfil(
     })
   );
 
-  const materias: string[] = (api.habilidades?.$values ?? []).map(
+  const habilidades: string[] = (api.habilidades?.$values ?? []).map(
     (h) => h.habilidadeID
   );
 
@@ -148,7 +148,7 @@ export function mapearObterProfessorParaPerfil(
     avatar: api.urlFoto ?? "/avatar.png",
     urlFoto: api.urlFoto ?? undefined,
     biografia: api.biografia ?? "",
-    materias,
+    habilidades,
     valorHora: api.horaAula ?? 0,
     experiencia: experiencias,
     idiomas: idiomasArray,

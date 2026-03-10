@@ -132,10 +132,23 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
   if (loading || !professor) {
     return null;
   }
-  const disponibilidade =
-    Array.isArray(professor.disponibilidade)
-      ? professor.disponibilidade
-      : professor.disponibilidade?.$values ?? [];
+  const diasDisponiveis = professor.disponibilidade?.$values ?? [];
+  
+  const diasComHorarios = new Set(
+    diasDisponiveis.map(d => d.diaSemana)
+  );
+  
+  const mapaDias: { [key: number]: string } = {
+    0: "Domingo",
+    1: "Segunda",
+    2: "Terça",
+    3: "Quarta",
+    4: "Quinta",
+    5: "Sexta",
+    6: "Sábado"
+  };
+  
+  const disponibilidade = Array.from(diasComHorarios).map(dia => mapaDias[dia]);
   const avaliacoes = professor.avaliacao?.$values ?? [];
 
   const totalAvaliacoes = avaliacoes.length;
@@ -153,7 +166,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
   return (
     <div className="min-h-screen bg-gray-50 pt-15">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header Section */}
+       
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
           <div className="p-8">
             <div className="flex flex-col md:flex-row gap-6">
@@ -167,7 +180,6 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                   }}
                 />
 
-                {/* {professor.verificado && ( */}
                 <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
                   <CheckCircle className="w-4 h-4 text-white" />
                 </div>
@@ -209,7 +221,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                 </div>
 
                 <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-6">
-                  {professor.habilidades?.$values.map((habilidade) => (
+                  {professor.detalhesHabilidades?.$values.map((habilidade) => (
                     <span
                       key={habilidade.habilidadeID}
                       className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 border border-indigo-200"
@@ -245,9 +257,9 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
+      
           <div className="lg:col-span-2 space-y-8">
-            {/* About Section */}
+  
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Sobre
@@ -257,7 +269,6 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
               </p>
             </div>
 
-            {/* Academic Background */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <GraduationCap className="w-6 h-6 text-indigo-600" />
@@ -300,7 +311,6 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
 
             </div>
 
-            {/* Professional Experience */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <Briefcase className="w-6 h-6 text-green-600" />
@@ -337,13 +347,12 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
               </div>
             </div>
 
-            {/* Subject Areas */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Matérias e Especialidades
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
-                {professor.habilidades?.$values.map((habilidade) => (
+                {professor.detalhesHabilidades?.$values.map((habilidade) => (
                   <div
                     key={habilidade.habilidadeID}
                     className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
@@ -455,21 +464,24 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                   "Sexta",
                   "Sábado",
                   "Domingo",
-                ].map((dia) => (
-                  <div key={dia} className="flex items-center justify-between">
-                    <span className="text-gray-700">{dia}</span>
-                    <span
-                      className={`text-sm font-medium px-2 py-1 rounded-full ${disponibilidade.includes(dia)
-                          ? "text-green-700 bg-green-100"
-                          : "text-gray-500 bg-gray-100"
-                        }`}
-                    >
-                      {disponibilidade.includes(dia)
-                        ? "Disponível"
-                        : "Indisponível"}
-                    </span>
-                  </div>
-                ))}
+                ].map((dia) => {
+                  const diaDisponivel = disponibilidade.includes(dia);
+                  return (
+                    <div key={dia} className="flex items-center justify-between">
+                      <span className="text-gray-700">{dia}</span>
+                      <span
+                        className={`text-sm font-medium px-2 py-1 rounded-full ${diaDisponivel
+                            ? "text-green-700 bg-green-100"
+                            : "text-gray-500 bg-gray-100"
+                          }`}
+                      >
+                        {diaDisponivel
+                          ? "Disponível"
+                          : "Indisponível"}
+                      </span>
+                    </div>
+                  );
+                })}
 
               </div>
             </div>

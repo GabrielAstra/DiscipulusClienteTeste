@@ -190,6 +190,7 @@ export default function PainelProfessor() {
           mostrarModal={mostrarModalPreview}
           onClose={() => setMostrarModalPreview(false)}
           perfil={perfil}
+          todasHabilidades={todasHabilidades}
         />
       </div>
     </div>

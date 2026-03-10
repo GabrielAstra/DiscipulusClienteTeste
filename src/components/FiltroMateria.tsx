@@ -4,23 +4,23 @@ import React from "react";
 interface PropriedadesFiltroMateria {
   categoriaSelecionada: string;
   aoMudarCategoria: (categoria: string) => void;
-  materiasSelecionadas: string[];
-  aoMudarMateria: (materias: string[]) => void;
-  materiasDisponiveis: string[];
+  habilidadesSelecionadas: string[];
+  aoMudarHabilidades: (habilidades: string[]) => void;
+  habilidadesDisponiveis: string[];
 }
 
 export default function FiltroMateria({
   categoriaSelecionada,
   aoMudarCategoria,
-  materiasSelecionadas,
-  aoMudarMateria,
-  materiasDisponiveis,
+  habilidadesSelecionadas,
+  aoMudarHabilidades,
+  habilidadesDisponiveis,
 }: PropriedadesFiltroMateria) {
-  const alternarMateria = (materia: string) => {
-    if (materiasSelecionadas.includes(materia)) {
-      aoMudarMateria(materiasSelecionadas.filter((m) => m !== materia));
+  const alternarHabilidade = (habilidade: string) => {
+    if (habilidadesSelecionadas.includes(habilidade)) {
+      aoMudarHabilidades(habilidadesSelecionadas.filter((h) => h !== habilidade));
     } else {
-      aoMudarMateria([...materiasSelecionadas, materia]);
+      aoMudarHabilidades([...habilidadesSelecionadas, habilidade]);
     }
   };
 
@@ -57,26 +57,26 @@ export default function FiltroMateria({
             Matérias
           </label>
           <div className="space-y-2 max-h-48 overflow-y-auto">
-            {materiasDisponiveis.map((materia) => (
+            {habilidadesDisponiveis.map((habilidade) => (
               <label
-                key={materia}
+                key={habilidade}
                 className="flex items-center space-x-2 cursor-pointer"
               >
                 <input
                   type="checkbox"
-                  checked={materiasSelecionadas.includes(materia)}
-                  onChange={() => alternarMateria(materia)}
+                  checked={habilidadesSelecionadas.includes(habilidade)}
+                  onChange={() => alternarHabilidade(habilidade)}
                   className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
-                <span className="text-sm text-gray-700">{materia}</span>
+                <span className="text-sm text-gray-700">{habilidade}</span>
               </label>
             ))}
           </div>
         </div>
 
-        {materiasSelecionadas.length > 0 && (
+        {habilidadesSelecionadas.length > 0 && (
           <button
-            onClick={() => aoMudarMateria([])}
+            onClick={() => aoMudarHabilidades([])}
             className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
           >
             Limpar filtros

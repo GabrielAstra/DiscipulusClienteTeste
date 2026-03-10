@@ -8,7 +8,7 @@ interface AulaAgendada {
   id: string;
   alunoNome: string;
   alunoAvatar: string;
-  materia: string;
+  habilidade: string;
   data: string;
   horaInicio: string;
   horaFim: string;
@@ -86,7 +86,7 @@ export default function AgendaTab({ aulas }: { aulas: AulaAgendada[] }) {
                     />
                     <div>
                       <p className="font-medium">{aula.alunoNome}</p>
-                      <p className="text-sm text-gray-500">{aula.materia}</p>
+                      <p className="text-sm text-gray-500">{aula.habilidade}</p>
                     </div>
                   </div>
 

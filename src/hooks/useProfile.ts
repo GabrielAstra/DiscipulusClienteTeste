@@ -18,7 +18,7 @@ const initialPerfil: PerfilProfessor = {
   avatar: "/avatar.png",
   urlFoto: "",
   biografia: "",
-  materias: [],
+  habilidades: [],
   valorHora: 0,
   experiencia: [],
   idiomas: [],
@@ -62,7 +62,7 @@ export function useProfile() {
   }, [showError]);
 
   // Carrega todas as habilidades uma única vez para usar tanto na edição
-  // quanto na visualização (exibir nomes das matérias ao invés dos IDs).
+  // quanto na visualização (exibir nomes das habilidades ao invés dos IDs).
   useEffect(() => {
     buscarHabilidades()
       .then((res) => setTodasHabilidades(res))
@@ -119,7 +119,7 @@ export function useProfile() {
         },
         formacoes: perfil.formacao,
         experiencias: perfil.experiencia,
-        habilidades: perfil.materias,
+        habilidades: perfil.habilidades,
       };
 
       await salvarPerfilCompleto(payloadPerfil);

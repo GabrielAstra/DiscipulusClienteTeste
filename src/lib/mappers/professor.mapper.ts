@@ -11,7 +11,12 @@ export function mapProfessorFromApi(apiProfessor: any, index: number): Professor
         id: apiProfessor.professorId,
         nome: apiProfessor.nome,
         avatar: AVATARES_MOCK[index % AVATARES_MOCK.length],
-        materias: apiProfessor.habilidades?.$values ?? [],
+        habilidades: (apiProfessor.habilidades?.$values ?? [])
+            .map((h: any) => {
+                // Tentar diferentes formatos possíveis
+                return h.nomeHabilidade || h.nome || h.habilidade || (typeof h === 'string' ? h : '');
+            })
+            .filter((h: string) => h !== ''), // Remover strings vazias
         mediaAvaliacoes: apiProfessor.mediaAvaliacoes ?? 0,
         totalAvaliacoes: apiProfessor.totalAvaliacoes,
         valorHora: apiProfessor.precoHoraAula ?? 0,

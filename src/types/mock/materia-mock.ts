@@ -1,6 +1,6 @@
-import { Materia } from "@/types/materia";
+import { HabilidadeCatalogo } from "@/types/materia";
 
-export const materias: Materia[] = [
+export const habilidades: HabilidadeCatalogo[] = [
   { id: "1", nome: "Matemática", categoria: "Exatas", icone: "Calculator" },
   { id: "2", nome: "Física", categoria: "Exatas", icone: "Atom" },
   { id: "3", nome: "Química", categoria: "Exatas", icone: "TestTube" },

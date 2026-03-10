@@ -1,6 +1,6 @@
 "use client";
 
-import { PerfilProfessor } from '@/types/teacher';
+import { PerfilProfessor, Habilidade } from '@/types/teacher';
 import { formatarDataPreview, calcularDuracao } from '@/utils/formatters';
 import { diasSemana } from '@/constants/teacher';
 import {
@@ -12,12 +12,14 @@ interface ProfilePreviewModalProps {
   mostrarModal: boolean;
   onClose: () => void;
   perfil: PerfilProfessor;
+  todasHabilidades?: Habilidade[];
 }
 
 export function ProfilePreviewModal({ 
   mostrarModal, 
   onClose, 
-  perfil 
+  perfil,
+  todasHabilidades = []
 }: ProfilePreviewModalProps) {
   if (!mostrarModal) return null;
 
@@ -87,14 +89,17 @@ export function ProfilePreviewModal({
                   </div>
 
                   <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-6">
-                    {perfil.materias.length > 0 ? perfil.materias.map((materia) => (
-                      <span
-                        key={materia}
-                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 border border-indigo-200"
-                      >
-                        {materia}
-                      </span>
-                    )) : (
+                    {perfil.habilidades.length > 0 ? perfil.habilidades.map((habilidadeId) => {
+                      const hab = todasHabilidades.find((h) => h.id.toString() === habilidadeId);
+                      return (
+                        <span
+                          key={habilidadeId}
+                          className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 border border-indigo-200"
+                        >
+                          {hab?.nome ?? habilidadeId}
+                        </span>
+                      );
+                    }) : (
                       <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600 border border-gray-200">
                         Adicione suas matérias
                       </span>

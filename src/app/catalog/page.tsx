@@ -3,7 +3,7 @@ import { Search, SlidersHorizontal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import CartaoProfessor from "@/components/CartaoProfessor";
-import { materias } from "@/types/mock/materia-mock";
+import { habilidades as habilidadesCatalogo } from "@/types/mock/materia-mock";
 import FiltroMateria from "@/components/FiltroMateria";
 import { Professor } from "@/types/professor";
 import { listarProfessores } from "@/lib/service/catalog/catalog.service";
@@ -12,7 +12,7 @@ import { mapProfessorFromApi } from "@/lib/mappers/professor.mapper";
 export default function CatalogoProfessoresPage() {
   const [termoBusca, setTermoBusca] = useState("");
   const [categoriaSelecionada, setCategoriaSelecionada] = useState("Todas");
-  const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>(
+  const [habilidadesSelecionadas, setHabilidadesSelecionadas] = useState<string[]>(
     []
   );
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
@@ -47,30 +47,30 @@ export default function CatalogoProfessoresPage() {
   }, [termoBusca, pagina]);
 
 
-  const materiasDisponiveis = useMemo(() => {
+  const habilidadesDisponiveis = useMemo(() => {
     if (categoriaSelecionada === "Todas") {
-      return materias.map((m) => m.nome);
+      return habilidadesCatalogo.map((h) => h.nome);
     }
-    return materias
-      .filter((m) => m.categoria === categoriaSelecionada)
-      .map((m) => m.nome);
+    return habilidadesCatalogo
+      .filter((h) => h.categoria === categoriaSelecionada)
+      .map((h) => h.nome);
   }, [categoriaSelecionada]);
 
   const professoresFiltrados = useMemo(() => {
     let filtrados = professores.filter((professor) => {
       const correspondeABusca =
         professor.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
-        professor.materias.some((materia) =>
-          materia.toLowerCase().includes(termoBusca.toLowerCase())
+        professor.habilidades.some((habilidade) =>
+          habilidade.toLowerCase().includes(termoBusca.toLowerCase())
         );
 
-      const correspondeMaterias =
-        materiasSelecionadas.length === 0 ||
-        materiasSelecionadas.some((materia) =>
-          professor.materias.includes(materia)
+      const correspondeHabilidades =
+        habilidadesSelecionadas.length === 0 ||
+        habilidadesSelecionadas.some((habilidade) =>
+          professor.habilidades.includes(habilidade)
         );
 
-      return correspondeABusca && correspondeMaterias;
+      return correspondeABusca && correspondeHabilidades;
     });
 
     filtrados.sort((a, b) => {
@@ -89,7 +89,7 @@ export default function CatalogoProfessoresPage() {
     });
 
     return filtrados;
-  }, [professores, termoBusca, materiasSelecionadas, ordenarPor]);
+  }, [professores, termoBusca, habilidadesSelecionadas, ordenarPor]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-15">
@@ -146,9 +146,9 @@ export default function CatalogoProfessoresPage() {
               <FiltroMateria
                 categoriaSelecionada={categoriaSelecionada}
                 aoMudarCategoria={setCategoriaSelecionada}
-                materiasSelecionadas={materiasSelecionadas}
-                aoMudarMateria={setMateriasSelecionadas}
-                materiasDisponiveis={materiasDisponiveis}
+                habilidadesSelecionadas={habilidadesSelecionadas}
+                aoMudarHabilidades={setHabilidadesSelecionadas}
+                habilidadesDisponiveis={habilidadesDisponiveis}
               />
             </div>
           )}

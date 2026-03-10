@@ -17,12 +17,7 @@ export interface InformacoesPessoaisResponse {
     idiomas: string;
     localizacao: string;
     tempoExperiencia: number;
-    /**
-     * Backend atualmente pode retornar as matérias/habilidades do professor
-     * tanto em uma propriedade `materias` quanto `habilidades`.
-     * Mantemos ambas como opcionais e normalizamos para `materias` no DTO.
-     */
-    materias?: string[];
+ 
     habilidades?: string[];
 }
 
@@ -39,7 +34,7 @@ export interface InformacoesPessoaisDTO {
     idiomas: string;
     localizacao: string;
     tempoExperiencia: number;
-    materias: string[];
+    habilidades: string[];
 }
 
 
@@ -61,8 +56,7 @@ export async function listarInformacoesPessoais(): Promise<IServiceResponse<Info
 
         const body: InformacoesPessoaisResponse = await response.json();
 
-        const materiasBackend =
-            (body.materias as string[] | undefined) ??
+        const habilidadesBackend =
             (body.habilidades as string[] | undefined) ??
             [];
 
@@ -79,7 +73,7 @@ export async function listarInformacoesPessoais(): Promise<IServiceResponse<Info
             idiomas: body.idiomas,
             localizacao: body.localizacao,
             tempoExperiencia: body.tempoExperiencia,
-            materias: materiasBackend
+            habilidades: habilidadesBackend
         };
 
         return { success: true, data: informacoesPessoaisDTO };

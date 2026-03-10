@@ -59,14 +59,23 @@ export default function ModalAgendamento({
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
 
-    const diasDisponivelString = (professor.disponibilidade as any)?.$values || [];
+    // Extrair dias disponíveis da estrutura correta
+    const diasDisponivelData = professor.disponibilidade?.$values || [];
+    
+    // Criar um Set com os números dos dias da semana disponíveis
+    const diasSemanaDisponiveis = new Set(
+      diasDisponivelData.map(d => d.diaSemana)
+    );
 
     for (let i = 1; i <= 30; i++) {
       const data = new Date(hoje);
       data.setDate(hoje.getDate() + i);
 
-      const diaSemana = nomesDias[data.getDay()];
-      const temDisponibilidade = diasDisponivelString.includes(diaSemana);
+      const diaSemanaNumero = data.getDay(); // 0=Domingo, 1=Segunda, etc.
+      const diaSemana = nomesDias[diaSemanaNumero];
+      
+      // Verificar se este dia da semana tem disponibilidade
+      const temDisponibilidade = diasSemanaDisponiveis.has(diaSemanaNumero);
 
       dias.push({
         data: data.toISOString().split("T")[0],
@@ -74,7 +83,7 @@ export default function ModalAgendamento({
         dia: data.getDate(),
         mes: data.toLocaleDateString("pt-BR", { month: "short" }),
         diaSemana: diaSemana,
-        diaSemanaAbrev: nomesDiasAbrev[data.getDay()],
+        diaSemanaAbrev: nomesDiasAbrev[diaSemanaNumero],
         temDisponibilidade,
       });
     }
@@ -84,16 +93,18 @@ export default function ModalAgendamento({
 
   const gerarSlotsHorario = (dataString: string): SlotHorario[] => {
     const data = new Date(dataString + "T00:00:00");
+    const diaSemanaNumero = data.getDay(); // 0=Domingo, 1=Segunda, etc.
 
-    const diaSemana = nomesDias[data.getDay()];
+    // Buscar o dia disponível correspondente
+    const diasDisponivelData = professor.disponibilidade?.$values || [];
+    const diaDisponivel = diasDisponivelData.find(d => d.diaSemana === diaSemanaNumero);
+    
+    if (!diaDisponivel) return [];
 
-    const horariosDisponiveis = (professor.disponibilidadeHorario as any)?.$values || [];
-    const horariosDoDia = horariosDisponiveis.filter(
-      (h: any) => h.diaSemana === diaSemana
-    );
     const slots: SlotHorario[] = [];
+    const horariosArray = diaDisponivel.horarios?.$values || [];
 
-    horariosDoDia.forEach((horario: any) => {
+    horariosArray.forEach((horario: any) => {
       const horaInicial = horario.horaInicial || "";
       const horaFinal = horario.horaFinal || "";
 
@@ -105,6 +116,7 @@ export default function ModalAgendamento({
       const inicioMinutos = horaInicio * 60 + minutoInicio;
       const fimMinutos = horaFim * 60 + minutoFim;
 
+      // Gerar slots de 30 minutos
       for (let minuto = inicioMinutos; minuto < fimMinutos; minuto += 30) {
         const hora = Math.floor(minuto / 60);
         const min = minuto % 60;
