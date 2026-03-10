@@ -49,7 +49,7 @@ export function AcademicEducation({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6" data-onboarding="academic">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-2">
           <GraduationCap className="w-6 h-6 text-indigo-600" />

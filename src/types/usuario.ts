@@ -5,4 +5,5 @@ export interface Usuario {
   avatar?: string;
   papel: "Aluno" | "Professor";
   role: string;
+  onBoarding?: boolean;
 }

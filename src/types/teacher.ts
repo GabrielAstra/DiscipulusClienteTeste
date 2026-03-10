@@ -44,6 +44,7 @@ export interface PerfilProfessor {
     telefone: string;
     localizacao: string;
     tempoExperiencia: number;
+    onBoarding?: boolean;
 }
 
 export interface Transacao {

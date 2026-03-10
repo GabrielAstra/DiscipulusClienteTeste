@@ -50,7 +50,7 @@ export function ProfessionalExperience({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6" data-onboarding="experience">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-2">
           <Briefcase className="w-6 h-6 text-green-600" />

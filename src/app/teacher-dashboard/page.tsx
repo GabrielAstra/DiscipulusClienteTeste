@@ -14,6 +14,59 @@ import { WithdrawalModal } from "@/components/teacher/WithdrawalModal";
 import { ProfilePreviewModal } from "@/components/teacher/ProfilePreviewModal";
 import AgendaTab from "@/components/teacher/ClassSchedule";
 import { aulasMock } from "@/data/mockAulasAgendadas";
+import Onboarding, { OnboardingStep } from "@/components/Onboarding";
+import { useOnboarding } from "@/hooks/useOnboarding";
+
+const onboardingSteps: OnboardingStep[] = [
+  {
+    target: "[data-onboarding='profile-header']",
+    title: "Bem-vindo ao seu Painel!",
+    content: "Este é o seu painel de professor. Aqui você pode gerenciar seu perfil, aulas e ganhos. Vamos fazer um tour rápido!",
+    placement: "bottom",
+  },
+  {
+    target: "[data-onboarding='profile-photo']",
+    title: "Foto de Perfil",
+    content: "Adicione uma foto profissional. Uma boa foto aumenta a confiança dos alunos e melhora suas chances de conseguir mais aulas.",
+    placement: "right",
+  },
+  {
+    target: "[data-onboarding='profile-info']",
+    title: "Informações Pessoais",
+    content: "Preencha suas informações pessoais, biografia e localização. Quanto mais completo seu perfil, mais visível você fica na plataforma.",
+    placement: "bottom",
+  },
+  {
+    target: "[data-onboarding='academic']",
+    title: "Formação Acadêmica",
+    content: "Adicione sua formação acadêmica. Isso mostra sua qualificação e experiência aos alunos.",
+    placement: "top",
+  },
+  {
+    target: "[data-onboarding='experience']",
+    title: "Experiência Profissional",
+    content: "Descreva sua experiência profissional. Compartilhe onde você trabalhou e o que ensinou.",
+    placement: "top",
+  },
+  {
+    target: "[data-onboarding='subjects']",
+    title: "Matérias e Disponibilidade",
+    content: "Selecione as matérias que você ensina e configure sua disponibilidade de horários. Isso permite que os alunos agendem aulas com você.",
+    placement: "top",
+  },
+  {
+    target: "[data-onboarding='tabs']",
+    title: "Navegação",
+    content: "Use estas abas para navegar entre seu perfil, carteira (onde você vê seus ganhos) e agenda (suas aulas agendadas).",
+    placement: "bottom",
+  },
+  {
+    target: "[data-onboarding='save-button']",
+    title: "Salvar Perfil",
+    content: "Não esqueça de salvar suas alterações! Após preencher tudo, clique em 'Salvar Perfil' para que seu perfil seja aprovado e exibido na plataforma.",
+    placement: "left",
+  },
+];
 
 
 export default function PainelProfessor() {
@@ -35,6 +88,8 @@ export default function PainelProfessor() {
     handleRemoverExperiencia,
     avatarUrl,
   } = useProfile();
+  
+  const { showOnboarding, completeOnboarding, skipOnboarding } = useOnboarding(perfil);
 
   const [dadosCarteira] = useState<DadosCarteira>({
     saldo: 1250.5,
@@ -80,14 +135,14 @@ export default function PainelProfessor() {
   return (
     <div className="min-h-screen bg-gray-50 pt-15">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
+        <div className="mb-8" data-onboarding="profile-header">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Painel do Professor
           </h1>
           <p className="text-gray-600">Gerencie seu perfil, aulas e ganhos</p>
         </div>
 
-        <div className="mb-8">
+        <div className="mb-8" data-onboarding="tabs">
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-8">
               <button
@@ -191,6 +246,13 @@ export default function PainelProfessor() {
           onClose={() => setMostrarModalPreview(false)}
           perfil={perfil}
           todasHabilidades={todasHabilidades}
+        />
+        
+        <Onboarding
+          steps={onboardingSteps}
+          show={showOnboarding}
+          onComplete={completeOnboarding}
+          onSkip={skipOnboarding}
         />
       </div>
     </div>

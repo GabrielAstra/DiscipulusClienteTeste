@@ -61,6 +61,7 @@ export interface ObterProfessorResponse {
   experiencias?: { $values?: ObterProfessorExperiencia[] };
   habilidades?: { $values?: ObterProfessorHabilidade[] };
   formacoes?: { $values?: ObterProfessorFormacao[] };
+  onBoarding?: boolean;
 }
 
 function mapearDisponibilidadeParaPerfil(
@@ -157,5 +158,6 @@ export function mapearObterProfessorParaPerfil(
     formacao: formacoes,
     telefone: api.celular ?? "",
     localizacao: api.localizacao ?? "",
+    onBoarding: api.onBoarding ?? false,
   };
 }

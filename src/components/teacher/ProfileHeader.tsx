@@ -94,6 +94,7 @@ export function ProfileHeader({
               <button
                 onClick={onSalvar}
                 disabled={salvandoPerfil}
+                data-onboarding="save-button"
                 className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {salvandoPerfil ? (
@@ -123,7 +124,7 @@ export function ProfileHeader({
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-4">
-          <div>
+          <div data-onboarding="profile-photo">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Foto de Perfil
             </label>
@@ -198,6 +199,7 @@ export function ProfileHeader({
                 onChange={(e) =>
                   setPerfil({ ...perfil, nome: e.target.value })
                 }
+                data-onboarding="profile-info"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             ) : (
