@@ -21,41 +21,6 @@ export async function obterPerfilCompleto(): Promise<PerfilProfessor | null> {
   }
 }
 
-export async function buscarFormacoes(): Promise<FormacaoDTO[]> {
-  try {
-    const res = await fetch(`/api/formacao`, {
-      method: "GET",
-    });
-    const body = (await res.json()) as IResponse<FormacaoDTO[]>;
-
-    if (!body.success) {
-      throw new Error(body.message ?? ERRO_REQUISICAO);
-    }
-
-    return body.data ?? [];
-  } catch (err) {
-    console.error("Erro ao buscar formações:", err);
-    throw err;
-  }
-}
-
-export async function buscarExperiencias(): Promise<ExperienciaDTO[]> {
-  try {
-    const res = await fetch(`/api/experiencia`, {
-      method: "GET",
-    });
-    const body = (await res.json()) as IResponse<ExperienciaDTO[]>;
-
-    if (!body.success) {
-      throw new Error(body.message ?? ERRO_REQUISICAO);
-    }
-
-    return body.data ?? [];
-  } catch (err) {
-    console.error("Erro ao buscar experiencias:", err);
-    throw err;
-  }
-}
 
 export async function buscarHabilidades(): Promise<Habilidade[]> {
   const res = await fetch("/api/habilidade", { method: "GET" });
