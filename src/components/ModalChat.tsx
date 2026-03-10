@@ -98,20 +98,25 @@ export default function ModalChat({
   }, [connection, aberto, usuario?.id]);
 
   const lidarComEnviarMensagem = async () => {
-  if (!novaMensagem.trim() || !connection) return;
+    if (!novaMensagem.trim()) return;
+    
+    if (!connection) {
+      console.error('Conexão SignalR não estabelecida');
+      return;
+    }
 
-      try {
-        await connection.invoke("EnviarMensagem", {
-          conversaId,
-          texto: novaMensagem,
-          usuarioRecebedorId: professor.usuarioID,
-        });
+    try {
+      await connection.invoke("EnviarMensagem", {
+        conversaId,
+        texto: novaMensagem,
+        usuarioRecebedorId: professor.usuarioID,
+      });
 
-        setNovaMensagem("");
-      } catch (err) {
-        console.error("Erro ao enviar mensagem", err);
-      }
-    };
+      setNovaMensagem("");
+    } catch (err) {
+      console.error("Erro ao enviar mensagem", err);
+    }
+  };
 
 
   const lidarComTeclaPressionada = (e: React.KeyboardEvent) => {

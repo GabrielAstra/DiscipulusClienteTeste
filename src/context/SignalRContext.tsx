@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useRef } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { useUsuario } from '@/context/UsuarioContext';
 
@@ -14,31 +14,38 @@ const SignalRContext = createContext<SignalRContextType>({
 
 export function SignalRProvider({ children }: { children: React.ReactNode }) {
   const { usuario } = useUsuario();
-  const connectionRef = useRef<signalR.HubConnection | null>(null);
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
 
   useEffect(() => {
-    if (!usuario) return;
+    if (!usuario) {
+      setConnection(null);
+      return;
+    }
 
-    const connection = new signalR.HubConnectionBuilder()
+    const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(process.env.NEXT_PUBLIC_DISCIPULUS_API_URL_CHATHUB!, {
         withCredentials: true,
       })
       .withAutomaticReconnect()
       .build();
 
-    connectionRef.current = connection;
-
-    connection.start()
-      .then(() => console.log('SignalR conectado'))
-      .catch(console.error);
+    newConnection.start()
+      .then(() => {
+        console.log('SignalR conectado');
+        setConnection(newConnection);
+      })
+      .catch((err) => {
+        console.error('Erro ao conectar SignalR:', err);
+      });
 
     return () => {
-      connection.stop();
+      newConnection.stop();
+      setConnection(null);
     };
   }, [usuario]);
 
   return (
-    <SignalRContext.Provider value={{ connection: connectionRef.current }}>
+    <SignalRContext.Provider value={{ connection }}>
       {children}
     </SignalRContext.Provider>
   );
