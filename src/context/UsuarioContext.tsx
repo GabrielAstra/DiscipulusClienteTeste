@@ -43,16 +43,26 @@ export function UsuarioProvider({ children }: { children: React.ReactNode }) {
       },
       body: JSON.stringify(payload),
     });
+    
+    const loginResponse = await res.json();
+    
     if (!res.ok) {
       setLoading(false);
-      return { success: false };
+      return { 
+        success: false, 
+        message: loginResponse.message || "Erro ao fazer login" 
+      };
     }
 
     const resUser = await fetch("/api/user/me");
     const data = (await resUser.json()) as IResponse<Usuario>;
     setUsuario(data?.data!);
     setLoading(false);
-    return { success: true, data: data.data };
+    return { 
+      success: true, 
+      data: data.data,
+      message: loginResponse.message 
+    };
   }
 
   async function realizarLogout() {

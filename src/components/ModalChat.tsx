@@ -6,6 +6,7 @@ import { useUsuario } from "@/context/UsuarioContext";
 import { listarMensagens } from "@/lib/service/chat/mensagens.service";
 import { useSignalR } from "@/context/SignalRContext";
 import { Professor } from "@/types/professor";
+import { useToast } from "@/context/ToastContext";
 
 interface Mensagem {  
   id: string;
@@ -29,10 +30,13 @@ export default function ModalChat({
   const [mensagens, setMensagens] = useState<Mensagem[]>([]);
   const [novaMensagem, setNovaMensagem] = useState("");
   const [digitando, setDigitando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  const [banido, setBanido] = useState(false);
   const { connection } = useSignalR();
   const refFinalMensagens = useRef<HTMLDivElement>(null);
 
   const { usuario } = useUsuario();
+  const { showError } = useToast();
 
   const conversaId = usuario
       ? `${usuario.id}_${professor.usuarioID}`
@@ -96,6 +100,25 @@ export default function ModalChat({
       connection.off("NovaMensagem", handler);
     };
   }, [connection, aberto, usuario?.id]);
+
+  useEffect(() => {
+    if (!connection || !aberto) return;
+
+    const erroHandler = (mensagemErro: string) => {
+      setErro(mensagemErro);
+      showError("Erro no chat", mensagemErro);
+      
+      if (mensagemErro.toLowerCase().includes("banido")) {
+        setBanido(true);
+      }
+    };
+
+    connection.on("Erro", erroHandler);
+
+    return () => {
+      connection.off("Erro", erroHandler);
+    };
+  }, [connection, aberto, showError]);
 
   const lidarComEnviarMensagem = async () => {
     if (!novaMensagem.trim()) return;
@@ -229,8 +252,16 @@ export default function ModalChat({
         </div>
 
         <div className="p-4 border-t border-gray-200">
+          {banido && erro && (
+            <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-800 font-medium">{erro}</p>
+            </div>
+          )}
           <div className="flex items-center space-x-2">
-            <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+            <button 
+              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              disabled={banido}
+            >
               <Paperclip className="w-5 h-5" />
             </button>
             <div className="flex-1 relative">
@@ -238,18 +269,22 @@ export default function ModalChat({
                 value={novaMensagem}
                 onChange={(e) => setNovaMensagem(e.target.value)}
                 onKeyPress={lidarComTeclaPressionada}
-                placeholder="Digite sua mensagem..."
-                className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                placeholder={banido ? "Chat temporariamente bloqueado" : "Digite sua mensagem..."}
+                className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none disabled:bg-gray-100 disabled:cursor-not-allowed"
                 rows={1}
                 style={{ minHeight: "44px", maxHeight: "100px" }}
+                disabled={banido}
               />
-              <button className="absolute right-2 top-2 p-2 text-gray-400 hover:text-gray-600 transition-colors">
+              <button 
+                className="absolute right-2 top-2 p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                disabled={banido}
+              >
                 <Smile className="w-5 h-5" />
               </button>
             </div>
             <button
               onClick={lidarComEnviarMensagem}
-              disabled={!novaMensagem.trim()}
+              disabled={!novaMensagem.trim() || banido}
               className="p-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <Send className="w-5 h-5" />

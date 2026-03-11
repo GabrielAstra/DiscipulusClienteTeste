@@ -20,12 +20,12 @@ export default function LoginPage() {
   const lidarComEnvio = async (e: React.FormEvent) => {
     e.preventDefault();
     const request: ILoginRequest = { email, password: senha, lembrarLogin };
-    const { success, data } = await realizarLogin(request);
+    const { success, data, message } = await realizarLogin(request);
     if (success) {
-      showSuccess("Olá!", `Bem-vindo(a) de volta, ${data?.nome}!`);
+      showSuccess(message || "Login realizado com sucesso", `Bem-vindo(a) de volta, ${data?.nome}!`);
       navegar.push("/catalog");
     } else {
-      showError("Email e/ou senha inválidos!");
+      showError(message || "Email e/ou senha inválidos!");
     }
   };
 

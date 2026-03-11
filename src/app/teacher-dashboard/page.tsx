@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User, DollarSign, CalendarDays } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { DadosCarteira } from "@/types/teacher";
@@ -16,6 +16,8 @@ import AgendaTab from "@/components/teacher/ClassSchedule";
 import { aulasMock } from "@/data/mockAulasAgendadas";
 import Onboarding, { OnboardingStep } from "@/components/Onboarding";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useUsuario } from "@/context/UsuarioContext";
+import { useRouter } from "next/navigation";
 
 const onboardingSteps: OnboardingStep[] = [
   {
@@ -70,6 +72,16 @@ const onboardingSteps: OnboardingStep[] = [
 
 
 export default function PainelProfessor() {
+  const { usuario, loading: loadingUser } = useUsuario();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loadingUser && usuario) {
+      if (usuario.papel !== "Professor") {
+        router.push("/unauthorized");
+      }
+    }
+  }, [usuario, loadingUser, router]);
   const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira" | "agenda">("perfil");
   const [mostrarModalSaque, setMostrarModalSaque] = useState(false);
   const [mostrarModalPreview, setMostrarModalPreview] = useState(false);
@@ -131,6 +143,23 @@ export default function PainelProfessor() {
     alert("Solicitação de saque enviada com sucesso!");
   };
   const [horariosRemovidos, setHorariosRemovidos] = useState<string[]>([]);
+
+  // Mostrar loading enquanto verifica autenticação
+  if (loadingUser) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Não renderizar nada se não for professor (será redirecionado)
+  if (!usuario || usuario.papel !== "Professor") {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-15">

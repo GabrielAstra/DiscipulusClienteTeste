@@ -7,6 +7,14 @@ import {
 } from "@/utils/mapObterProfessor";
 import { PerfilProfessor } from "@/types/teacher";
 
+interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  erros: string[] | null;
+  timestamp: string;
+}
+
 export async function obterProfessor(): Promise<
   IServiceResponse<PerfilProfessor>
 > {
@@ -25,10 +33,22 @@ export async function obterProfessor(): Promise<
       return { success: false, message: ERRO_REQUISICAO };
     }
 
-    const body: ObterProfessorResponse = await response.json();
-    const perfil = mapearObterProfessorParaPerfil(body);
+    const apiResponse: ApiResponse<ObterProfessorResponse> = await response.json();
+    
+    if (!apiResponse.success) {
+      return { 
+        success: false, 
+        message: apiResponse.message || ERRO_REQUISICAO 
+      };
+    }
 
-    return { success: true, data: perfil };
+    const perfil = mapearObterProfessorParaPerfil(apiResponse.data);
+
+    return { 
+      success: true, 
+      data: perfil,
+      message: apiResponse.message 
+    };
   } catch (error) {
     console.error("Erro ao obter professor:", error);
     return { success: false, message: ERRO_REQUISICAO };

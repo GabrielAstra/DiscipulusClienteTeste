@@ -1,5 +1,4 @@
 import { login } from "@/lib/service/auth/auth.service";
-import { IResponse } from "@/types/response";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -8,16 +7,20 @@ export async function POST(req: NextRequest) {
   const { rememberMe } = body;
 
   const { message, success, data } = response;
-  let responseBody: IResponse<void>;
 
   if (!success) {
-    responseBody = IResponse.fail(message);
-    return NextResponse.json(responseBody, { status: 401 });
+    return NextResponse.json(
+      { success: false, message: message || "Erro ao fazer login" },
+      { status: 401 }
+    );
   }
 
-  responseBody = IResponse.ok(message);
-  const res = NextResponse.json(responseBody);
-  res.cookies.set("token", data?.token!, {
+  const res = NextResponse.json({ 
+    success: true, 
+    message: message || "Login realizado com sucesso" 
+  });
+  
+  res.cookies.set("token", data?.accessToken!, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
@@ -25,11 +28,11 @@ export async function POST(req: NextRequest) {
     maxAge: 60 * 15,
   });
 
-  res.cookies.set("refreshToken", data?.tokenRefresh!, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
-  path: "/",
+  res.cookies.set("refreshToken", data?.refreshToken!, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
     maxAge: rememberMe 
       ? 60 * 60 * 24 * 30  
       : 60 * 60 * 12,    

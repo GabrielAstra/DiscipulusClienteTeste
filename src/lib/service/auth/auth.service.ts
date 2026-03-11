@@ -1,5 +1,6 @@
 import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
 import { IServiceResponse } from "@/types/response";
+import { AuthResponse, AuthTokens } from "@/types/auth";
 
 export interface ILoginRequest {
   email: string;
@@ -7,17 +8,11 @@ export interface ILoginRequest {
   lembrarLogin: boolean;
 }
 
-export interface ILoginResponse {
-  token: string;
-  tokenRefresh: string;
-}
 export async function login(
   payload: ILoginRequest
-): Promise<IServiceResponse<ILoginResponse>> {
+): Promise<IServiceResponse<AuthTokens>> {
   try {
-
     const resposta = await fetch(
-
       `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Home/Login`,
       {
         method: "POST",
@@ -28,12 +23,13 @@ export async function login(
         body: JSON.stringify(payload),
       }
     );
-    const responseBody = await resposta.json();
+    
+    const responseBody: AuthResponse = await resposta.json();
 
     return {
-      message: responseBody.mensagem,
-      success: responseBody.flag,
-      data: { token: responseBody.token, tokenRefresh: responseBody.tokenRefresh },
+      message: responseBody.message,
+      success: responseBody.success,
+      data: responseBody.data,
     };
   } catch (error) {
     console.error(error);
@@ -53,13 +49,9 @@ export interface ICadastroRequest {
   tipoUsuario: number; // 1 = professor, 2 = estudante
 }
 
-export interface ICadastroResponse {
-  token?: string;
-}
-
 export async function signup(
   payload: ICadastroRequest
-): Promise<IServiceResponse<ICadastroResponse>> {
+): Promise<IServiceResponse<AuthTokens>> {
   try {
     const resposta = await fetch(
       `${process.env.NEXT_PUBLIC_DISCIPULUS_API_URL}/Home/Registro`,
@@ -71,11 +63,13 @@ export async function signup(
         body: JSON.stringify({ ...payload, status: 0 }),
       }
     );
-    const responseBody = await resposta.json();
+    
+    const responseBody: AuthResponse = await resposta.json();
+    
     return {
       message: responseBody.message,
       success: responseBody.success,
-      data: { token: responseBody.token },
+      data: responseBody.data,
     };
   } catch (error) {
     console.error(error);

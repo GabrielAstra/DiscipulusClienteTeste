@@ -20,22 +20,30 @@ export default function CatalogoProfessoresPage() {
   const [professores, setProfessores] = useState<Professor[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagina, setPagina] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
   const PAGINACAO = 12;
 
   useEffect(() => {
     async function carregarProfessores() {
       try {
-        const data = await listarProfessores({
+        const response = await listarProfessores({
           filtros: termoBusca || undefined,
           pagina,
           paginacao: PAGINACAO,
           busca: !!termoBusca,
         });
 
-        const professoresMapeados =
-          data.resposta?.$values?.map(mapProfessorFromApi) ?? [];
+        // Novo formato: response.data.itens.$values
+        const itens = response.data?.itens?.$values || [];
+        
+        const professoresMapeados = itens.map(mapProfessorFromApi);
 
         setProfessores(professoresMapeados);
+        
+        // Atualizar informações de paginação do novo formato
+        if (response.data?.totalPaginas) {
+          setTotalPaginas(response.data.totalPaginas);
+        }
       } catch (error) {
         console.error("Erro ao carregar professores", error);
       } finally {

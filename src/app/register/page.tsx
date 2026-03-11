@@ -68,18 +68,24 @@ export default function CadastroPage() {
     });
     const responseBodySignup = await res.json();
     if (!responseBodySignup.success) {
-      showError(responseBodySignup.message);
+      showError(responseBodySignup.message || "Erro ao criar conta");
       setCarregando(false);
       return;
     } else {
       const resUser = await fetch("/api/user/me");
       const data = (await resUser.json()) as IResponse<Usuario>;
       showSuccess(
-        `Bem vindo(a) ${data.data?.nome}`,
-        "Cadastro feito com sucesso!"
+        responseBodySignup.message || "Conta criada com sucesso",
+        `Bem vindo(a) ${data.data?.nome}!`
       );
       await refreshUser();
-      navegar.push("/catalog");
+      
+      // Se for professor, redireciona para o painel
+      if (tipoUsuario === 1) {
+        navegar.push("/teacher-dashboard");
+      } else {
+        navegar.push("/catalog");
+      }
     }
   };
 

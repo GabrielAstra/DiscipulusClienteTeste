@@ -4,7 +4,6 @@ import { fetchWithAuth } from "@/lib/helper/fetchWithAuth";
 const API_URL = process.env.NEXT_PUBLIC_DISCIPULUS_API_URL;
 
 export async function POST(request: Request) {
-
   const { searchParams } = new URL(request.url);
 
   try {
@@ -28,7 +27,13 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json(JSON.parse(raw));
+    const apiResponse = JSON.parse(raw);
+    
+    if (apiResponse.success !== undefined) {
+      return NextResponse.json(apiResponse);
+    }
+    
+    return NextResponse.json(apiResponse);
 
   } catch (error) {
     console.error("ERRO AO LISTAR PROFESSORES:", error);

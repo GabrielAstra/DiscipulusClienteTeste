@@ -1,27 +1,38 @@
 import { signup } from "@/lib/service/auth/auth.service";
-import { IResponse } from "@/types/response";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
   const { message, success, data } = await signup(body);
-  var responseBody: IResponse<void>;
 
   if (!success) {
-    responseBody = IResponse.fail(message);
-    return NextResponse.json(responseBody, { status: 400 });
+    return NextResponse.json(
+      { success: false, message: message || "Erro ao criar conta" },
+      { status: 400 }
+    );
   }
 
-  responseBody = IResponse.ok(message);
-  const res = NextResponse.json(responseBody);
+  const res = NextResponse.json({ 
+    success: true, 
+    message: message || "Conta criada com sucesso" 
+  });
 
-  // Set HttpOnly cookie for token
-  res.cookies.set("token", data?.token!, {
+  // Set HttpOnly cookies for tokens
+  res.cookies.set("token", data?.accessToken!, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
+    maxAge: 60 * 15,
+  });
+
+  res.cookies.set("refreshToken", data?.refreshToken!, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: 60 * 60 * 12,
   });
 
   return res;
