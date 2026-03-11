@@ -5,6 +5,7 @@ import {
   Globe,
   Award,
   Users,
+  ArrowRight,
 } from "lucide-react";
 import { Professor } from "@/types/professor";
 import Link from "next/link";
@@ -16,128 +17,117 @@ interface PropriedadesCartaoProfessor {
 export default function CartaoProfessor({
   professor,
 }: PropriedadesCartaoProfessor) {
-  
   const habilidades = professor.detalhesHabilidades?.$values?.map(h => h.nomeHabilidade) || professor.habilidades || [];
+  const idiomas = professor.idiomas || (professor.idioma ? [professor.idioma] : []);
   
   return (
-    <div className="relative group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-indigo-100 transition-all duration-300 transform hover:-translate-y-1">
-      <div className="relative p-6 pb-4">
-        <div className="flex items-start justify-between">
-          <div className="relative">
-            <div className="w-20 h-20 rounded-2xl overflow-hidden ring-4 ring-white shadow-lg">
-             
-                <img
-                  src={professor.fotoPerfil || "/avatar.png"}
-                  alt={professor.nome}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  onError={(e) => {
-                    e.currentTarget.src = "/avatar.png";
-                  }}
-                />
-
-            </div>
-            {professor.verificado && (
-              <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full p-1.5 shadow-lg">
-                <CheckCircle className="w-4 h-4 text-white" />
-              </div>
-            )}
-          </div>
-
-          <div className="text-right">
-            <div className="flex items-center justify-end space-x-1 mb-1">
-              <Star className="w-4 h-4 text-amber-400 fill-current" />
-              <span className="text-lg font-bold text-gray-900">
-                {professor.mediaAvaliacoes}
-              </span>
-            </div>
-            <div className="text-sm text-gray-500">
-              {professor.totalAvaliacoes} avaliações
-            </div>
-          </div>
+    <div className="group relative w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-lg border border-gray-100 hover:shadow-xl hover:border-indigo-200 transition-all duration-300 hover:-translate-y-1">
+    
+      <div className="relative h-64 overflow-hidden">
+        <img
+          src={professor.fotoPerfil || "/avatar.png"}
+          alt={professor.nome}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={(e) => {
+            e.currentTarget.src = "/avatar.png";
+          }}
+        />
+        
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent" />
+        
+        <div className="absolute top-4 left-4 flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur-sm px-3 py-1.5 text-xs font-medium">
+          <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+          <span className="text-gray-700">Online</span>
         </div>
-
-        <div className="mt-4">
-          <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors">
+        
+        <div className="absolute top-4 right-4 flex items-center gap-1 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white">
+          <CheckCircle className="h-3.5 w-3.5" />
+          Verificado
+        </div>
+        
+        <div className="absolute bottom-4 left-4 right-4">
+          <h3 className="font-bold text-xl text-white drop-shadow-lg">
             {professor.nome}
           </h3>
-          <div className="flex items-center text-gray-600 text-sm">
-            <Award className="w-4 h-4 mr-1" />
-            <span>{professor.experiencia} de experiência</span>
+          <div className="mt-1 flex items-center gap-3 text-sm text-white/80">
+            <span className="flex items-center gap-1">
+              <Award className="h-3.5 w-3.5" />
+              {professor.tempoExperiencia} anos
+            </span>
+            {idiomas.length > 0 && (
+              <span className="flex items-center gap-1">
+                <Globe className="h-3.5 w-3.5" />
+                {idiomas.slice(0, 2).join(", ")}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="px-6 pb-4">
-        <div className="flex flex-wrap gap-2">
-          {habilidades.slice(0, 3).map((habilidade, indice) => (
+      <div className="p-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <div className="flex">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`h-4 w-4 ${
+                    star <= Math.floor(professor.mediaAvaliacoes)
+                      ? "fill-amber-400 text-amber-400"
+                      : "text-gray-300"
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-sm font-semibold text-gray-900">
+              {professor.mediaAvaliacoes}
+            </span>
+            <span className="text-xs text-gray-500">
+              ({professor.totalAvaliacoes})
+            </span>
+          </div>
+          <div className="flex items-center gap-1 text-xs text-gray-500">
+            <Users className="h-3.5 w-3.5" />
+            32 alunos
+          </div>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {habilidades.slice(0, 3).map((habilidade, i) => (
             <span
-              key={`${habilidade}-${indice}`}
-              className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                indice === 0
-                  ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
-                  : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
-              }`}
+              key={i}
+              className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700"
             >
               {habilidade}
             </span>
           ))}
           {habilidades.length > 3 && (
-            <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
+            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600">
               +{habilidades.length - 3}
             </span>
           )}
         </div>
-      </div>
 
-      <div className="px-6 pb-4 space-y-3">
-        <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center text-gray-600">
-            <Globe className="w-4 h-4 mr-2" />
-            <span>{professor.idiomas.slice(0, 2).join(", ")}</span>
-            {professor.idiomas.length > 2 && (
-              <span className="ml-1 text-gray-400">
-                +{professor.idiomas.length - 2}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center text-gray-600">
-            <Users className="w-4 h-4 mr-1" />
-            <span>32 mocado</span>
-          </div>
-        </div>
-
-        <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-          {professor.biografia.length > 100
-            ? `${professor.biografia.substring(0, 100)}...`
-            : professor.biografia}
+        {/* Bio */}
+        <p className="mt-3 text-sm leading-relaxed text-gray-600 line-clamp-2">
+          {professor.biografia}
         </p>
-      </div>
 
-      <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-indigo-50 border-t border-gray-100">
-        <div className="flex items-center justify-between">
+        <div className="mt-4 flex items-end justify-between border-t border-gray-100 pt-4">
           <div>
-            <div className="flex items-baseline space-x-1">
-              <span className="text-2xl font-bold text-gray-900">
-                R${professor.valorHora}
-              </span>
-              <span className="text-sm text-gray-500">/aula</span>
-            </div>
-            <div className="text-xs text-gray-500 mt-0.5">A partir de R${professor.valorHora}</div>
+            <p className="text-xs text-gray-500">A partir de</p>
+            <p className="text-2xl font-bold text-gray-900">
+              R${professor.valorHora}
+              <span className="text-sm font-normal text-gray-500">/aula</span>
+            </p>
           </div>
-
           <Link
             href={`/teacher/${professor.id}`}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
           >
             Ver Perfil
+            <ArrowRight className="h-4 w-4" />
           </Link>
-        </div>
-      </div>
-
-      <div className="absolute top-4 left-4">
-        <div className="flex items-center space-x-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span className="text-xs font-medium text-gray-700">Online</span>
         </div>
       </div>
     </div>

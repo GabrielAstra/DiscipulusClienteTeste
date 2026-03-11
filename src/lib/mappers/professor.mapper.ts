@@ -1,11 +1,5 @@
 import { Professor } from "@/types/professor";
 
-const AVATARES_MOCK = [
-    "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg",
-    "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg",
-    "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg",
-];
-
 export function mapProfessorFromApi(apiProfessor: any, index: number): Professor {
     // Habilidades agora vêm como strings diretas: ["C#", "HTML", "Portugues"]
     const habilidades = (apiProfessor.habilidades?.$values ?? [])
@@ -24,19 +18,26 @@ export function mapProfessorFromApi(apiProfessor: any, index: number): Professor
         .map((i: any) => typeof i === 'string' ? i.trim() : i)
         .filter((i: string) => i !== '');
 
+    // Adiciona timestamp na URL da foto para evitar cache
+    const fotoPerfil = apiProfessor.fotoPerfil 
+        ? `${apiProfessor.fotoPerfil}${apiProfessor.fotoPerfil.includes('?') ? '&' : '?'}t=${Date.now()}`
+        : '/avatar.png';
+
     return {
         id: apiProfessor.professorId,
         nome: apiProfessor.nome,
-        avatar: AVATARES_MOCK[index % AVATARES_MOCK.length],
+        usuarioID: apiProfessor.usuarioId || '',
+        horaAula: apiProfessor.horaAula || 0,
+        tempoExperiencia: apiProfessor.tempoExperiencia ?? 0,
+        localizacao: apiProfessor.localizacao,
+        biografia: apiProfessor.sobreMim ?? "Professor sem biografia cadastrada.",
+        idioma: idiomas[0] || '',
+        idiomas,
         habilidades,
         mediaAvaliacoes: apiProfessor.mediaAvaliacoes ?? 0,
-        totalAvaliacoes: apiProfessor.totalAvaliacoes,
+        urlFoto: fotoPerfil,
+        fotoPerfil: fotoPerfil,
         valorHora: apiProfessor.precoHoraAula ?? 0,
-        experiencia: `${apiProfessor.tempoExperiencia} anos`,
-        biografia: apiProfessor.sobreMim ?? "Professor sem biografia cadastrada.",
-        idiomas,
-        disponibilidade: [],
-        fotoPerfil: apiProfessor.fotoPerfil,
-        verificado: true,
+        totalAvaliacoes: apiProfessor.totalAvaliacoes ?? 0,
     };
 }

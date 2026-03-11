@@ -142,12 +142,17 @@ export function mapearObterProfessorParaPerfil(
     api.disponibilidade
   );
 
+  // Adiciona timestamp na URL da foto para evitar cache
+  const urlFotoComTimestamp = api.urlFoto 
+    ? `${api.urlFoto}${api.urlFoto.includes('?') ? '&' : '?'}t=${Date.now()}`
+    : undefined;
+
   return {
     id: api.usuarioID ?? "",
     nome: api.nome ?? "",
     email: api.email ?? "",
-    avatar: api.urlFoto ?? "/avatar.png",
-    urlFoto: api.urlFoto ?? undefined,
+    avatar: urlFotoComTimestamp ?? "/avatar.png",
+    urlFoto: urlFotoComTimestamp,
     biografia: api.biografia ?? "",
     habilidades,
     valorHora: api.horaAula ?? 0,

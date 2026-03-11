@@ -83,12 +83,6 @@ export function useProfile() {
         await uploadAvatar(arquivoAvatar);
         setUploadingPhoto(false);
         setArquivoAvatar(null);
-
-        // força recarregar avatar real do backend
-        setPerfil((prev) => ({
-          ...prev,
-          urlFoto: `/api/avatar?t=${Date.now()}`
-        }));
       }
 
       if (perfil.disponibilidadeHorarios.length > 0) {
@@ -124,6 +118,7 @@ export function useProfile() {
 
       await salvarPerfilCompleto(payloadPerfil);
 
+      // Recarrega o perfil completo do backend para pegar a URL atualizada da foto
       const perfilAtualizado = await obterPerfilCompleto();
       if (perfilAtualizado) {
         setPerfil(perfilAtualizado);

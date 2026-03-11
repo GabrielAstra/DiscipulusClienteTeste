@@ -23,6 +23,7 @@ export interface Professor {
   localizacao?: string;
   biografia: string;
   idioma: string;
+  idiomas?: string[];
   habilidades: string[];
   mediaAvaliacoes: number;
   urlFoto: string;

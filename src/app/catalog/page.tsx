@@ -33,14 +33,12 @@ export default function CatalogoProfessoresPage() {
           busca: !!termoBusca,
         });
 
-        // Novo formato: response.data.itens.$values
         const itens = response.data?.itens?.$values || [];
         
         const professoresMapeados = itens.map(mapProfessorFromApi);
 
         setProfessores(professoresMapeados);
         
-        // Atualizar informações de paginação do novo formato
         if (response.data?.totalPaginas) {
           setTotalPaginas(response.data.totalPaginas);
         }
