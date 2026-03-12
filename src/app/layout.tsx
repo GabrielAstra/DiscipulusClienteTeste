@@ -44,7 +44,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className="bg-gray-50">
+      <body className="bg-gradient-to-br from-indigo-50 via-white to-purple-50">
         <UsuarioProvider>
           <ToastProvider>
             <SignalRProvider>

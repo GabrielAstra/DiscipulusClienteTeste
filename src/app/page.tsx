@@ -30,8 +30,8 @@ export default function Home() {
   const [faqAberto, setFaqAberto] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen bg-white overflow-hidden">
-      <section className="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-20 pb-32 overflow-hidden">
+    <div className="min-h-screen bg-transparent overflow-hidden" >
+      <section className="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50  pb-32 overflow-hidden" style={{ paddingTop: "20px" }}>
         <WaveDivider color="#ffff" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -39,12 +39,6 @@ export default function Home() {
 
             <div className="lg:w-1/2 text-left">
 
-              {/* <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-indigo-200 rounded-full px-6 py-2 mb-8 shadow-lg">
-                  <Star className="w-4 h-4 text-indigo-600 mr-2" />
-                  <span className="text-sm font-medium text-indigo-700">
-                    Plataforma #1 de Tutoria no Brasil
-                  </span>
-                </div> */}
 
               <span className={`${plusJakartaSpans.className} text-lg md:text-xl text-gray-600 mb-10 leading-relaxed`}>
                 Seu parceiro online de aprendizado

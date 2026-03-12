@@ -98,7 +98,7 @@ export default function CatalogoProfessoresPage() {
   }, [professores, termoBusca, habilidadesSelecionadas, ordenarPor]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-15">
+    <div className="min-h-screen bg-transparent ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -112,14 +112,14 @@ export default function CatalogoProfessoresPage() {
 
         <div className="mb-8 space-y-4">
           <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
+            <div className="flex-1 relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Buscar por nome ou matéria..."
                 value={termoBusca}
                 onChange={(e) => setTermoBusca(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full bg-transparent pl-10 pr-4 py-3 border-0 rounded-2xl focus:ring-0 focus:outline-none"
               />
             </div>
 

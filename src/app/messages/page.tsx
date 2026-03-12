@@ -147,7 +147,7 @@ export default function Messages() {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 pt-15">
+    <div className="min-h-screen bg-gray-100 ">
       <div className="h-screen flex flex-col">
         <div className="flex-1 flex overflow-hidden">
           <ConversationList
