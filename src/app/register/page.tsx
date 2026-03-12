@@ -80,7 +80,6 @@ export default function CadastroPage() {
       );
       await refreshUser();
       
-      // Se for professor, redireciona para o painel
       if (tipoUsuario === 1) {
         navegar.push("/teacher-dashboard");
       } else {

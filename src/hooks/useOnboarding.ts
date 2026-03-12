@@ -11,18 +11,12 @@ export function useOnboarding(perfil: { onBoarding?: boolean } | null) {
       return;
     }
 
-    console.log('=== DEBUG ONBOARDING ===');
-    console.log('perfil.onBoarding:', perfil.onBoarding);
-    console.log('Deve mostrar onboarding:', perfil.onBoarding === false);
-    console.log('========================');
-
-    // Só mostra se for explicitamente false
     if (perfil.onBoarding === false) {
       setTimeout(() => {
         setShowOnboarding(true);
       }, 500);
     } else {
-      // Se for true ou undefined, não mostra
+   
       setShowOnboarding(false);
     }
   }, [perfil]);
@@ -35,7 +29,6 @@ export function useOnboarding(perfil: { onBoarding?: boolean } | null) {
         method: "POST",
       });
       
-      // Recarregar os dados do perfil
       window.location.reload();
     } catch (error) {
       console.error("Erro ao completar onboarding:", error);
