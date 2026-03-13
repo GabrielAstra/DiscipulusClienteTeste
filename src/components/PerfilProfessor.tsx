@@ -164,7 +164,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
 
 
   return (
-    <div className="min-h-screen bg-transparent pt-24">
+    <div className="min-h-screen bg-transparent">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
        
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
