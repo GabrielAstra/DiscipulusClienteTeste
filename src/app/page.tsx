@@ -31,118 +31,72 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-transparent overflow-hidden" >
-      <section className="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50  pb-32 overflow-hidden" style={{ paddingTop: "20px" }}>
-        <WaveDivider color="#ffff" />
+      <section className="relative pb-32 overflow-hidden" style={{ 
+        paddingTop: "80px",
+        backgroundImage: 'url(/quadroBranco.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
+            
+            {/* Left side - Text content */}
             <div className="lg:w-1/2 text-left">
-
-
-              <span className={`${plusJakartaSpans.className} text-lg md:text-xl text-gray-600 mb-10 leading-relaxed`}>
-                Seu parceiro online de aprendizado
-              </span>
-
-              <h1 className={`${plusJakarta.className} text-5xl md:text-6xl font-extrabold text-gray-900 mb-8 leading-tight`}>
-                Encontre o Professor
-                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent block">
-                  Perfeito para Você
+              <h1 className={`${plusJakarta.className} text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-6 leading-tight`}>
+                A Plataforma Moderna de
+                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent block mt-2">
+                  Educação Online
                 </span>
               </h1>
 
               <p className={`${plusJakartaSpans.className} text-lg md:text-xl text-gray-600 mb-10 leading-relaxed`}>
-                Conecte-se com professores especialistas para experiências de aprendizado personalizadas.
-                Domine qualquer matéria com orientação individual de profissionais verificados.
+                Conecte-se com professores especialistas. Aprenda, colabore e alcance seus objetivos educacionais.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+              <Link
+                href="/catalog"
+                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                Começar Agora
+              </Link>
+            </div>
 
-                <Link
-                  href="/catalog"
-                  className="group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
-                >
-                  <Search className="w-5 h-5 group-hover:scale-110 transition-transform" />
-
-                  <span>Encontrar Professores</span>
-                </Link>
-
-                <Link
-                  href="/register"
-                  className="group border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white px-10 py-5 rounded-2xl text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center space-x-3 backdrop-blur-sm bg-white/80 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                >
-                  <span>Seja um Professor</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-
+            <div className="lg:w-1/2 relative">
+              <div className="relative rounded-[40px] overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 p-1">
+                <div className="bg-white rounded-[36px] p-4">
+                  <img
+                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop"
+                    alt="Estudantes colaborando"
+                    className="w-full h-auto rounded-[32px] object-cover"
+                  />
+                </div>
               </div>
-              <div className="flex items-center gap-4 mt-10">
-                <div className="flex -space-x-3">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="w-10 h-10 rounded-full border-2 border-hero overflow-hidden"
-                    >
-                      <img
-                        src={`https://randomuser.me/api/portraits/men/${i}.jpg`} // exemplo de URL
-                        alt={`Pessoa ${i}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                  <div className="w-10 h-10 rounded-full border-2 border-hero bg-lime flex items-center justify-center text-xs font-bold text-accent-foreground">
-                    4.8
-                    <Star className="w-2.5 h-2.5 ml-0.5 fill-current" />
+
+              <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-gray-900">20k+</p>
+                    <p className="text-sm text-gray-600">Estudantes</p>
                   </div>
                 </div>
-                <div>
-                  <p className="text-hero-text text-sm font-semibold">Avaliações de estudantes</p>
-                  <p className="text-hero-subtitle/70 text-xs">Baseado em mais de 300 feedbacks</p>
-                </div>
               </div>
 
-
-            </div>
-
-            <div className="lg:w-1/2 relative flex justify-center">
-              <img
-                src="/alunoNovo.png"
-                alt="Estudante aprendendo online"
-                className="w-full max-w-lg relative z-1"
-              />
-
-              {/* aqui usa z-index para ficar em cima da imagem tomar atenção */}
-              <div className="absolute top-10 left-10 w-40 p-4 bg-white/84 backdrop-blur-sm border border-white/30 rounded-[16px] shadow-lg animate-bounce-slow z-2">
-                <div className="flex items-center">
-                  <Star className="w-5 h-5 text-yellow-400" />
-                  <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent block">
-                    Estudantes
-                  </span>
+              <div className="absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+                    <Award className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-gray-900">500+</p>
+                    <p className="text-sm text-gray-600">Professores</p>
+                  </div>
                 </div>
-                <p className="text-black font-bold text-lg mt-1">20,000+</p>
-              </div>
-
-              <div className="absolute bottom-16 left-12 w-36 p-3 bg-white/84 backdrop-blur-sm border border-white/30 rounded-[16px] shadow-lg animate-bounce-slow delay-200 z-2">
-                <div className="flex items-center">
-                  <User className="w-5 h-5 text-blue-400" />
-                  <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent block">
-                    Professores
-                  </span>
-                </div>
-                <p className="text-black font-bold text-lg mt-1">500+</p>
-              </div>
-
-              <div className="absolute top-32 right-8 w-36 p-3 bg-white/84 backdrop-blur-md border border-white/30 rounded-[16px] shadow-lg animate-bounce-slow delay-400 z-2">
-                <div className="flex items-center space-x-2">
-                  <MessageCircle className="w-5 h-5 text-purple-400" />
-                  <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent block">
-                    Feedbacks
-                  </span>
-                </div>
-                <p className="text-black font-bold text-lg mt-1">300+</p>
               </div>
             </div>
-
           </div>
         </div>
       </section>
