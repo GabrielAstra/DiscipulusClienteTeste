@@ -16,7 +16,7 @@ export default function CartaoProfessorSimples({
   return (
     <Link href={`/teacher/${professor.id}`}>
       <div className="group relative w-full overflow-hidden rounded-3xl bg-gray-100 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
-        {/* Imagem do Professor */}
+       
         <div className="relative h-[450px] overflow-hidden">
           <img
             src={professor.fotoPerfil || "/avatar.png"}
@@ -27,12 +27,10 @@ export default function CartaoProfessorSimples({
             }}
           />
           
-          {/* Overlay gradiente */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
           
-          {/* Conteúdo sobre a imagem */}
           <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-            {/* Nome e verificação */}
+        
             <div className="flex items-center gap-2 mb-2">
               <h3 className="font-bold text-2xl drop-shadow-lg">
                 {professor.nome}
@@ -40,12 +38,10 @@ export default function CartaoProfessorSimples({
               <i className="uis uis-check-circle text-[#6562ff] text-2xl"></i>
             </div>
             
-            {/* Profissão e experiência */}
             <p className="text-white/90 text-sm mb-4">
               {habilidades[0] || "Professor"} | {professor.tempoExperiencia}+ anos de experiência
             </p>
             
-            {/* Cursos e avaliação */}
             <div className="flex items-center gap-3">
               <div className="bg-[#6562ff] text-white px-4 py-2 rounded-full text-sm font-semibold">
                 {totalCursos} Courses
