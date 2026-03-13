@@ -172,7 +172,7 @@ export default function Home() {
             <div className="lg:w-1/2 text-left">
               <h1 className={`${plusJakarta.className} text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-6 leading-tight`}>
                 A Plataforma Moderna de
-                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent block mt-2">
+                <span className="bg-[#6562ff] bg-clip-text text-transparent block mt-2">
                   Educação Online
                 </span>
               </h1>

@@ -163,8 +163,18 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
 
 
   return (
-    <div className="min-h-screen bg-transparent">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-transparent relative">
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: 'url(/backgroundProfile.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed'
+        }}
+      />
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
        
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
           <div className="p-8">
@@ -234,7 +244,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                 <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
                   <button
                     onClick={lidarComCliqueBotaoAgendar}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 shadow-sm"
+                    className="bg-[#6562ff] text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 shadow-sm"
                   >
                     <Calendar className="w-5 h-5" />
                     <span>Agendar Aula</span>

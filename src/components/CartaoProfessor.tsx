@@ -40,7 +40,7 @@ export default function CartaoProfessor({
           <span className="text-gray-700">Online</span>
         </div>
         
-        <div className="absolute top-4 right-4 flex items-center gap-1 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white">
+        <div className="absolute top-4 right-4 flex items-center gap-1 rounded-full bg-[#6562ff] backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white">
           <CheckCircle className="h-3.5 w-3.5" />
           Verificado
         </div>
@@ -123,7 +123,7 @@ export default function CartaoProfessor({
           </div>
           <Link
             href={`/teacher/${professor.id}`}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+            className="flex items-center gap-2 rounded-xl bg-[#6562ff] px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
           >
             Ver Perfil
             <ArrowRight className="h-4 w-4" />
