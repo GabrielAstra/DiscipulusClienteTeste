@@ -465,8 +465,6 @@ export default function Home() {
       </section>
 
       <section className="py-24 bg-white">
-
-
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className={`${plusJakarta.className} text-4xl md:text-5xl font-bold text-gray-900 mb-6`}>
@@ -477,26 +475,39 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {faq.map((item, indice) => (
-              <div key={indice} className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
+              <div key={indice} className="bg-gray-50 rounded-2xl overflow-hidden transition-all duration-300">
                 <button
                   onClick={() => setFaqAberto(faqAberto === indice ? null : indice)}
-                  className="w-full text-left p-6 flex items-center justify-between"
+                  className="w-full text-left p-6 flex items-start justify-between gap-4 hover:bg-gray-100 transition-colors"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900">{item.pergunta}</h3>
-                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${faqAberto === indice ? 'rotate-180' : ''}`} />
+                  <div className="flex items-start gap-4 flex-1">
+                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      faqAberto === indice 
+                        ? 'bg-gray-900 text-white rotate-0' 
+                        : 'bg-white text-gray-900'
+                    }`}>
+                      {faqAberto === indice ? (
+                        <span className="text-xl font-light leading-none">×</span>
+                      ) : (
+                        <span className="text-xl font-light leading-none">+</span>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 pt-0.5">{item.pergunta}</h3>
+                  </div>
                 </button>
-                {faqAberto === indice && (
-                  <div className="px-6 pb-6">
+                <div className={`overflow-hidden transition-all duration-300 ${
+                  faqAberto === indice ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                }`}>
+                  <div className="px-6 pb-6 pl-[4.5rem]">
                     <p className="text-gray-600 leading-relaxed">{item.resposta}</p>
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>
         </div>
-
       </section>
 
 
