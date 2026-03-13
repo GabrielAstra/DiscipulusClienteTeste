@@ -27,7 +27,13 @@ export async function GET(request: Request) {
 
   const apiResponse = await res.json();
   
-  // Se a resposta tem o novo formato com success, message, data
+  if (apiResponse.success !== undefined && !apiResponse.success) {
+    return NextResponse.json(
+      { success: false, message: apiResponse.message || "Professor não encontrado", data: null },
+      { status: 404 }
+    );
+  }
+  
   if (apiResponse.success !== undefined && apiResponse.data) {
     const data = apiResponse.data;
     

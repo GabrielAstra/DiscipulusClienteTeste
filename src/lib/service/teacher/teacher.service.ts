@@ -1,8 +1,13 @@
 
 export async function listarProfessor(id: string) {
     const res = await fetch(`/api/teacher?id=${id}`);
-    if (!res.ok) throw new Error("Erro ao buscar professor");
-    return res.json();
+    const data = await res.json();
+    
+    if (!res.ok || (data.success !== undefined && !data.success)) {
+        throw new Error(data.message || "Professor não encontrado");
+    }
+    
+    return data;
 }
 
 

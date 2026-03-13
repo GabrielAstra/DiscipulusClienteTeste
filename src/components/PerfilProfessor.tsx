@@ -47,18 +47,17 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
       try {
         const data = await listarProfessor(id);
         setProfessor(data);
-
-
       } catch (err) {
         console.error("Erro ao carregar perfil do professor", err);
         setProfessor(null);
+        showError("Professor não encontrado. Redirecionando para o catálogo...");
       } finally {
         setLoading(false);
       }
     }
 
     carregarPerfil();
-  }, [id]);
+  }, [id, showError]);
 
   useEffect(() => {
     if (!loading && !professor) {
