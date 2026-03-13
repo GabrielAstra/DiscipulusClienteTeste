@@ -176,90 +176,113 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
       />
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
        
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
-          <div className="p-8">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="relative">
+        <div className="bg-white rounded-xl shadow-sm border-2 border-[#6562ff] overflow-hidden mb-8">
+          <div className="h-1 w-full bg-gradient-to-r from-[#6562ff] via-[#6562ff]/60 to-transparent" />
+          
+          <div className="flex flex-col sm:flex-row gap-0">
+            <div className="relative flex-shrink-0 p-5 pb-0 sm:pb-5">
+              <div className="relative mx-auto w-32 h-32 sm:w-36 sm:h-36">
                 <img
                   src={professor.urlFoto || "/avatar.png"}
                   alt={professor.nome}
-                  className="w-32 h-32 rounded-full object-cover mx-auto md:mx-0"
+                  className="h-full w-full rounded-2xl object-cover shadow-md transition-transform duration-500 hover:scale-[1.03]"
                   onError={(e) => {
                     e.currentTarget.src = "/avatar.png";
                   }}
                 />
 
-                <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
-                  <CheckCircle className="w-4 h-4 text-white" />
+                <div className="absolute -bottom-1 -right-1 flex items-center justify-center h-7 w-7 rounded-full bg-white border-2 border-white">
+                  <span className="h-4 w-4 rounded-full bg-green-500 animate-pulse" />
                 </div>
-                {/* )} */}
+
+                <div className="absolute -top-2 -right-2 flex items-center justify-center h-7 w-7 rounded-full bg-[#6562ff] text-white shadow-md">
+                  <CheckCircle className="h-4 w-4" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1 p-5 pt-3 sm:pt-5 sm:pl-1 flex flex-col">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+                    {professor.nome}
+                  </h1>
+                  {professor.localizacao && (
+                    <p className="mt-0.5 flex items-center gap-1 text-sm text-gray-600">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {professor.localizacao}
+                    </p>
+                  )}
+                  <div className="mt-1.5 flex flex-wrap items-center gap-3 text-sm text-gray-600">
+                    <span className="flex items-center gap-1">
+                      <div className="flex">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`h-3.5 w-3.5 ${
+                              star <= Math.floor(parseFloat(mediaAvaliacoes))
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-gray-300"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="font-semibold text-gray-900 ml-0.5">
+                        {mediaAvaliacoes}
+                      </span>
+                      <span className="text-xs">({totalAvaliacoes} avaliações)</span>
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3.5 w-3.5" />
+                      {professor.tempoExperiencia} anos de experiência
+                    </span>
+                  </div>
+                </div>
+
+                <div className="text-right flex-shrink-0">
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+                    R${professor.horaAula}
+                  </p>
+                  <p className="text-xs text-gray-600">por aula</p>
+                </div>
               </div>
 
-              <div className="flex-1 text-center md:text-left">
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                      {professor.nome}
-                    </h1>
-                    <div className="flex items-center justify-center md:justify-start space-x-1 text-gray-600 mb-2">
-                      <MapPin className="w-4 h-4" />
-                      <span>{professor.localizacao || "Localização não informada"}</span>
-                    </div>
-                    <div className="flex items-center justify-center md:justify-start space-x-4 text-gray-600 mb-4">
-                      <div className="flex items-center space-x-1">
-                        <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                        <span className="font-medium">
-                          {mediaAvaliacoes}
-                        </span>
-                        <span>({totalAvaliacoes} avaliações)</span>
-
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="w-5 h-5" />
-                        <span>{professor.tempoExperiencia} anos de experiência</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="text-center md:text-right">
-                    <div className="text-3xl font-bold text-gray-900">
-                      R${professor.horaAula}
-                    </div>
-                    <div className="text-gray-600">por aula</div>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-6">
-                  {professor.detalhesHabilidades?.$values.map((habilidade) => (
-                    <span
-                      key={habilidade.habilidadeID}
-                      className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 border border-indigo-200"
-                    >
-                      {habilidade.nomeHabilidade}
-                    </span>
-                  ))}
-                </div>
-
-
-                <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-                  <button
-                    onClick={lidarComCliqueBotaoAgendar}
-                    className="bg-[#6562ff] text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 shadow-sm"
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {professor.detalhesHabilidades?.$values.slice(0, 4).map((habilidade) => (
+                  <span
+                    key={habilidade.habilidadeID}
+                    className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-800 border border-indigo-200"
                   >
-                    <Calendar className="w-5 h-5" />
-                    <span>Agendar Aula</span>
-                  </button>
-                  <button
-                    onClick={lidarComCliqueBotaoChat}
-                    className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
-                  >
-                    <MessageCircle className="w-5 h-5" />
-                    <span>Enviar Mensagem</span>
-                  </button>
-                  <button className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-3 rounded-lg transition-colors">
-                    <Heart className="w-5 h-5" />
-                  </button>
-                </div>
+                    {habilidade.nomeHabilidade}
+                  </span>
+                ))}
+                {professor.idioma && (
+                  <span className="rounded-full border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700">
+                    <Globe className="h-3 w-3 inline mr-1" />
+                    {professor.idioma}
+                  </span>
+                )}
+               
+              </div>
+
+              <div className="mt-auto pt-4 flex flex-wrap items-center gap-2">
+                <button
+                  onClick={lidarComCliqueBotaoAgendar}
+                  className="flex items-center gap-2 rounded-xl bg-[#6562ff] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-[#6562ff]/20 transition-all hover:bg-[#5451dd] hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <Calendar className="h-4 w-4" />
+                  Agendar Aula
+                </button>
+                <button
+                  onClick={lidarComCliqueBotaoChat}
+                  className="flex items-center gap-2 rounded-xl border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Enviar Mensagem
+                </button>
+                <button className="ml-auto flex items-center justify-center h-10 w-10 rounded-xl border border-gray-300 text-gray-600 transition-all hover:bg-gray-50 hover:text-red-500 hover:scale-110 active:scale-90">
+                  <Heart className="h-4 w-4" />
+                </button>
               </div>
             </div>
           </div>
@@ -269,7 +292,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
       
           <div className="lg:col-span-2 space-y-8">
   
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border-2 border-[#6562ff] p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Sobre
               </h2>
@@ -278,7 +301,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border-2 border-[#6562ff] p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <GraduationCap className="w-6 h-6 text-indigo-600" />
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -320,7 +343,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
 
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border-2 border-[#6562ff] p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <Briefcase className="w-6 h-6 text-green-600" />
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -417,7 +440,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border-2 border-[#6562ff] p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Informações Rápidas
               </h3>
