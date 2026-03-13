@@ -31,12 +31,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-transparent overflow-hidden" >
-      <section className="relative pb-32 overflow-hidden" style={{ 
-        paddingTop: "80px",
-        backgroundImage: 'url(/quadroBranco.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+      <section className="relative pb-32 overflow-hidden " style={{ 
+        paddingTop: "40px",
+        
       }}>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
@@ -54,12 +51,44 @@ export default function Home() {
                 Conecte-se com professores especialistas. Aprenda, colabore e alcance seus objetivos educacionais.
               </p>
 
-              <Link
+             
+              <div className="flex items-center gap-4 mt-10">
+                 <Link
                 href="/catalog"
-                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              >
-                Começar Agora
-              </Link>
+                className="inline-flex items-center 
+                justify-center px-8 py-4 
+                bg-gradient-to-r from-indigo-600 
+                to-purple-600 hover:from-indigo-700
+                 hover:to-purple-700 text-white rounded-full text-lg 
+                 font-semibold transition-all duration-300 shadow-lg 
+                 hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  Começar Agora
+                </Link>
+                <div className="flex -space-x-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="w-10 h-10 rounded-full border-2 border-hero overflow-hidden"
+                    >
+                      <img
+                        src={`https://randomuser.me/api/portraits/men/${i}.jpg`} // exemplo de URL
+                        alt={`Pessoa ${i}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                  <div className="w-10 h-10 rounded-full border-2 border-hero bg-lime flex items-center justify-center text-xs font-bold text-accent-foreground">
+                    4.8
+                    <Star className="w-2.5 h-2.5 ml-0.5 fill-current" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-hero-text text-sm font-semibold">Avaliações de estudantes</p>
+                  <p className="text-hero-subtitle/70 text-xs">Baseado em mais de 300 feedbacks</p>
+                </div>
+              </div>
+              
             </div>
 
             <div className="lg:w-1/2 relative">
@@ -76,7 +105,7 @@ export default function Home() {
               <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
-                    <Users className="w-6 h-6 text-white" />
+                  <i className="uil uil-users-alt text-white text-xl"></i>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">20k+</p>
@@ -88,8 +117,8 @@ export default function Home() {
               <div className="absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
+                  <i className="uil uil-user-check text-white text-xl"></i>         
+                 </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">500+</p>
                     <p className="text-sm text-gray-600">Professores</p>
