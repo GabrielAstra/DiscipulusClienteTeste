@@ -16,13 +16,13 @@ export default function Footer() {
                         </p>
 
                         <div className="flex space-x-4">
-                            <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
+                            <div className="w-10 h-10 bg-[#6562ff] rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
                                 <span className="text-sm font-bold">f</span>
                             </div>
-                            <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
+                            <div className="w-10 h-10 bg-[#6562ff] rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
                                 <span className="text-sm font-bold">ig</span>
                             </div>
-                            <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
+                            <div className="w-10 h-10 bg-[#6562ff] rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors cursor-pointer">
                                 <span className="text-sm font-bold">in</span>
                             </div>
                         </div>

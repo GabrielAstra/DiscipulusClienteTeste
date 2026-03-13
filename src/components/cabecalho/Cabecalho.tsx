@@ -109,7 +109,7 @@ export default function Cabecalho({ usuario, aoFazerLogout }: PropriedadesCabeca
                     px-4 py-2 rounded-full
                     text-sm font-medium
                     transition-all duration-200
-                    hover:bg-blue-600 hover:text-white"
+                    hover:bg-[#6562ff] hover:text-white"
                 >
                   <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                     <User className="w-4 h-4 text-zinc-900" />
@@ -118,7 +118,7 @@ export default function Cabecalho({ usuario, aoFazerLogout }: PropriedadesCabeca
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-full py-3  text-sm font-medium transition-colors"
+                  className="bg-[#6562ff] hover:bg-black text-white px-6 rounded-full py-3  text-sm font-medium transition-colors"
                 >
                   Cadastrar
                 </Link>

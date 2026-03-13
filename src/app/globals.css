@@ -141,10 +141,36 @@
 
 /* fiz aqui porque nao sei em tailwind, depois se alguém souber faz e tira isso daqui pfv  */
 .efeito-vidro-roxo{
-background: rgba(108, 28, 218, 0.11);
+background: rgba(101, 98, 255, 0.21);
 border-radius: 16px;
 box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-backdrop-filter: blur(5px);
--webkit-backdrop-filter: blur(5px);
-border: 1px solid rgba(108, 28, 218, 0.3);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
+border: 1px solid rgba(101, 98, 255, 0.3);
+}
+
+/* Esconder scrollbar mas manter funcionalidade */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Efeito blur no scroll */
+.scroll-blur-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(0px);
+}
+
+@supports (backdrop-filter: blur(8px)) {
+  .scroll-blur-overlay {
+    backdrop-filter: blur(var(--blur-amount, 0px));
+  }
 }

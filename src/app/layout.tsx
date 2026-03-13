@@ -45,10 +45,8 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
-        <link
-          rel="stylesheet"
-          href="https://unicons.iconscout.com/release/v4.0.8/css/line.css"
-        />
+      <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css" />
+      <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/solid.css" />   
       </head>
       <body className="">
         <UsuarioProvider>
