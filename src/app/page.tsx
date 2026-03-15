@@ -158,14 +158,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-transparent overflow-hidden" >
       <section className="relative bg-white pb-32 overflow-hidden bg-gradient-to-br from-gray-50 to-indigo-50" style={{ paddingTop: "40px" }}>
-        <div 
-          className="absolute inset-0 pointer-events-none z-10 transition-opacity duration-300"
-          style={{
-            background: `rgba(101, 98, 255, ${Math.min(scrollY / 500, 0.15)})`,
-            backdropFilter: `blur(${Math.min(scrollY / 50, 8)}px)`,
-            opacity: scrollY > 0 ? 1 : 0
-          }}
-        />
+        <WaveDivider   flip color="#ffff" />
+       
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
             

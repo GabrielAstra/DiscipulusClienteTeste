@@ -98,8 +98,12 @@ export default function CatalogoProfessoresPage() {
   }, [professores, termoBusca, habilidadesSelecionadas, ordenarPor]);
 
   return (
-    <div className="min-h-screen bg-transparent ">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-transparent relative">
+      <div
+        className="fixed inset-0 z-0"
+      
+      />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Encontre o Professor Perfeito

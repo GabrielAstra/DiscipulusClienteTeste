@@ -31,7 +31,12 @@ export async function listarHabilidades(
     }
 
     const body = await response.json();
-    const dtos = body["$values"] as HabilidadeResponse[];
+
+    if (!body.success) {
+      return { success: false, message: body.message || ERRO_REQUISICAO };
+    }
+
+    const dtos = body.data["$values"] as HabilidadeResponse[];
 
     const habilidades: Habilidade[] = dtos.map(dto => ({
       id: dto.habilidadeID,

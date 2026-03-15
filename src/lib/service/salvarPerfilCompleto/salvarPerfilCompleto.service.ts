@@ -1,4 +1,3 @@
-import { environment } from "@/lib/environment/environment";
 import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
 import { IServiceResponse } from "@/types/response";
 
@@ -52,6 +51,12 @@ export async function editarPerfilCompleto(
         if (!response.ok) {
             console.error(`Erro na API: ${response.status} - ${response.statusText}`);
             return { success: false, message: ERRO_REQUISICAO };
+        }
+
+        const body = await response.json();
+
+        if (!body.success) {
+            return { success: false, message: body.message || ERRO_REQUISICAO };
         }
 
         return { success: true, data: null };

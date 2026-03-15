@@ -166,13 +166,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
     <div className="min-h-screen bg-transparent relative">
       <div 
         className="fixed inset-0 z-0"
-        style={{
-          backgroundImage: 'url(/backgroundProfile.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed'
-        }}
+        
       />
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
        
