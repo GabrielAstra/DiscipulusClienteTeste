@@ -7,6 +7,7 @@ import { listarMensagens } from "@/lib/service/chat/mensagens.service";
 import { useSignalR } from "@/context/SignalRContext";
 import { Professor } from "@/types/professor";
 import { useToast } from "@/context/ToastContext";
+import { useModal } from "@/context/ModalContext";
 
 interface Mensagem {  
   id: string;
@@ -30,6 +31,13 @@ export default function ModalChat({
   const [mensagens, setMensagens] = useState<Mensagem[]>([]);
   const [novaMensagem, setNovaMensagem] = useState("");
   const [digitando, setDigitando] = useState(false);
+  const { abrirModal, fecharModal } = useModal();
+
+  useEffect(() => {
+    if (aberto) abrirModal();
+    else fecharModal();
+    return () => fecharModal();
+  }, [aberto]);
   const [erro, setErro] = useState<string | null>(null);
   const [banido, setBanido] = useState(false);
   const { connection } = useSignalR();
@@ -159,7 +167,7 @@ export default function ModalChat({
   if (!aberto) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm bg-opacity-50 flex items-center justify-center  p-4">
       <div className="bg-white rounded-2xl w-full max-w-md h-[600px] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">

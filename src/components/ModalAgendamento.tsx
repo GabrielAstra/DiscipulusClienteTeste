@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { Professor } from "../types/professor";
 import { Check, X, Calendar, Clock } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { DadosAgendamento } from "../types/agendamento";
+import { useModal } from "@/context/ModalContext";
 
 interface PropriedadesModalAgendamento {
   professor: Professor;
@@ -38,6 +39,13 @@ export default function ModalAgendamento({
   const [passo, setPasso] = useState(1);
   const [dataSelecionada, setDataSelecionada] = useState("");
   const [horarioSelecionado, setHorarioSelecionado] = useState("");
+  const { abrirModal, fecharModal } = useModal();
+
+  useEffect(() => {
+    if (aberto) abrirModal();
+    else fecharModal();
+    return () => fecharModal();
+  }, [aberto]);
   const [duracao, setDuracao] = useState(60);
   const [observacoes, setObservacoes] = useState("");
   const router = useRouter();
@@ -202,7 +210,7 @@ export default function ModalAgendamento({
   if (!aberto) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-[100] p-4">
       <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
           <div className="flex items-center space-x-4">

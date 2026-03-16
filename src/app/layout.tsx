@@ -7,6 +7,7 @@ import { UsuarioProvider } from "../context/UsuarioContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { Toaster } from "sonner";
 import { SignalRProvider } from '@/context/SignalRContext';
+import { ModalProvider } from "@/context/ModalContext";
 import { Sign } from "crypto";
 import { Shrikhand } from 'next/font/google'
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
@@ -52,9 +53,11 @@ export default function RootLayout({
         <UsuarioProvider>
           <ToastProvider>
             <SignalRProvider>
-              <CabecalhoClient />
-                {children}
-              <Toaster position="top-right" richColors />
+              <ModalProvider>
+                <CabecalhoClient />
+                  {children}
+                <Toaster position="top-right" richColors />
+              </ModalProvider>
             </SignalRProvider>
           </ToastProvider>
         </UsuarioProvider>

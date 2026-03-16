@@ -49,7 +49,6 @@ export async function GET(request: Request) {
     });
   }
   
-  // Fallback para formato antigo
   const habilidades = (apiResponse.habilidades?.$values ?? []).map(
     (h: { nomeHabilidade?: string; habilidadeID?: string }) =>
       h.nomeHabilidade ?? String(h.habilidadeID ?? "")

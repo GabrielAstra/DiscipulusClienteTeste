@@ -170,7 +170,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
       />
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
        
-        <div className="bg-white rounded-xl shadow-sm border-2 border-[#6562ff] overflow-hidden mb-8">
+        <div className="bg-white rounded-xl shadow-sm  overflow-hidden mb-8">
           <div className="h-1 w-full bg-gradient-to-r from-[#6562ff] via-[#6562ff]/60 to-transparent" />
           
           <div className="flex flex-col sm:flex-row gap-0">
@@ -286,7 +286,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
       
           <div className="lg:col-span-2 space-y-8">
   
-            <div className="bg-white rounded-xl shadow-sm border-2 border-[#6562ff] p-6">
+            <div className="bg-white rounded-xl shadow-sm  p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Sobre
               </h2>
@@ -295,7 +295,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border-2 border-[#6562ff] p-6">
+            <div className="bg-white rounded-xl shadow-sm  p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <GraduationCap className="w-6 h-6 text-indigo-600" />
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -337,7 +337,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
 
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border-2 border-[#6562ff] p-6">
+            <div className="bg-white rounded-xl shadow-sm  p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <Briefcase className="w-6 h-6 text-green-600" />
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -373,7 +373,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm  p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Matérias e Especialidades
               </h2>
@@ -394,7 +394,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
             </div>
 
             {/* Reviews */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm  p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Avaliações ({totalAvaliacoes})
               </h2>
@@ -434,7 +434,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border-2 border-[#6562ff] p-6">
+            <div className="bg-white rounded-xl shadow-sm  p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Informações Rápidas
               </h3>
@@ -477,7 +477,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm  p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Disponibilidade
               </h3>
