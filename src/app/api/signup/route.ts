@@ -4,11 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  const { message, success, data } = await signup(body);
+  const { message, success, data, erros } = await signup(body);
 
   if (!success) {
     return NextResponse.json(
-      { success: false, message: message || "Erro ao criar conta" },
+      { success: false, message: message || "Erro ao criar conta", erros },
       { status: 400 }
     );
   }

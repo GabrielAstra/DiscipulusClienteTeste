@@ -26,4 +26,5 @@ export interface IServiceResponse<T> {
   success: boolean;
   message?: string;
   data?: T;
+  erros?: string[] | { $values: string[] } | null;
 }

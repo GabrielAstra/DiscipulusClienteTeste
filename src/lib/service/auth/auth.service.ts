@@ -70,6 +70,7 @@ export async function signup(
       message: responseBody.message,
       success: responseBody.success,
       data: responseBody.data,
+      erros: responseBody.erros,
     };
   } catch (error) {
     console.error(error);

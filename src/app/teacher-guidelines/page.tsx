@@ -134,8 +134,7 @@ export default function TermosDeUso() {
   return (
     <div className="min-h-screen bg-white">
 
-      {/* Header Hero */}
-      <section className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 pt-20 pb-24 overflow-hidden">
+      <section className="relative bg-[#6562ff] pt-20 pb-24 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
           <div className="absolute bottom-10 right-10 w-80 h-80 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>

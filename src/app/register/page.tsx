@@ -68,7 +68,12 @@ export default function CadastroPage() {
     });
     const responseBodySignup = await res.json();
     if (!responseBodySignup.success) {
-      showError(responseBodySignup.message || "Erro ao criar conta");
+      const errosRaw = responseBodySignup.erros;
+      const erros: string[] = Array.isArray(errosRaw)
+        ? errosRaw
+        : errosRaw?.$values ?? [];
+      const detalhe = erros.length ? erros.join(", ") : null;
+      showError(responseBodySignup.message || "Erro ao criar conta", detalhe ?? undefined);
       setCarregando(false);
       return;
     } else {
