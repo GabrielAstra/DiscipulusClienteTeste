@@ -1,4 +1,5 @@
 "use client";
+
 import { useToast } from "@/context/ToastContext";
 import { useUsuario } from "@/context/UsuarioContext";
 import { ILoginRequest } from "@/lib/service/auth/auth.service";
@@ -12,19 +13,17 @@ import {
   Heart,
   GraduationCap,
   Briefcase,
-  Award,
   MapPin,
   Star,
+  BookOpen,
+  ChevronRight,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import ModalAgendamento from "./ModalAgendamento";
 import ModalChat from "./ModalChat";
 import ModalLogin from "./ModalLogin";
 import { Professor } from "@/types/professor";
-
 import { listarProfessor } from "@/lib/service/teacher/teacher.service";
-
-
 
 interface PropriedadesPerfilProfessor {
   id: string;
@@ -39,519 +38,429 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
   const [agendamentoAberto, setAgendamentoAberto] = useState(false);
   const [chatAberto, setChatAberto] = useState(false);
   const [modalLoginAberto, setModalLoginAberto] = useState(false);
+  const [favoritado, setFavoritado] = useState(false);
   const router = useRouter();
-
 
   useEffect(() => {
     async function carregarPerfil() {
       try {
         const data = await listarProfessor(id);
         setProfessor(data);
-      } catch (err) {
-        console.error("Erro ao carregar perfil do professor", err);
+      } catch {
         setProfessor(null);
         showError("Professor não encontrado. Redirecionando para o catálogo...");
       } finally {
         setLoading(false);
       }
     }
-
     carregarPerfil();
   }, [id, showError]);
 
   useEffect(() => {
-    if (!loading && !professor) {
-      router.push("/catalog");
-    }
+    if (!loading && !professor) router.push("/catalog");
   }, [loading, professor, router]);
 
-
-  const formatarData = (dataString: string) => {
-    return new Date(dataString).toLocaleDateString("pt-BR", {
-      month: 'short',
-      year: 'numeric'
-    });
-  };
+  const formatarData = (dataString: string) =>
+    new Date(dataString).toLocaleDateString("pt-BR", { month: "short", year: "numeric" });
 
   const calcularDuracao = (inicio: string, fim: string) => {
-    const dataInicio = new Date(inicio);
-    const dataFim = new Date(fim);
-    const diffAnos = dataFim.getFullYear() - dataInicio.getFullYear();
-    const diffMeses = dataFim.getMonth() - dataInicio.getMonth();
-
-    const totalMeses = diffAnos * 12 + diffMeses;
+    const totalMeses =
+      (new Date(fim).getFullYear() - new Date(inicio).getFullYear()) * 12 +
+      (new Date(fim).getMonth() - new Date(inicio).getMonth());
     const anos = Math.floor(totalMeses / 12);
     const meses = totalMeses % 12;
-
-    if (anos > 0 && meses > 0) {
-      return `${anos} ano${anos > 1 ? 's' : ''} e ${meses} ${meses > 1 ? 'meses' : 'mês'}`;
-    } else if (anos > 0) {
-      return `${anos} ano${anos > 1 ? 's' : ''}`;
-    } else {
-      return `${meses} ${meses > 1 ? 'meses' : 'mês'}`;
-    }
+    if (anos > 0 && meses > 0) return `${anos}a ${meses}m`;
+    if (anos > 0) return `${anos} ano${anos > 1 ? "s" : ""}`;
+    return `${meses} ${meses > 1 ? "meses" : "mês"}`;
   };
 
   const lidarComCliqueBotaoAgendar = () => {
-    if (usuario) {
-      setAgendamentoAberto(true);
-    } else {
-      setModalLoginAberto(true);
-    }
+    if (usuario) setAgendamentoAberto(true);
+    else setModalLoginAberto(true);
   };
 
   const lidarComCliqueBotaoChat = () => {
-    if (usuario) {
-      setChatAberto(true);
-    } else {
-      setModalLoginAberto(true);
-    }
+    if (usuario) setChatAberto(true);
+    else setModalLoginAberto(true);
   };
 
   const lidarComSucessoLogin = async (dadosUsuario: ILoginRequest) => {
     const { success, data } = await realizarLogin(dadosUsuario);
-    if (success) {
-      showSuccess("Olá!", `Bem-vindo(a) de volta, ${data?.nome}!`);
-    } else {
-      showError("Email e/ou senha inválidos!");
-    }
+    if (success) showSuccess("Olá!", `Bem-vindo(a) de volta, ${data?.nome}!`);
+    else showError("Email e/ou senha inválidos!");
     setModalLoginAberto(false);
     setAgendamentoAberto(true);
   };
-  const renderStars = (nota: number) => {
-    return [...Array(5)].map((_, i) => (
-      <Star
-        key={i}
-        className={`w-4 h-4 ${i < nota ? "text-yellow-400 fill-current" : "text-gray-300"
-          }`}
-      />
-    ));
-  };
 
-  if (loading || !professor) {
-    return null;
-  }
-  const diasDisponiveis = professor.disponibilidade?.$values ?? [];
-  
-  const diasComHorarios = new Set(
-    diasDisponiveis.map(d => d.diaSemana)
-  );
-  
-  const mapaDias: { [key: number]: string } = {
-    0: "Domingo",
-    1: "Segunda",
-    2: "Terça",
-    3: "Quarta",
-    4: "Quinta",
-    5: "Sexta",
-    6: "Sábado"
-  };
-  
-  const disponibilidade = Array.from(diasComHorarios).map(dia => mapaDias[dia]);
+  if (loading || !professor) return null;
+
   const avaliacoes = professor.avaliacao?.$values ?? [];
-
   const totalAvaliacoes = avaliacoes.length;
-
   const mediaAvaliacoes =
     totalAvaliacoes > 0
-      ? (
-        avaliacoes.reduce((acc, av) => acc + av.nota, 0) /
-        totalAvaliacoes
-      ).toFixed(1)
+      ? (avaliacoes.reduce((acc, av) => acc + av.nota, 0) / totalAvaliacoes).toFixed(1)
       : "0";
 
+  const diasDisponiveis = professor.disponibilidade?.$values ?? [];
+  const diasComHorarios = new Set(diasDisponiveis.map((d) => d.diaSemana));
+  const mapaDias: Record<number, string> = {
+    0: "Domingo", 1: "Segunda", 2: "Terça", 3: "Quarta",
+    4: "Quinta", 5: "Sexta", 6: "Sábado",
+  };
+  const disponibilidade = Array.from(diasComHorarios).map((d) => mapaDias[d]);
 
+  const habilidades = professor.detalhesHabilidades?.$values ?? [];
 
   return (
-    <div className="min-h-screen bg-[#eef0f4] relative">
-      <div 
-        className="fixed inset-0 z-0"
-        
-      />
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-       
-        <div className="bg-white rounded-xl shadow-sm  overflow-hidden mb-8">
-          <div className="h-1 w-full bg-gradient-to-r from-[#6562ff] via-[#6562ff]/60 to-transparent" />
-          
-          <div className="flex flex-col sm:flex-row gap-0">
-            <div className="relative flex-shrink-0 p-5 pb-0 sm:pb-5">
-              <div className="relative mx-auto w-32 h-32 sm:w-36 sm:h-36">
-                <img
-                  src={professor.urlFoto || "/avatar.png"}
-                  alt={professor.nome}
-                  className="h-full w-full rounded-2xl object-cover shadow-md transition-transform duration-500 hover:scale-[1.03]"
-                  onError={(e) => {
-                    e.currentTarget.src = "/avatar.png";
-                  }}
-                />
+    <div className="min-h-screen bg-[#f4f5f7]">
 
-                <div className="absolute -bottom-1 -right-1 flex items-center justify-center h-7 w-7 rounded-full bg-white border-2 border-white">
-                  <span className="h-4 w-4 rounded-full bg-green-500 animate-pulse" />
+      {/* Hero cover */}
+      <div className="relative h-52 sm:h-64  overflow-hidden">
+        <div className="absolute inset-0 opacity-20" />
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f4f5f7] to-transparent" />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 pb-16 relative">
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+
+          {/* Coluna principal */}
+          <div className="flex-1 min-w-0 space-y-5">
+
+            {/* Card de identidade */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="flex flex-col sm:flex-row gap-5">
+                {/* Avatar */}
+                <div className="relative flex-shrink-0">
+                  <img
+                    src={professor.urlFoto || "/avatar.png"}
+                    alt={professor.nome}
+                    className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shadow-lg ring-4 ring-white"
+                    onError={(e) => { e.currentTarget.src = "/avatar.png"; }}
+                  />
+                  <span className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-md">
+                    <span className="h-3.5 w-3.5 rounded-full bg-green-500" />
+                  </span>
                 </div>
 
-                <div className="absolute -top-2 -right-2 flex items-center justify-center h-7 w-7 rounded-full bg-[#6562ff] text-white shadow-md">
-                  <CheckCircle className="h-4 w-4" />
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-3 flex-wrap">
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h1 className="text-2xl font-bold text-gray-900">{professor.nome}</h1>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-[#6562ff]/10 px-2.5 py-0.5 text-xs font-semibold text-[#6562ff]">
+                          <CheckCircle className="h-3 w-3" />
+                          Verificado
+                        </span>
+                      </div>
+                      {professor.localizacao && (
+                        <p className="mt-1 flex items-center gap-1 text-sm text-gray-500">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {professor.localizacao}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-gray-900">R$ {professor.horaAula}</p>
+                      <p className="text-xs text-gray-400">por aula</p>
+                    </div>
+                  </div>
+
+                  {/* Stats row */}
+                  <div className="mt-3 flex flex-wrap gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <div className="flex">
+                        {[1,2,3,4,5].map((s) => (
+                          <Star key={s} className={`h-3.5 w-3.5 ${s <= Math.floor(parseFloat(mediaAvaliacoes)) ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`} />
+                        ))}
+                      </div>
+                      <span className="text-sm font-bold text-gray-900">{mediaAvaliacoes}</span>
+                      <span className="text-xs text-gray-400">({totalAvaliacoes})</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-sm text-gray-500">
+                      <Clock className="h-3.5 w-3.5" />
+                      {professor.tempoExperiencia} anos de exp.
+                    </div>
+                    {professor.idioma && (
+                      <div className="flex items-center gap-1.5 text-sm text-gray-500">
+                        <Globe className="h-3.5 w-3.5" />
+                        {professor.idioma}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tags */}
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {habilidades.slice(0, 5).map((h) => (
+                      <span key={h.habilidadeID} className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+                        {h.nomeHabilidade}
+                      </span>
+                    ))}
+                    {habilidades.length > 5 && (
+                      <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-500">
+                        +{habilidades.length - 5}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Ações */}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      onClick={lidarComCliqueBotaoAgendar}
+                      className="flex items-center gap-2 rounded-xl bg-[#6562ff] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-[#6562ff]/25 transition-all hover:bg-[#5451dd] hover:shadow-lg active:scale-95"
+                    >
+                      <Calendar className="h-4 w-4" />
+                      Agendar Aula
+                    </button>
+                    <button
+                      onClick={lidarComCliqueBotaoChat}
+                      className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 active:scale-95"
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                      Mensagem
+                    </button>
+                    <button
+                      onClick={() => setFavoritado(!favoritado)}
+                      className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all active:scale-90 ${favoritado ? "border-red-200 bg-red-50 text-red-500" : "border-gray-200 bg-white text-gray-400 hover:text-red-400"}`}
+                    >
+                      <Heart className={`h-4 w-4 ${favoritado ? "fill-current" : ""}`} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex-1 p-5 pt-3 sm:pt-5 sm:pl-1 flex flex-col">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
-                    {professor.nome}
-                  </h1>
-                  {professor.localizacao && (
-                    <p className="mt-0.5 flex items-center gap-1 text-sm text-gray-600">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {professor.localizacao}
-                    </p>
-                  )}
-                  <div className="mt-1.5 flex flex-wrap items-center gap-3 text-sm text-gray-600">
-                    <span className="flex items-center gap-1">
-                      <div className="flex">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`h-3.5 w-3.5 ${
-                              star <= Math.floor(parseFloat(mediaAvaliacoes))
-                                ? "fill-yellow-400 text-yellow-400"
-                                : "text-gray-300"
-                            }`}
-                          />
-                        ))}
+            {/* Sobre */}
+            {professor.biografia && (
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h2 className="text-base font-bold text-gray-900 mb-3">Sobre</h2>
+                <p className="text-sm text-gray-600 leading-relaxed">{professor.biografia}</p>
+              </div>
+            )}
+
+            {/* Matérias */}
+            {habilidades.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <BookOpen className="h-4 w-4 text-[#6562ff]" />
+                  <h2 className="text-base font-bold text-gray-900">Matérias</h2>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {habilidades.map((h) => (
+                    <span key={h.habilidadeID} className="flex items-center gap-1.5 rounded-xl bg-[#6562ff]/8 px-3.5 py-2 text-sm font-medium text-[#6562ff]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#6562ff]" />
+                      {h.nomeHabilidade}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Formação */}
+            {(professor.formacoes?.$values?.length ?? 0) > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center gap-2 mb-5">
+                  <GraduationCap className="h-4 w-4 text-violet-600" />
+                  <h2 className="text-base font-bold text-gray-900">Formação Acadêmica</h2>
+                </div>
+                <div className="space-y-4">
+                  {professor.formacoes!.$values.map((f, i) => (
+                    <div key={f.id ?? i} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className="h-8 w-8 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0">
+                          <GraduationCap className="h-4 w-4 text-violet-600" />
+                        </div>
+                        {i < professor.formacoes!.$values.length - 1 && (
+                          <div className="w-px flex-1 bg-gray-100 mt-2" />
+                        )}
                       </div>
-                      <span className="font-semibold text-gray-900 ml-0.5">
-                        {mediaAvaliacoes}
-                      </span>
-                      <span className="text-xs">({totalAvaliacoes} avaliações)</span>
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5" />
-                      {professor.tempoExperiencia} anos de experiência
-                    </span>
+                      <div className="pb-4 flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900">{f.titulo}</p>
+                        <p className="text-sm text-violet-600 font-medium mt-0.5">{f.instituicao}</p>
+                        <div className="mt-1.5 flex items-center gap-2">
+                          <span className="text-xs text-gray-400">{formatarData(f.dtInicio)} – {formatarData(f.dtConclusao)}</span>
+                          <span className="rounded-full bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-600">
+                            {calcularDuracao(f.dtInicio, f.dtConclusao)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Experiência */}
+            {(professor.experiencias?.$values?.length ?? 0) > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center gap-2 mb-5">
+                  <Briefcase className="h-4 w-4 text-emerald-600" />
+                  <h2 className="text-base font-bold text-gray-900">Experiência Profissional</h2>
+                </div>
+                <div className="space-y-4">
+                  {professor.experiencias!.$values.map((exp, i) => (
+                    <div key={i} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className="h-8 w-8 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                          <Briefcase className="h-4 w-4 text-emerald-600" />
+                        </div>
+                        {i < professor.experiencias!.$values.length - 1 && (
+                          <div className="w-px flex-1 bg-gray-100 mt-2" />
+                        )}
+                      </div>
+                      <div className="pb-4 flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900">{exp.titulo}</p>
+                        <p className="text-sm text-emerald-600 font-medium mt-0.5">{exp.instituicao}</p>
+                        <div className="mt-1.5 flex items-center gap-2">
+                          <span className="text-xs text-gray-400">{formatarData(exp.inicio)} – {formatarData(exp.fim)}</span>
+                          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-600">
+                            {calcularDuracao(exp.inicio, exp.fim)}
+                          </span>
+                        </div>
+                        {exp.descricao && (
+                          <p className="mt-2 text-xs text-gray-500 leading-relaxed">{exp.descricao}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Avaliações */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-base font-bold text-gray-900">Avaliações</h2>
+                {totalAvaliacoes > 0 && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex">
+                      {[1,2,3,4,5].map((s) => (
+                        <Star key={s} className={`h-4 w-4 ${s <= Math.floor(parseFloat(mediaAvaliacoes)) ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`} />
+                      ))}
+                    </div>
+                    <span className="text-sm font-bold text-gray-900">{mediaAvaliacoes}</span>
+                    <span className="text-xs text-gray-400">({totalAvaliacoes})</span>
                   </div>
-                </div>
-
-                <div className="text-right flex-shrink-0">
-                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">
-                    R${professor.horaAula}
-                  </p>
-                  <p className="text-xs text-gray-600">por aula</p>
-                </div>
-              </div>
-
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {professor.detalhesHabilidades?.$values.slice(0, 4).map((habilidade) => (
-                  <span
-                    key={habilidade.habilidadeID}
-                    className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-800 border border-indigo-200"
-                  >
-                    {habilidade.nomeHabilidade}
-                  </span>
-                ))}
-                {professor.idioma && (
-                  <span className="rounded-full border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700">
-                    <Globe className="h-3 w-3 inline mr-1" />
-                    {professor.idioma}
-                  </span>
                 )}
-               
               </div>
 
-              <div className="mt-auto pt-4 flex flex-wrap items-center gap-2">
+              {avaliacoes.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-6">Nenhuma avaliação ainda.</p>
+              ) : (
+                <div className="space-y-4">
+                  {avaliacoes.map((av) => (
+                    <div key={av.avaliacaoId} className="flex gap-3">
+                      <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-xs font-bold text-gray-500">
+                        A
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-semibold text-gray-800">Aluno anônimo</span>
+                          <div className="flex">
+                            {[1,2,3,4,5].map((s) => (
+                              <Star key={s} className={`h-3 w-3 ${s <= av.nota ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`} />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600">{av.comentario}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="w-full lg:w-72 flex-shrink-0 space-y-4 lg:sticky lg:top-6">
+
+            {/* Card de agendamento */}
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-br from-[#6562ff] to-[#8b5cf6] p-5 text-white">
+                <p className="text-xs font-semibold uppercase tracking-wider opacity-75 mb-1">Valor por aula</p>
+                <p className="text-3xl font-bold">R$ {professor.horaAula}</p>
+                <p className="text-xs opacity-60 mt-0.5">Pagamento seguro</p>
+              </div>
+              <div className="p-5 space-y-3">
                 <button
                   onClick={lidarComCliqueBotaoAgendar}
-                  className="flex items-center gap-2 rounded-xl bg-[#6562ff] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-[#6562ff]/20 transition-all hover:bg-[#5451dd] hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#6562ff] py-3 text-sm font-semibold text-white shadow-md shadow-[#6562ff]/25 transition-all hover:bg-[#5451dd] hover:shadow-lg active:scale-95"
                 >
                   <Calendar className="h-4 w-4" />
                   Agendar Aula
                 </button>
                 <button
                   onClick={lidarComCliqueBotaoChat}
-                  className="flex items-center gap-2 rounded-xl border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 active:scale-95"
                 >
                   <MessageCircle className="h-4 w-4" />
                   Enviar Mensagem
                 </button>
-                <button className="ml-auto flex items-center justify-center h-10 w-10 rounded-xl border border-gray-300 text-gray-600 transition-all hover:bg-gray-50 hover:text-red-500 hover:scale-110 active:scale-90">
-                  <Heart className="h-4 w-4" />
-                </button>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-      
-          <div className="lg:col-span-2 space-y-8">
-  
-            <div className="bg-white rounded-xl shadow-sm  p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Sobre
-              </h2>
-              <p className="text-gray-700 leading-relaxed">
-                {professor.biografia}
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm  p-6">
-              <div className="flex items-center space-x-2 mb-6">
-                <GraduationCap className="w-6 h-6 text-indigo-600" />
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Formação Acadêmica
-                </h2>
-              </div>
-              <div className="space-y-6">
-                {professor.formacoes?.$values.map((formacao, index) => (
-                  <div
-                    key={formacao.id ?? index}
-                    className="relative pl-6 border-l-2 border-indigo-100 last:border-l-0"
-                  >
-                    <div className="absolute -left-2 top-2 w-4 h-4 bg-indigo-600 rounded-full"></div>
-
-                    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-4 border border-indigo-100">
-                      <h3 className="font-semibold text-gray-900 mb-1">
-                        {formacao.titulo}
-                      </h3>
-
-                      <p className="text-indigo-700 font-medium mb-2">
-                        {formacao.instituicao}
-                      </p>
-
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Calendar className="w-4 h-4" />
-                        <span>
-                          {formatarData(formacao.dtInicio)} -{" "}
-                          {formatarData(formacao.dtConclusao)}
-                        </span>
-
-                        <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">
-                          {calcularDuracao(formacao.dtInicio, formacao.dtConclusao)}
-                        </span>
-                      </div>
-                    </div>
+            {/* Info rápida */}
+            <div className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Informações</h3>
+              {[
+                { icon: Clock, label: "Experiência", value: `${professor.tempoExperiencia} anos` },
+                { icon: Globe, label: "Idioma", value: professor.idioma },
+                { icon: MapPin, label: "Localização", value: professor.localizacao || "Não informada" },
+                { icon: CheckCircle, label: "Status", value: "Verificado", color: "text-green-600" },
+              ].map(({ icon: Icon, label, value, color }) => (
+                <div key={label} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-gray-500">
+                    <Icon className="h-3.5 w-3.5" />
+                    <span className="text-xs">{label}</span>
                   </div>
-                ))}
-              </div>
-
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm  p-6">
-              <div className="flex items-center space-x-2 mb-6">
-                <Briefcase className="w-6 h-6 text-green-600" />
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Experiência Profissional
-                </h2>
-              </div>
-              <div className="space-y-6">
-                {professor.experiencias?.$values.map((exp, index) => (
-                  <div key={index} className="relative pl-6 border-l-2 border-green-100 last:border-l-0">
-                    <div className="absolute -left-2 top-2 w-4 h-4 bg-green-600 rounded-full"></div>
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-100">
-                      <h3 className="font-semibold text-gray-900 mb-1">
-                        {exp.titulo}
-                      </h3>
-                      <p className="text-green-700 font-medium mb-2">
-                        {exp.instituicao}
-                      </p>
-                      <div className="flex items-center space-x-2 text-sm text-gray-600 mb-3">
-                        <Calendar className="w-4 h-4" />
-                        <span>
-                          {formatarData(exp.inicio)} - {formatarData(exp.fim)}
-                        </span>
-                        <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                          {calcularDuracao(exp.inicio, exp.fim)}
-                        </span>
-                      </div>
-                      <p className="text-gray-700 text-sm leading-relaxed">
-                        {exp.descricao}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm  p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Matérias e Especialidades
-              </h2>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {professor.detalhesHabilidades?.$values.map((habilidade) => (
-                  <div
-                    key={habilidade.habilidadeID}
-                    className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
-                    <span className="font-medium text-gray-900">
-                      {habilidade.nomeHabilidade}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-            </div>
-
-            {/* Reviews */}
-            <div className="bg-white rounded-xl shadow-sm  p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Avaliações ({totalAvaliacoes})
-              </h2>
-
-              <div className="space-y-4">
-                {avaliacoes.length === 0 && (
-                  <p className="text-gray-500 text-sm">
-                    Este professor ainda não possui avaliações.
-                  </p>
-                )}
-
-                {avaliacoes.map((avaliacao) => (
-                  <div
-                    key={avaliacao.avaliacaoId}
-                    className="border-b border-gray-200 pb-4"
-                  >
-                    <div className="flex items-center space-x-2 mb-2">
-                      <div className="flex items-center">
-                        {renderStars(avaliacao.nota)}
-                      </div>
-
-                      {/* Se futuramente vier nome do aluno */}
-                      <span className="font-medium text-gray-900">
-                        Aluno anônimo
-                      </span>
-                    </div>
-
-                    <p className="text-gray-700">
-                      {avaliacao.comentario}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm  p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Informações Rápidas
-              </h3>
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <Globe className="w-5 h-5 text-gray-400 mt-0.5" />
-                  <div>
-                    <div className="text-sm text-gray-600 font-medium">Idiomas</div>
-                    <div className="text-gray-900">
-                      {professor.idioma}
-                    </div>
-                  </div>
+                  <span className={`text-xs font-semibold ${color ?? "text-gray-800"}`}>{value}</span>
                 </div>
-
-                <div className="flex items-start space-x-3">
-                  <Clock className="w-5 h-5 text-gray-400 mt-0.5" />
-                  <div>
-                    <div className="text-sm text-gray-600 font-medium">Experiência</div>
-                    <div className="text-gray-900">{professor.tempoExperiencia} anos</div>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
-                  <div>
-                    <div className="text-sm text-gray-600 font-medium">Status</div>
-                    <div className="text-green-600 font-medium">
-                      Professor Verificado
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-                  <div>
-                    <div className="text-sm text-gray-600 font-medium">Localização</div>
-                    <div className="text-gray-900">{professor.localizacao || "Localização não informada"}</div>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm  p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Disponibilidade
-              </h3>
-              <div className="space-y-2">
-                {[
-                  "Segunda",
-                  "Terça",
-                  "Quarta",
-                  "Quinta",
-                  "Sexta",
-                  "Sábado",
-                  "Domingo",
-                ].map((dia) => {
-                  const diaDisponivel = disponibilidade.includes(dia);
+            {/* Disponibilidade */}
+            <div className="bg-white rounded-2xl shadow-sm p-5">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Disponibilidade</h3>
+              <div className="grid grid-cols-7 gap-1">
+                {["D","S","T","Q","Q","S","S"].map((letra, i) => {
+                  const nomeDia = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"][i];
+                  const ativo = disponibilidade.includes(nomeDia);
                   return (
-                    <div key={dia} className="flex items-center justify-between">
-                      <span className="text-gray-700">{dia}</span>
-                      <span
-                        className={`text-sm font-medium px-2 py-1 rounded-full ${diaDisponivel
-                            ? "text-green-700 bg-green-100"
-                            : "text-gray-500 bg-gray-100"
-                          }`}
-                      >
-                        {diaDisponivel
-                          ? "Disponível"
-                          : "Indisponível"}
-                      </span>
+                    <div key={i} className="flex flex-col items-center gap-1">
+                      <span className="text-[10px] text-gray-400 font-medium">{letra}</span>
+                      <div className={`h-7 w-7 rounded-lg flex items-center justify-center text-[10px] font-bold transition-colors ${ativo ? "bg-[#6562ff] text-white" : "bg-gray-100 text-gray-300"}`}>
+                        {ativo ? "✓" : "–"}
+                      </div>
                     </div>
                   );
                 })}
-
               </div>
             </div>
 
-            {/* Contact Card */}
-            <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl border border-indigo-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Pronto para começar?
-              </h3>
-              <p className="text-gray-600 text-sm mb-4">
-                Agende sua primeira aula e experimente um ensino personalizado
-                de alta qualidade.
-              </p>
-              <button
-                onClick={lidarComCliqueBotaoAgendar}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
-              >
-                <Calendar className="w-4 h-4" />
-                <span>Agendar Primeira Aula</span>
-              </button>
-            </div>
+            {/* CTA bottom */}
+            <button
+              onClick={lidarComCliqueBotaoAgendar}
+              className="w-full flex items-center justify-between rounded-2xl bg-gray-900 px-5 py-4 text-white transition-all hover:bg-gray-800 active:scale-95"
+            >
+              <div className="text-left">
+                <p className="text-xs text-gray-400">Pronto para começar?</p>
+                <p className="text-sm font-semibold">Agende sua primeira aula</p>
+              </div>
+              <ChevronRight className="h-5 w-5 text-gray-400" />
+            </button>
           </div>
         </div>
-
-        <ModalAgendamento
-          professor={professor}
-          aberto={agendamentoAberto}
-          aoFechar={() => setAgendamentoAberto(false)}
-          aoIrParaPagamento={(dados) => {
-          }}
-        />
-
-        <ModalChat
-          professor={professor}
-          aberto={chatAberto}
-          aoFechar={() => setChatAberto(false)}
-        />
-
-        <ModalLogin
-          aberto={modalLoginAberto}
-          aoFechar={() => setModalLoginAberto(false)}
-          aoFazerLogin={lidarComSucessoLogin}
-        />
       </div>
+
+      <ModalAgendamento
+        professor={professor}
+        aberto={agendamentoAberto}
+        aoFechar={() => setAgendamentoAberto(false)}
+        aoIrParaPagamento={() => {}}
+      />
+      <ModalChat professor={professor} aberto={chatAberto} aoFechar={() => setChatAberto(false)} />
+      <ModalLogin aberto={modalLoginAberto} aoFechar={() => setModalLoginAberto(false)} aoFazerLogin={lidarComSucessoLogin} />
     </div>
   );
 }
