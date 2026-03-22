@@ -10,7 +10,12 @@ export interface DadosAgendamento {
     dataSelecionada: string;
     diaSemana: string;
     horarioSelecionado: string;
+    horarioFinal?: string;
     duracao: number;
     observacoes: string;
     precoTotal: number;
+    // Dados retornados pelo endpoint de checkout
+    checkoutSessaoId?: string;
+    tokenPublico?: string;
 }
+

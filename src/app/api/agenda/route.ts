@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 
         let data;
         try {
-            data = JSON.parse(raw);     // <-- tenta converter para JSON
+            data = JSON.parse(raw);     
         } catch {
             return NextResponse.json(
                 { success: false, message: "Resposta não é um JSON válido!", raw },

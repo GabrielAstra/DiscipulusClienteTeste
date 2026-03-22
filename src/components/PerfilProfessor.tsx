@@ -163,7 +163,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
 
 
   return (
-    <div className="min-h-screen bg-transparent relative">
+    <div className="min-h-screen bg-[#eef0f4] relative">
       <div 
         className="fixed inset-0 z-0"
         

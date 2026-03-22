@@ -2,10 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { Professor } from "../types/professor";
-import { Check, X, Calendar, Clock } from "lucide-react";
+import { Check, X, ChevronLeft, ChevronRight, Clock, MessageSquare } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { DadosAgendamento } from "../types/agendamento";
 import { useModal } from "@/context/ModalContext";
+import { iniciarCheckout } from "@/lib/service/agendamento/agendamento.service";
 
 interface PropriedadesModalAgendamento {
   professor: Professor;
@@ -14,21 +15,19 @@ interface PropriedadesModalAgendamento {
   aoIrParaPagamento: (dados: DadosAgendamento) => void;
 }
 
-interface DiaDisponivel {
-  data: string;
-  dataCompleta: Date;
-  dia: number;
-  mes: string;
-  diaSemana: string;
-  diaSemanaAbrev: string;
-  temDisponibilidade: boolean;
-}
-
 interface SlotHorario {
   inicio: string;
   fim: string;
   disponivel: boolean;
+  horarioId: string;
+  agendaId: string;
 }
+
+const MESES = [
+  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro",
+];
+const DIAS_SEMANA_ABREV = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 
 export default function ModalAgendamento({
   professor,
@@ -36,110 +35,104 @@ export default function ModalAgendamento({
   aoFechar,
   aoIrParaPagamento,
 }: PropriedadesModalAgendamento) {
-  const [passo, setPasso] = useState(1);
-  const [dataSelecionada, setDataSelecionada] = useState("");
-  const [horarioSelecionado, setHorarioSelecionado] = useState("");
+  const router = useRouter();
   const { abrirModal, fecharModal } = useModal();
+
+  const hoje = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const [mesAtual, setMesAtual] = useState(() => new Date(hoje.getFullYear(), hoje.getMonth(), 1));
+  const [dataSelecionada, setDataSelecionada] = useState<string>("");
+  const [horarioSelecionado, setHorarioSelecionado] = useState("");
+  const [horarioIdSelecionado, setHorarioIdSelecionado] = useState("");
+  const [agendaIdSelecionado, setAgendaIdSelecionado] = useState("");
+  const [duracao, setDuracao] = useState(60);
+  const [observacoes, setObservacoes] = useState("");
+  const [mostrarObservacoes, setMostrarObservacoes] = useState(false);
+  const [carregandoCheckout, setCarregandoCheckout] = useState(false);
 
   useEffect(() => {
     if (aberto) abrirModal();
     else fecharModal();
     return () => fecharModal();
   }, [aberto]);
-  const [duracao, setDuracao] = useState(60);
-  const [observacoes, setObservacoes] = useState("");
-  const router = useRouter();
 
-  const nomesDias = [
-    "Domingo",
-    "Segunda",
-    "Terça",
-    "Quarta",
-    "Quinta",
-    "Sexta",
-    "Sábado",
-  ];
+  const diasSemanaDisponiveis = useMemo(() => {
+    const arr = professor.disponibilidade?.$values || [];
+    return new Set(arr.map((d: any) => d.diaSemana));
+  }, [professor.disponibilidade]);
 
-  const nomesDiasAbrev = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const dataMax = useMemo(() => {
+    const d = new Date(hoje);
+    d.setDate(d.getDate() + 60);
+    return d;
+  }, [hoje]);
 
-  const diasDisponiveis: DiaDisponivel[] = useMemo(() => {
-    const dias: DiaDisponivel[] = [];
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
+  const celulasCalendario = useMemo(() => {
+    const ano = mesAtual.getFullYear();
+    const mes = mesAtual.getMonth();
+    const primeiroDia = new Date(ano, mes, 1).getDay();
+    const totalDias = new Date(ano, mes + 1, 0).getDate();
 
-    // Extrair dias disponíveis da estrutura correta
-    const diasDisponivelData = professor.disponibilidade?.$values || [];
-    
-    // Criar um Set com os números dos dias da semana disponíveis
-    const diasSemanaDisponiveis = new Set(
-      diasDisponivelData.map(d => d.diaSemana)
-    );
+    const celulas: (null | { data: Date; dataStr: string; disponivel: boolean })[] = [];
 
-    for (let i = 1; i <= 30; i++) {
-      const data = new Date(hoje);
-      data.setDate(hoje.getDate() + i);
+    for (let i = 0; i < primeiroDia; i++) celulas.push(null);
 
-      const diaSemanaNumero = data.getDay(); // 0=Domingo, 1=Segunda, etc.
-      const diaSemana = nomesDias[diaSemanaNumero];
-      
-      // Verificar se este dia da semana tem disponibilidade
-      const temDisponibilidade = diasSemanaDisponiveis.has(diaSemanaNumero);
-
-      dias.push({
-        data: data.toISOString().split("T")[0],
-        dataCompleta: data,
-        dia: data.getDate(),
-        mes: data.toLocaleDateString("pt-BR", { month: "short" }),
-        diaSemana: diaSemana,
-        diaSemanaAbrev: nomesDiasAbrev[diaSemanaNumero],
-        temDisponibilidade,
+    for (let d = 1; d <= totalDias; d++) {
+      const data = new Date(ano, mes, d);
+      const dataStr = data.toISOString().split("T")[0];
+      const passado = data < hoje;
+      const muitoLonge = data > dataMax;
+      const temDisp = diasSemanaDisponiveis.has(data.getDay());
+      celulas.push({
+        data,
+        dataStr,
+        disponivel: !passado && !muitoLonge && temDisp,
       });
     }
 
-    return dias;
-  }, [professor.disponibilidade]);
+    return celulas;
+  }, [mesAtual, hoje, dataMax, diasSemanaDisponiveis]);
 
-  const gerarSlotsHorario = (dataString: string): SlotHorario[] => {
+  const gerarSlots = (dataString: string): SlotHorario[] => {
     const data = new Date(dataString + "T00:00:00");
-    const diaSemanaNumero = data.getDay(); // 0=Domingo, 1=Segunda, etc.
+    const diaSemanaNum = data.getDay();
+    const arr = professor.disponibilidade?.$values || [];
+    const diaDisp = arr.find((d: any) => d.diaSemana === diaSemanaNum);
+    if (!diaDisp) return [];
 
-    // Buscar o dia disponível correspondente
-    const diasDisponivelData = professor.disponibilidade?.$values || [];
-    const diaDisponivel = diasDisponivelData.find(d => d.diaSemana === diaSemanaNumero);
-    
-    if (!diaDisponivel) return [];
+    const ocupados = new Set(
+      (professor.horariosOcupados?.$values || [])
+        .filter((o: any) => o.data === dataString)
+        .map((o: any) => o.horaInicio)
+    );
 
     const slots: SlotHorario[] = [];
-    const horariosArray = diaDisponivel.horarios?.$values || [];
+    const horarios = diaDisp.horarios?.$values || [];
 
-    horariosArray.forEach((horario: any) => {
-      const horaInicial = horario.horaInicial || "";
-      const horaFinal = horario.horaFinal || "";
+    horarios.forEach((h: any) => {
+      const [hIni, mIni] = (h.horaInicial || "").split(":").map(Number);
+      const [hFim, mFim] = (h.horaFinal || "").split(":").map(Number);
+      if (isNaN(hIni) || isNaN(hFim)) return;
 
-      if (!horaInicial || !horaFinal) return;
+      const iniMin = hIni * 60 + mIni;
+      const fimMin = hFim * 60 + mFim;
 
-      const [horaInicio, minutoInicio] = horaInicial.split(":").map(Number);
-      const [horaFim, minutoFim] = horaFinal.split(":").map(Number);
-
-      const inicioMinutos = horaInicio * 60 + minutoInicio;
-      const fimMinutos = horaFim * 60 + minutoFim;
-
-      // Gerar slots de 30 minutos
-      for (let minuto = inicioMinutos; minuto < fimMinutos; minuto += 30) {
-        const hora = Math.floor(minuto / 60);
-        const min = minuto % 60;
-        const horaStr = hora.toString().padStart(2, "0");
-        const minStr = min.toString().padStart(2, "0");
-
-        const proximaHora = Math.floor((minuto + 30) / 60);
-        const proximoMin = (minuto + 30) % 60;
-        const proximaHoraStr = proximaHora.toString().padStart(2, "0");
-        const proximoMinStr = proximoMin.toString().padStart(2, "0");
-
+      for (let m = iniMin; m < fimMin; m += 30) {
+        const hS = String(Math.floor(m / 60)).padStart(2, "0");
+        const mS = String(m % 60).padStart(2, "0");
+        const hE = String(Math.floor((m + 30) / 60)).padStart(2, "0");
+        const mE = String((m + 30) % 60).padStart(2, "0");
+        const ini = `${hS}:${mS}`;
         slots.push({
-          inicio: `${horaStr}:${minStr}`,
-          fim: `${proximaHoraStr}:${proximoMinStr}`,
-          disponivel: true,
+          inicio: ini,
+          fim: `${hE}:${mE}`,
+          disponivel: !ocupados.has(ini),
+          horarioId: h.id || h.idAgenda || "",
+          agendaId: diaDisp.agendaId || "",
         });
       }
     });
@@ -147,347 +140,350 @@ export default function ModalAgendamento({
     return slots;
   };
 
-  const slotsDisponiveis = dataSelecionada
-    ? gerarSlotsHorario(dataSelecionada)
-    : [];
-
+  const slots = dataSelecionada ? gerarSlots(dataSelecionada) : [];
   const valorHora = professor.valorHora || 0;
   const precoTotal = (valorHora * duracao) / 60;
 
-  const calcularMediaAvaliacoes = (): { nota: number; total: number } => {
-    if (professor.mediaAvaliacoes && professor.totalAvaliacoes) {
-      return {
-        nota: professor.mediaAvaliacoes,
-        total: professor.totalAvaliacoes,
-      };
-    }
-
-    const avaliacoes = (professor.totalAvaliacoes as any)?.$values || [];
-    if (avaliacoes.length === 0) {
-      return { nota: 0, total: 0 };
-    }
-
-    const mediaNota =
-      avaliacoes.reduce((sum: number, av: any) => sum + av.nota, 0) /
-      avaliacoes.length;
-    return { nota: mediaNota, total: avaliacoes.length };
-  };
-
-  const lidarComContinuarParaPagamento = () => {
-    const dataAtual = diasDisponiveis.find((d) => d.data === dataSelecionada);
-    const avaliacoes = calcularMediaAvaliacoes();
-
-    const dadosAgendamento: DadosAgendamento = {
-      professorId: professor.id,
-      professorNome: professor.nome,
-      professorAvatar: professor.urlFoto || "https://via.placeholder.com/150",
-      professorValorHora: valorHora,
-      professorAvaliacao: avaliacoes.total > 0 ? avaliacoes : undefined,
-      dataSelecionada,
-      diaSemana: dataAtual?.diaSemana || "",
-      horarioSelecionado,
-      duracao,
-      observacoes,
-      precoTotal,
-    };
-
-    sessionStorage.setItem("dadosAgendamento", JSON.stringify(dadosAgendamento));
-
-    aoIrParaPagamento(dadosAgendamento);
-
-    router.push("/checkout");
-
-    setPasso(1);
-    setDataSelecionada("");
-    setHorarioSelecionado("");
-    setObservacoes("");
-  };
-
-  const dataAtual = dataSelecionada
-    ? diasDisponiveis.find((d) => d.data === dataSelecionada)
+  const dataSelecionadaObj = dataSelecionada
+    ? new Date(dataSelecionada + "T00:00:00")
     : null;
+
+  const podeContinuar = dataSelecionada && horarioSelecionado;
+
+  const calcularMediaAvaliacoes = () => {
+    if (professor.mediaAvaliacoes && professor.totalAvaliacoes)
+      return { nota: professor.mediaAvaliacoes, total: professor.totalAvaliacoes };
+    const avs = (professor.totalAvaliacoes as any)?.$values || [];
+    if (!avs.length) return { nota: 0, total: 0 };
+    return { nota: avs.reduce((s: number, a: any) => s + a.nota, 0) / avs.length, total: avs.length };
+  };
+
+  const lidarComPagamento = async () => {
+    setCarregandoCheckout(true);
+    try {
+      const resposta = await iniciarCheckout({
+        professorId: professor.usuarioID,
+        agendaId: agendaIdSelecionado,
+        horarioId: horarioIdSelecionado,
+        diaMesAgendamento: new Date(dataSelecionada + "T00:00:00").toISOString(),
+        observacao: observacoes,
+      });
+
+      if (!resposta.success) throw new Error(resposta.message || "Erro ao iniciar checkout");
+
+      const { checkoutSessaoId, tokenPublico, horarioInicial, horarioFinal } = resposta.data;
+      const avaliacoes = calcularMediaAvaliacoes();
+
+      const dadosAgendamento: DadosAgendamento = {
+        professorId: professor.usuarioID,
+        professorNome: professor.nome,
+        professorAvatar: professor.urlFoto || "/avatar.png",
+        professorValorHora: valorHora,
+        professorAvaliacao: avaliacoes.total > 0 ? avaliacoes : undefined,
+        dataSelecionada,
+        diaSemana: DIAS_SEMANA_ABREV[dataSelecionadaObj?.getDay() ?? 0],
+        horarioSelecionado: horarioInicial || horarioSelecionado,
+        horarioFinal,
+        duracao,
+        observacoes,
+        precoTotal: resposta.data.valor ?? precoTotal,
+        checkoutSessaoId,
+        tokenPublico,
+      };
+
+      sessionStorage.setItem("dadosAgendamento", JSON.stringify(dadosAgendamento));
+      aoIrParaPagamento(dadosAgendamento);
+
+      setDataSelecionada("");
+      setHorarioSelecionado("");
+      setHorarioIdSelecionado("");
+      setAgendaIdSelecionado("");
+      setObservacoes("");
+
+      router.push(resposta.data.urlCheckout || `/checkout/${tokenPublico}`);
+    } catch (err: any) {
+      alert(err.message || "Erro ao iniciar checkout. Tente novamente.");
+    } finally {
+      setCarregandoCheckout(false);
+    }
+  };
 
   if (!aberto) return null;
 
+  const mesAnteriorDisp = mesAtual > new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const proximoMesDisp = new Date(mesAtual.getFullYear(), mesAtual.getMonth() + 2, 0) <= dataMax;
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-[100] p-4">
-      <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-          <div className="flex items-center space-x-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+      <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-3">
             <img
               src={professor.urlFoto}
               alt={professor.nome}
-              className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md"
-              onError={(e) => {
-                e.currentTarget.src = "/avatar.png";
-              }}
+              className="w-10 h-10 rounded-full object-cover"
+              onError={(e) => { e.currentTarget.src = "/avatar.png"; }}
             />
             <div>
-              <h2 className="text-xl font-bold text-gray-900">
-                Agendar Aula com {professor.nome}
-              </h2>
-              {valorHora > 0 && (
-                <p className="text-blue-600 font-semibold">
-                  R${valorHora.toFixed(2)}/hora
+              <p className="text-xs text-gray-400 font-medium">Agendar aula com</p>
+              <p className="text-sm font-bold text-gray-900">{professor.nome}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            {valorHora > 0 && (
+              <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                R$ {valorHora.toFixed(2)}/h
+              </span>
+            )}
+            <button onClick={aoFechar} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+              <X className="w-4 h-4 text-gray-500" />
+            </button>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="flex flex-1 overflow-hidden">
+
+          {/* Coluna esquerda — calendário + slots */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+
+            {/* Calendário */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-gray-900">
+                  {MESES[mesAtual.getMonth()]} {mesAtual.getFullYear()}
+                </h3>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setMesAtual(new Date(mesAtual.getFullYear(), mesAtual.getMonth() - 1, 1))}
+                    disabled={!mesAnteriorDisp}
+                    className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4 text-gray-600" />
+                  </button>
+                  <button
+                    onClick={() => setMesAtual(new Date(mesAtual.getFullYear(), mesAtual.getMonth() + 1, 1))}
+                    disabled={!proximoMesDisp}
+                    className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4 text-gray-600" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Cabeçalho dias da semana */}
+              <div className="grid grid-cols-7 mb-1">
+                {DIAS_SEMANA_ABREV.map((d) => (
+                  <div key={d} className="text-center text-xs font-semibold text-gray-400 py-1">
+                    {d}
+                  </div>
+                ))}
+              </div>
+
+              {/* Células */}
+              <div className="grid grid-cols-7 gap-1">
+                {celulasCalendario.map((celula, i) => {
+                  if (!celula) return <div key={`empty-${i}`} />;
+                  const isSelected = dataSelecionada === celula.dataStr;
+                  const isHoje = celula.dataStr === hoje.toISOString().split("T")[0];
+
+                  return (
+                    <button
+                      key={celula.dataStr}
+                      onClick={() => {
+                        if (!celula.disponivel) return;
+                        setDataSelecionada(celula.dataStr);
+                        setHorarioSelecionado("");
+                        setHorarioIdSelecionado("");
+                        setAgendaIdSelecionado("");
+                      }}
+                      disabled={!celula.disponivel}
+                      className={`
+                        relative h-9 w-full rounded-lg text-sm font-medium transition-all
+                        ${isSelected
+                          ? "bg-blue-600 text-white shadow-md"
+                          : celula.disponivel
+                          ? "hover:bg-blue-50 text-gray-800 hover:text-blue-700"
+                          : "text-gray-300 cursor-not-allowed"
+                        }
+                        ${isHoje && !isSelected ? "ring-2 ring-blue-300 ring-offset-1" : ""}
+                      `}
+                    >
+                      {celula.data.getDate()}
+                      {celula.disponivel && !isSelected && (
+                        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-blue-400" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Slots de horário */}
+            {dataSelecionada && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Clock className="w-4 h-4 text-blue-600" />
+                  <h3 className="text-sm font-bold text-gray-900">
+                    Horários —{" "}
+                    <span className="font-normal text-gray-500">
+                      {dataSelecionadaObj?.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "short" })}
+                    </span>
+                  </h3>
+                </div>
+
+                {slots.length > 0 ? (
+                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                    {slots.map((slot) => {
+                      const isSelected = horarioSelecionado === slot.inicio;
+                      return (
+                        <button
+                          key={slot.inicio}
+                          onClick={() => {
+                            if (!slot.disponivel) return;
+                            setHorarioSelecionado(slot.inicio);
+                            setHorarioIdSelecionado(slot.horarioId);
+                            setAgendaIdSelecionado(slot.agendaId);
+                            const [hI, mI] = slot.inicio.split(":").map(Number);
+                            const [hF, mF] = slot.fim.split(":").map(Number);
+                            setDuracao(hF * 60 + mF - (hI * 60 + mI));
+                          }}
+                          disabled={!slot.disponivel}
+                          className={`
+                            py-2.5 rounded-xl text-xs font-semibold border transition-all
+                            ${!slot.disponivel
+                              ? "border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed line-through"
+                              : isSelected
+                              ? "border-blue-600 bg-blue-600 text-white shadow-md"
+                              : "border-gray-200 text-gray-700 hover:border-blue-400 hover:bg-blue-50"
+                            }
+                          `}
+                        >
+                          {slot.inicio}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-400 text-center py-6">
+                    Nenhum horário disponível para esta data
+                  </p>
+                )}
+              </div>
+            )}
+
+            {podeContinuar && (
+              <div>
+                <button
+                  onClick={() => setMostrarObservacoes(!mostrarObservacoes)}
+                  className="flex items-center gap-2 text-sm cursor-pointer text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  {mostrarObservacoes ? "Ocultar observações" : "Adicionar observações (opcional)"}
+                </button>
+                {mostrarObservacoes && (
+                  <textarea
+                    value={observacoes}
+                    onChange={(e) => setObservacoes(e.target.value)}
+                    placeholder="Descreva o que você gostaria de focar na aula..."
+                    className="mt-3 w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400 resize-none transition-colors"
+                    rows={3}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="w-64 border-l border-gray-100 bg-gray-50 flex flex-col p-5">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Resumo</h3>
+
+            <div className="flex-1 space-y-4">
+              {/* Professor */}
+              <div className="flex items-center gap-2">
+                <img
+                  src={professor.urlFoto}
+                  alt={professor.nome}
+                  className="w-8 h-8 rounded-full object-cover"
+                  onError={(e) => { e.currentTarget.src = "/avatar.png"; }}
+                />
+                <span className="text-sm font-semibold text-gray-800 truncate">{professor.nome}</span>
+              </div>
+
+              <div className="space-y-2">
+                {/* Data */}
+                <div className="bg-white rounded-xl p-3 border border-gray-100">
+                  <p className="text-xs text-gray-400 mb-0.5">Data</p>
+                  {dataSelecionadaObj ? (
+                    <p className="text-sm font-semibold text-gray-800 capitalize">
+                      {dataSelecionadaObj.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" })}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-300">Não selecionada</p>
+                  )}
+                </div>
+
+                {/* Horário */}
+                <div className="bg-white rounded-xl p-3 border border-gray-100">
+                  <p className="text-xs text-gray-400 mb-0.5">Horário</p>
+                  {horarioSelecionado ? (
+                    <p className="text-sm font-semibold text-gray-800">{horarioSelecionado}</p>
+                  ) : (
+                    <p className="text-sm text-gray-300">Não selecionado</p>
+                  )}
+                </div>
+
+                {/* Duração */}
+                {horarioSelecionado && (
+                  <div className="bg-white rounded-xl p-3 border border-gray-100">
+                    <p className="text-xs text-gray-400 mb-0.5">Duração</p>
+                    <p className="text-sm font-semibold text-gray-800">{duracao} min</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Preço + botão */}
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              {podeContinuar && (
+                <div className="flex justify-between items-baseline mb-4">
+                  <span className="text-xs text-gray-400">Total</span>
+                  <span className="text-xl font-bold text-gray-900">R$ {precoTotal.toFixed(2)}</span>
+                </div>
+              )}
+
+              <button
+                onClick={lidarComPagamento}
+                disabled={!podeContinuar || carregandoCheckout}
+                className={`
+                  w-full py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2
+                  ${podeContinuar && !carregandoCheckout
+                    ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  }
+                `}
+              >
+                {carregandoCheckout ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                    Aguarde...
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-4 h-4" />
+                    Ir para pagamento
+                  </>
+                )}
+              </button>
+
+              {!podeContinuar && (
+                <p className="text-xs text-gray-400 text-center mt-2">
+                  {!dataSelecionada ? "Selecione uma data" : "Selecione um horário"}
                 </p>
               )}
             </div>
           </div>
-          <button
-            onClick={aoFechar}
-            className="p-2 hover:bg-white rounded-full transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <div className="flex items-center justify-center space-x-2 sm:space-x-4">
-            <div
-              className={`flex items-center space-x-2 ${
-                passo >= 1 ? "text-blue-600" : "text-gray-400"
-              }`}
-            >
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                  passo >= 1
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "bg-gray-200"
-                }`}
-              >
-                {passo > 1 ? <Check className="w-4 h-4" /> : "1"}
-              </div>
-              <span className="font-medium hidden sm:inline">Data e Hora</span>
-            </div>
-            <div className="flex-1 h-px bg-gray-300 max-w-[60px]"></div>
-            <div
-              className={`flex items-center space-x-2 ${
-                passo >= 2 ? "text-blue-600" : "text-gray-400"
-              }`}
-            >
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                  passo >= 2
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "bg-gray-200"
-                }`}
-              >
-                2
-              </div>
-              <span className="font-medium hidden sm:inline">Detalhes</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-6">
-          {passo === 1 && (
-            <div className="space-y-6">
-              <div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <Calendar className="w-5 h-5 text-blue-600" />
-                  <h3 className="text-lg font-bold text-gray-900">
-                    Escolha a Data
-                  </h3>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                  <p className="text-sm text-blue-800">
-                    <strong>Disponibilidade do Professor:</strong> Os dias
-                    destacados em azul possuem horários disponíveis
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-7 gap-2 mb-2">
-                  {nomesDiasAbrev.map((dia) => (
-                    <div
-                      key={dia}
-                      className="text-center text-xs font-semibold text-gray-600 py-2"
-                    >
-                      {dia}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-7 gap-2">
-                  {diasDisponiveis.slice(0, 28).map((diaInfo) => {
-                    const isSelected = dataSelecionada === diaInfo.data;
-                    const isAvailable = diaInfo.temDisponibilidade;
-
-                    return (
-                      <button
-                        key={diaInfo.data}
-                        onClick={() => {
-                          if (isAvailable) {
-                            setDataSelecionada(diaInfo.data);
-                            setHorarioSelecionado("");
-                          }
-                        }}
-                        disabled={!isAvailable}
-                        className={`
-                          aspect-square rounded-lg border-2 transition-all relative
-                          ${
-                            isSelected
-                              ? "border-blue-600 bg-blue-600 text-white shadow-lg scale-105"
-                              : isAvailable
-                              ? "border-blue-200 bg-blue-50 hover:border-blue-400 hover:bg-blue-100 text-blue-900"
-                              : "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-                          }
-                        `}
-                      >
-                        <div className="flex flex-col items-center justify-center h-full">
-                          <span className="text-lg font-bold">{diaInfo.dia}</span>
-                          <span className="text-xs">{diaInfo.mes}</span>
-                        </div>
-                        {isAvailable && !isSelected && (
-                          <div className="absolute top-1 right-1 w-2 h-2 bg-blue-600 rounded-full"></div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {dataSelecionada && dataAtual && (
-                <div className="border-t pt-6">
-                  <div className="flex items-center space-x-2 mb-4">
-                    <Clock className="w-5 h-5 text-blue-600" />
-                    <h3 className="text-lg font-bold text-gray-900">
-                      Horários Disponíveis
-                    </h3>
-                  </div>
-
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-                    <p className="text-sm text-green-800">
-                      <strong>
-                        {dataAtual.diaSemana}, {dataAtual.dia} de{" "}
-                        {dataAtual.mes}
-                      </strong>{" "}
-                      - Selecione um horário abaixo
-                    </p>
-                  </div>
-
-                  {slotsDisponiveis.length > 0 ? (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                      {slotsDisponiveis.map((slot) => (
-                        <button
-                          key={slot.inicio}
-                          onClick={() => {
-                            setHorarioSelecionado(slot.inicio);
-
-                            const [hInicio, mInicio] = slot.inicio.split(":").map(Number);
-                            const [hFim, mFim] = slot.fim.split(":").map(Number);
-
-                            const minutosInicio = hInicio * 60 + mInicio;
-                            const minutosFim = hFim * 60 + mFim;
-
-                            setDuracao(minutosFim - minutosInicio);
-                          }}
-                          className={`p-3 rounded-lg border-2 text-center transition-all ${
-                            horarioSelecionado === slot.inicio
-                              ? "border-blue-600 bg-blue-600 text-white shadow-md scale-105"
-                              : "border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700"
-                          }`}
-                        >
-                          <div className="font-bold text-sm">{slot.inicio}</div>
-                          <div className="text-xs opacity-75">{slot.fim}</div>
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      Nenhum horário disponível para esta data
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {dataSelecionada && horarioSelecionado && (
-                <div className="flex justify-end pt-4">
-                  <button
-                    onClick={() => setPasso(2)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
-                  >
-                    Continuar
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {passo === 2 && (
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
-                  Detalhes da Aula
-                </h3>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Observações (opcional)
-                    </label>
-                    <textarea
-                      value={observacoes}
-                      onChange={(e) => setObservacoes(e.target.value)}
-                      placeholder="Descreva o que você gostaria de focar na aula..."
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all"
-                      rows={4}
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-6 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
-                  <h4 className="font-bold text-gray-900 mb-3 text-lg">
-                    Resumo do Agendamento
-                  </h4>
-                  <div className="space-y-2 text-sm text-gray-700">
-                    <div className="flex justify-between">
-                      <span className="font-semibold">Data:</span>
-                      <span>
-                        {dataAtual?.diaSemana},{" "}
-                        {new Date(dataSelecionada).toLocaleDateString("pt-BR")}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-semibold">Horário:</span>
-                      <span>{horarioSelecionado}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-semibold">Duração:</span>
-                      <span>{duracao} minutos</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-semibold">Professor:</span>
-                      <span>{professor.nome}</span>
-                    </div>
-                    <div className="border-t-2 border-blue-300 pt-2 mt-3">
-                      <div className="flex justify-between items-center">
-                        <span className="font-bold text-base">Total:</span>
-                        <span className="text-2xl font-bold text-blue-600">
-                          R${precoTotal.toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-between pt-4">
-                <button
-                  onClick={() => setPasso(1)}
-                  className="border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-all"
-                >
-                  Voltar
-                </button>
-                <button
-                  onClick={lidarComContinuarParaPagamento}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
-                >
-                  Continuar para Pagamento
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

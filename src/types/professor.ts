@@ -72,4 +72,12 @@ export interface Professor {
   disponibilidadeHorario?: {
     $values: DisponibilidadeHorario[];
   };
+
+  horariosOcupados?: {
+    $values: {
+      data: string;      // "2026-04-15"
+      horaInicio: string; // "14:00"
+      horaFim: string;    // "14:30"
+    }[];
+  };
 }

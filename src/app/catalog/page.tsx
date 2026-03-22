@@ -98,7 +98,7 @@ export default function CatalogoProfessoresPage() {
   }, [professores, termoBusca, habilidadesSelecionadas, ordenarPor]);
 
   return (
-    <div className="min-h-screen bg-transparent relative">
+    <div className="min-h-screen bg-[#eef0f4] relative">
       <div
         className="fixed inset-0 z-0"
       

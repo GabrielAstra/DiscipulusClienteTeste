@@ -17,7 +17,7 @@ export default function PaginaPagamento() {
     if (dados) {
       setDadosAgendamento(JSON.parse(dados));
     } else {
-      // Sem dados, volta para home
+     
       router.replace("/");
     }
     setCarregando(false);
@@ -40,7 +40,7 @@ export default function PaginaPagamento() {
   };
 
   const aoVoltar = () => {
-    router.back();
+    router.push("/");
   };
 
   if (carregando) {
