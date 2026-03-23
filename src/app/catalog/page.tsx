@@ -21,27 +21,37 @@ export default function CatalogoProfessoresPage() {
   const [loading, setLoading] = useState(true);
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
-  const PAGINACAO = 12;
+  const [totalItens, setTotalItens] = useState(0);
+  const [paginacao, setPaginacao] = useState(12);
+
+  // Reset to page 1 when search term or page size changes
+  useEffect(() => {
+    setPagina(1);
+  }, [termoBusca, paginacao]);
 
   useEffect(() => {
     async function carregarProfessores() {
+      setLoading(true);
       try {
         const response = await listarProfessores({
           filtros: termoBusca || undefined,
           pagina,
-          paginacao: PAGINACAO,
+          paginacao: paginacao,
           busca: !!termoBusca,
         });
 
-        const itens = response.data?.itens?.$values || [];
+        // Log para debug da estrutura da resposta
+        console.log("API response:", JSON.stringify(response, null, 2));
+
+        const itens = response.data?.itens?.$values || response.data?.itens || [];
         
         const professoresMapeados = itens.map(mapProfessorFromApi);
-
         setProfessores(professoresMapeados);
-        
-        if (response.data?.totalPaginas) {
-          setTotalPaginas(response.data.totalPaginas);
-        }
+
+        const tp = response.data?.totalPaginas ?? response.totalPaginas ?? 1;
+        const ti = response.data?.totalItens ?? response.totalItens ?? professoresMapeados.length;
+        setTotalPaginas(tp);
+        setTotalItens(ti);
       } catch (error) {
         console.error("Erro ao carregar professores", error);
       } finally {
@@ -50,7 +60,7 @@ export default function CatalogoProfessoresPage() {
     }
 
     carregarProfessores();
-  }, [termoBusca, pagina]);
+  }, [termoBusca, pagina, paginacao]);
 
 
   const habilidadesDisponiveis = useMemo(() => {
@@ -146,6 +156,16 @@ export default function CatalogoProfessoresPage() {
                 <option value="preco-alto">Preço: Maior para Menor</option>
                 <option value="avaliacoes">Mais Avaliações</option>
               </select>
+
+              <select
+                value={paginacao}
+                onChange={(e) => setPaginacao(Number(e.target.value))}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              >
+                <option value={10}>10 por página</option>
+                <option value={12}>12 por página</option>
+                <option value={30}>30 por página</option>
+              </select>
             </div>
           </div>
         </div>
@@ -166,9 +186,9 @@ export default function CatalogoProfessoresPage() {
           <div className="flex-1">
             <div className="mb-4 flex items-center justify-between">
               <p className="text-gray-600">
-                {professoresFiltrados.length} professor
-                {professoresFiltrados.length !== 1 ? "es" : ""} encontrado
-                {professoresFiltrados.length !== 1 ? "s" : ""}
+                {totalItens > 0 ? totalItens : professoresFiltrados.length} professor
+                {(totalItens > 0 ? totalItens : professoresFiltrados.length) !== 1 ? "es" : ""} encontrado
+                {(totalItens > 0 ? totalItens : professoresFiltrados.length) !== 1 ? "s" : ""}
               </p>
             </div>
 
@@ -186,11 +206,67 @@ export default function CatalogoProfessoresPage() {
                 </p>
               </div>
             ) : (
-              <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-                {professoresFiltrados.map((professor) => (
-                  <CartaoProfessor key={professor.id} professor={professor} />
-                ))}
-              </div>
+              <>
+                <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+                  {professoresFiltrados.map((professor) => (
+                    <CartaoProfessor key={professor.id} professor={professor} />
+                  ))}
+                </div>
+
+                {totalPaginas >= 1 && (
+                  <div className="mt-8 flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => setPagina((p) => Math.max(1, p - 1))}
+                      disabled={pagina === 1}
+                      className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                    >
+                      Anterior
+                    </button>
+
+                    {Array.from({ length: totalPaginas }, (_, i) => i + 1)
+                      .filter(
+                        (p) =>
+                          p === 1 ||
+                          p === totalPaginas ||
+                          Math.abs(p - pagina) <= 1
+                      )
+                      .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+                        if (idx > 0 && p - (arr[idx - 1] as number) > 1) {
+                          acc.push("...");
+                        }
+                        acc.push(p);
+                        return acc;
+                      }, [])
+                      .map((item, idx) =>
+                        item === "..." ? (
+                          <span key={`ellipsis-${idx}`} className="px-2 text-gray-400">
+                            ...
+                          </span>
+                        ) : (
+                          <button
+                            key={item}
+                            onClick={() => setPagina(item as number)}
+                            className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                              pagina === item
+                                ? "bg-indigo-600 text-white border-indigo-600"
+                                : "border-gray-300 hover:bg-gray-50"
+                            }`}
+                          >
+                            {item}
+                          </button>
+                        )
+                      )}
+
+                    <button
+                      onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
+                      disabled={pagina === totalPaginas}
+                      className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                    >
+                      Próximo
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

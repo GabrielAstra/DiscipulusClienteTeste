@@ -114,22 +114,17 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
   return (
     <div className="min-h-screen bg-[#f4f5f7]">
 
-      {/* Hero cover */}
-      <div className="relative h-52 sm:h-64  overflow-hidden">
-        <div className="absolute inset-0 opacity-20" />
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f4f5f7] to-transparent" />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" />
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 pb-16 relative">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
 
-          {/* Coluna principal */}
           <div className="flex-1 min-w-0 space-y-5">
 
-            {/* Card de identidade */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <div className="flex flex-col sm:flex-row gap-5">
-                {/* Avatar */}
                 <div className="relative flex-shrink-0">
                   <img
                     src={professor.urlFoto || "/avatar.png"}
@@ -142,7 +137,6 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                   </span>
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div>
@@ -167,7 +161,6 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
                     </div>
                   </div>
 
-                  {/* Stats row */}
                   <div className="mt-3 flex flex-wrap gap-4">
                     <div className="flex items-center gap-1.5">
                       <div className="flex">
@@ -377,7 +370,7 @@ export default function PerfilProfessor({ id }: PropriedadesPerfilProfessor) {
 
             {/* Card de agendamento */}
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-              <div className="bg-gradient-to-br from-[#6562ff] to-[#8b5cf6] p-5 text-white">
+              <div className="bg-[#6562ff] p-5 text-white">
                 <p className="text-xs font-semibold uppercase tracking-wider opacity-75 mb-1">Valor por aula</p>
                 <p className="text-3xl font-bold">R$ {professor.horaAula}</p>
                 <p className="text-xs opacity-60 mt-0.5">Pagamento seguro</p>
