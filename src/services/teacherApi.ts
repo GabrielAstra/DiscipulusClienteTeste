@@ -1,4 +1,4 @@
-import { FormacaoDTO, ExperienciaDTO, PerfilProfessor, Habilidade } from '@/types/teacher';
+import {  PerfilProfessor, Habilidade } from '@/types/teacher';
 import { IResponse } from '@/types/response';
 import { ERRO_REQUISICAO } from '@/types/messages/error-messages';
 
