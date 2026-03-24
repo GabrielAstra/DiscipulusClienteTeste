@@ -3,10 +3,10 @@
 import { LogOut, User, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shrikhand, Plus_Jakarta_Sans } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 
 interface PropriedadesCabecalho {
-  usuario: any;
+  usuario: unknown;
   aoFazerLogout: () => void;
 }
 const plusJakartaSpans = Plus_Jakarta_Sans({

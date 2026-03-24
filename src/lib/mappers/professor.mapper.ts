@@ -1,26 +1,21 @@
 import { Professor } from "@/types/professor";
 
-export function mapProfessorFromApi(apiProfessor: any, index: number): Professor {
-    // Habilidades agora vêm como strings diretas: ["C#", "HTML", "Portugues"]
-    const habilidades = (apiProfessor.habilidades?.$values ?? [])
-        .map((h: any) => {
-            // Se for string, usar diretamente
-            if (typeof h === 'string') {
-                return h.trim();
-            }
-            // Fallback para formato antigo (objeto)
-            return h.nomeHabilidade || h.nome || h.habilidade || '';
+export function mapProfessorFromApi(apiProfessor: Record<string, unknown>): Professor {
+    const habilidades = ((apiProfessor.habilidades as { $values?: unknown[] })?.$values ?? [])
+        .map((h: unknown) => {
+            if (typeof h === 'string') return h.trim();
+            const obj = h as Record<string, string>;
+            return obj.nomeHabilidade || obj.nome || obj.habilidade || '';
         })
         .filter((h: string) => h !== '');
 
-    // Idiomas agora vêm como strings diretas: ["Norueguês", "Finlandês"]
-    const idiomas = (apiProfessor.idiomas?.$values ?? [])
-        .map((i: any) => typeof i === 'string' ? i.trim() : i)
-        .filter((i: string) => i !== '');
+    const idiomas = ((apiProfessor.idiomas as { $values?: unknown[] })?.$values ?? [])
+        .map((i: unknown) => typeof i === 'string' ? i.trim() : i)
+        .filter((i: unknown) => i !== '');
 
     // Adiciona timestamp na URL da foto para evitar cache
     const fotoPerfil = apiProfessor.fotoPerfil 
-        ? `${apiProfessor.fotoPerfil}${apiProfessor.fotoPerfil.includes('?') ? '&' : '?'}t=${Date.now()}`
+        ? `${apiProfessor.fotoPerfil}${(apiProfessor.fotoPerfil as string).includes('?') ? '&' : '?'}t=${Date.now()}`
         : '/avatar.png';
 
     return {

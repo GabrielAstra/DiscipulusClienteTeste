@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
 import ConversationList from '@/components/ConversationList';
 import ChatWindow from '@/components/ChatWindow';
@@ -19,7 +19,7 @@ export default function Messages() {
   useEffect(() => {
     if (!connection || !usuario) return;
 
-    const handler = (msg: any) => {
+    const handler = (msg: { conversaId: string; usuarioId: string; conteudo: string }) => {
       const conversaId = msg.conversaId;
 
       if (msg.usuarioId === usuario.id) return;
@@ -85,7 +85,7 @@ export default function Messages() {
 
         const data = await response.json();
 
-        const conversasFormatadas: Conversation[] = data.$values.map((c: any) => {
+        const conversasFormatadas: Conversation[] = data.$values.map((c: { conversaId: string; outroUsuarioNome: string; urlFotoPerfil?: string; ultimaMensagem?: string; dataUltimaMensagem: string }) => {
 
           return {
             id: c.conversaId,

@@ -30,7 +30,6 @@ export default function ModalChat({
  
   const [mensagens, setMensagens] = useState<Mensagem[]>([]);
   const [novaMensagem, setNovaMensagem] = useState("");
-  const [digitando, setDigitando] = useState(false);
   const { abrirModal, fecharModal } = useModal();
 
   useEffect(() => {
@@ -89,7 +88,7 @@ export default function ModalChat({
   useEffect(() => {
     if (!connection || !aberto) return;
 
-    const handler = (mensagem: any) => {
+    const handler = (mensagem: { mensagemId: string; conteudo: string; usuarioId: string }) => {
       setMensagens((prev) => [
         ...prev,
         {
@@ -234,7 +233,7 @@ export default function ModalChat({
             </div>
           ))}
 
-          {digitando && (
+          {false && (
             <div className="flex justify-start">
               <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-2xl">
                 <div className="flex space-x-1">

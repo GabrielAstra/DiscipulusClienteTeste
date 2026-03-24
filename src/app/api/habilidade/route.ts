@@ -1,8 +1,8 @@
 import { listarHabilidades } from "@/lib/service/habilidade/habilidade.service";
 import { IResponse } from "@/types/response";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(_: NextRequest) {
+export async function GET() {
   const response = await listarHabilidades();
   const { data, success, message } = response;
   if (!success) {

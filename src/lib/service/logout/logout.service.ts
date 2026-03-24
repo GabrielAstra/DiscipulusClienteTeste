@@ -1,7 +1,5 @@
 import { ERRO_REQUISICAO } from "@/types/messages/error-messages";
-import { IServiceResponse } from "@/types/response";
 import { fetchWithAuth } from "@/lib/helper/fetchWithAuth";
-import { ca } from "date-fns/locale";
 
 
 export interface Logout {

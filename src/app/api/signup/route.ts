@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   });
 
   // Set HttpOnly cookies for tokens
-  res.cookies.set("token", data?.accessToken!, {
+  res.cookies.set("token", data?.accessToken ?? "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     maxAge: 60 * 15,
   });
 
-  res.cookies.set("refreshToken", data?.refreshToken!, {
+  res.cookies.set("refreshToken", data?.refreshToken ?? "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",

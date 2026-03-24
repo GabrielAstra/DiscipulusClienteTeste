@@ -1,4 +1,3 @@
-import { Conversation, Message } from '../types/chat';
 export interface AulaAgendada {
     id: string;
     alunoNome: string;

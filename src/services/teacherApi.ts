@@ -55,7 +55,7 @@ export async function removerExperiencia(id: string): Promise<void> {
   }
 }
 
-export async function salvarPerfilCompleto(payload: any): Promise<void> {
+export async function salvarPerfilCompleto(payload: Record<string, unknown>): Promise<void> {
   const response = await fetch('/api/salvarPerfilCompleto', {
     method: 'POST',
     headers: {

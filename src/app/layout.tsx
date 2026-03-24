@@ -8,26 +8,6 @@ import { ToastProvider } from "@/context/ToastContext";
 import { Toaster } from "sonner";
 import { SignalRProvider } from '@/context/SignalRContext';
 import { ModalProvider } from "@/context/ModalContext";
-import { Sign } from "crypto";
-import { Shrikhand } from 'next/font/google'
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-})
-
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  variable: '--font-plus-jakarta',
-})
-
-
-const shrikhand = Shrikhand({
-  subsets: ['latin'],
-  weight: '400', 
-  display: 'swap',
-});
 
 
 export const metadata: Metadata = {

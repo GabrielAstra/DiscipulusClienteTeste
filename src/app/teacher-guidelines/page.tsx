@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link";
-import { Shrikhand, Plus_Jakarta_Sans } from 'next/font/google';
+import { Shrikhand } from 'next/font/google';
 import {
   ArrowLeft,
   Shield,
@@ -13,12 +13,6 @@ import {
 } from '@phosphor-icons/react';import { useState } from "react";
 import Footer from "@/components/Footer";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  weight: '800',
-  subsets:['latin'],
-  display: 'swap'
-
-})
 const shrikhand = Shrikhand({
   weight: '400',
   subsets: ['latin'],
@@ -122,15 +116,6 @@ export default function TermosDeUso() {
     red: "bg-red-50 border-red-200",
   };
 
-  const textCorMap: Record<string, string> = {
-    indigo: "text-indigo-700",
-    purple: "text-purple-700",
-    blue: "text-blue-700",
-    green: "text-green-700",
-    orange: "text-orange-700",
-    red: "text-red-700",
-  };
-
   return (
     <div className="min-h-screen bg-white">
 
@@ -202,11 +187,10 @@ export default function TermosDeUso() {
 
           {/* Seções dos Termos */}
           <div className="space-y-8">
-            {secoes.map((secao, index) => {
+            {secoes.map((secao) => {
               const Icone = secao.icone;
               const gradiente = corMap[secao.cor] || corMap.indigo;
               const bgCor = bgCorMap[secao.cor] || bgCorMap.indigo;
-              const textCor = textCorMap[secao.cor] || textCorMap.indigo;
 
               return (
                 <div

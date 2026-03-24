@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import { ArrowRight, ArrowLeft, Play, Pause, Search, Star, Calendar, Clock, Video, CheckCircle, User, BookOpen, MessageCircle, Heart } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Play, Pause, Search, Star, Calendar, Clock, Video, CheckCircle, BookOpen, MessageCircle, Heart } from 'lucide-react';
 import Link from 'next/link';
 interface Teacher {
   id: number;

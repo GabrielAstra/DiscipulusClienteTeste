@@ -141,15 +141,6 @@ export default function TermosDeUso() {
     red: "bg-red-50 border-red-200",
   };
 
-  const textCorMap: Record<string, string> = {
-    indigo: "text-indigo-700",
-    purple: "text-purple-700",
-    blue: "text-blue-700",
-    green: "text-green-700",
-    orange: "text-orange-700",
-    red: "text-red-700",
-  };
-
   return (
     <div className="min-h-screen bg-white">
 
@@ -235,11 +226,10 @@ export default function TermosDeUso() {
 
           {/* Seções dos Termos */}
           <div className="space-y-8">
-            {secoes.map((secao, index) => {
+            {secoes.map((secao) => {
               const Icone = secao.icone;
               const gradiente = corMap[secao.cor] || corMap.indigo;
               const bgCor = bgCorMap[secao.cor] || bgCorMap.indigo;
-              const textCor = textCorMap[secao.cor] || textCorMap.indigo;
 
               return (
                 <div

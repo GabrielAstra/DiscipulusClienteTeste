@@ -6,7 +6,6 @@ import {
   Users, 
   Clock, 
   Award, 
-  ChevronDown, 
   MessageCircle, 
   Target, 
   ChevronLeft, 
@@ -24,7 +23,7 @@ import {
   FlaskConical
 } from 'lucide-react';
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import WaveDivider from "@/components/WaveDivider";
 import Image from "next/image";
@@ -52,17 +51,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 export default function Home() {
   const [faqAberto, setFaqAberto] = useState<number | null>(null);
   const [materiaSelecionada, setMateriaSelecionada] = useState<string>("Todas");
-  const [scrollY, setScrollY] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const materias = [
     { nome: "Todas", icone: BookOpen },
@@ -299,7 +288,7 @@ export default function Home() {
       </section>
       <section className="bg-background rounded-t-[2.5rem] -mt-6 relative z-30 px-8 lg:px-16 py-16">
         <div className='text-center'>
-          <h1 className={`$plusJakarta.className text-3xl font-bold mb-10  `}>
+          <h1 className={`${plusJakarta.className} text-3xl font-bold mb-10`}>
             Por que escolher o Discipulus ?
           </h1>
         </div>
@@ -450,7 +439,7 @@ export default function Home() {
                 </div>
 
                 <p className="text-gray-700 leading-relaxed italic">
-                  "{testimonial.texto}"
+                  &quot;{testimonial.texto}&quot;
                 </p>
               </div>
             ))}

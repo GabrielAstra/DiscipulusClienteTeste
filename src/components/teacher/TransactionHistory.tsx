@@ -1,6 +1,6 @@
 "use client";
 
-import { DadosCarteira, Transacao } from '@/types/teacher';
+import { DadosCarteira } from '@/types/teacher';
 import { formatarMoeda, formatarData } from '@/utils/formatters';
 import { TrendingUp, DollarSign } from 'lucide-react';
 

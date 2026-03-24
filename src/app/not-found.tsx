@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Shrikhand } from 'next/font/google';
-import { ArrowLeft, Search, Home } from 'lucide-react';
+import { Home } from 'lucide-react';
 
 const shrikhand = Shrikhand({
   weight: '400',

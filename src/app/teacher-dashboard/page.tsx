@@ -142,7 +142,7 @@ export default function PainelProfessor() {
     console.log("Solicitação de saque:", { valor, metodo });
     alert("Solicitação de saque enviada com sucesso!");
   };
-  const [horariosRemovidos, setHorariosRemovidos] = useState<string[]>([]);
+  const [, setHorariosRemovidos] = useState<string[]>([]);
 
   // Mostrar loading enquanto verifica autenticação
   if (loadingUser) {

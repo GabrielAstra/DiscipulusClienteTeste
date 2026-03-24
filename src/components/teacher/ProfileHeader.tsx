@@ -374,7 +374,7 @@ export function ProfileHeader({
                   ) : (
                     <div className="text-center py-4">
                       <p className="text-gray-500 text-sm">
-                        Nenhum idioma encontrado para "{filtroIdioma}"
+                        Nenhum idioma encontrado para &quot;{filtroIdioma}&quot;
                       </p>
                     </div>
                   )}

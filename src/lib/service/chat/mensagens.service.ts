@@ -1,5 +1,4 @@
 import { Message } from "@/types/chat";
-import { useUsuario } from "@/context/UsuarioContext";
 
 interface MensagemDTO {
     mensagemId: string;

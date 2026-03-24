@@ -62,7 +62,7 @@ export default function ModalAgendamento({
 
   const diasSemanaDisponiveis = useMemo(() => {
     const arr = professor.disponibilidade?.$values || [];
-    return new Set(arr.map((d: any) => d.diaSemana));
+    return new Set(arr.map((d: { diaSemana: number }) => d.diaSemana));
   }, [professor.disponibilidade]);
 
   const dataMax = useMemo(() => {
@@ -101,19 +101,19 @@ export default function ModalAgendamento({
     const data = new Date(dataString + "T00:00:00");
     const diaSemanaNum = data.getDay();
     const arr = professor.disponibilidade?.$values || [];
-    const diaDisp = arr.find((d: any) => d.diaSemana === diaSemanaNum);
+    const diaDisp = arr.find((d: { diaSemana: number; horarios?: { $values?: unknown[] }; agendaId?: string }) => d.diaSemana === diaSemanaNum);
     if (!diaDisp) return [];
 
     const ocupados = new Set(
       (professor.horariosOcupados?.$values || [])
-        .filter((o: any) => o.data === dataString)
-        .map((o: any) => o.horaInicio)
+        .filter((o: { data: string; horaInicio: string }) => o.data === dataString)
+        .map((o: { data: string; horaInicio: string }) => o.horaInicio)
     );
 
     const slots: SlotHorario[] = [];
     const horarios = diaDisp.horarios?.$values || [];
 
-    horarios.forEach((h: any) => {
+    horarios.forEach((h: { id?: string; idAgenda?: string; horaInicial?: string; horaFinal?: string }) => {
       const [hIni, mIni] = (h.horaInicial || "").split(":").map(Number);
       const [hFim, mFim] = (h.horaFinal || "").split(":").map(Number);
       if (isNaN(hIni) || isNaN(hFim)) return;
@@ -153,9 +153,9 @@ export default function ModalAgendamento({
   const calcularMediaAvaliacoes = () => {
     if (professor.mediaAvaliacoes && professor.totalAvaliacoes)
       return { nota: professor.mediaAvaliacoes, total: professor.totalAvaliacoes };
-    const avs = (professor.totalAvaliacoes as any)?.$values || [];
+    const avs = (professor.totalAvaliacoes as { $values?: { nota: number }[] })?.$values || [];
     if (!avs.length) return { nota: 0, total: 0 };
-    return { nota: avs.reduce((s: number, a: any) => s + a.nota, 0) / avs.length, total: avs.length };
+    return { nota: avs.reduce((s: number, a: { nota: number }) => s + a.nota, 0) / avs.length, total: avs.length };
   };
 
   const lidarComPagamento = async () => {
@@ -201,8 +201,9 @@ export default function ModalAgendamento({
       setObservacoes("");
 
       router.push(resposta.data.urlCheckout || `/checkout/${tokenPublico}`);
-    } catch (err: any) {
-      alert(err.message || "Erro ao iniciar checkout. Tente novamente.");
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      alert(error.message || "Erro ao iniciar checkout. Tente novamente.");
     } finally {
       setCarregandoCheckout(false);
     }

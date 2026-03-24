@@ -18,7 +18,6 @@ export default function CatalogoProfessoresPage() {
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [ordenarPor, setOrdenarPor] = useState("avaliacao");
   const [professores, setProfessores] = useState<Professor[]>([]);
-  const [loading, setLoading] = useState(true);
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [totalItens, setTotalItens] = useState(0);
@@ -31,7 +30,6 @@ export default function CatalogoProfessoresPage() {
 
   useEffect(() => {
     async function carregarProfessores() {
-      setLoading(true);
       try {
         const response = await listarProfessores({
           filtros: termoBusca || undefined,
@@ -54,8 +52,6 @@ export default function CatalogoProfessoresPage() {
         setTotalItens(ti);
       } catch (error) {
         console.error("Erro ao carregar professores", error);
-      } finally {
-        setLoading(false);
       }
     }
 
@@ -73,7 +69,7 @@ export default function CatalogoProfessoresPage() {
   }, [categoriaSelecionada]);
 
   const professoresFiltrados = useMemo(() => {
-    let filtrados = professores.filter((professor) => {
+    const filtrados = professores.filter((professor) => {
       const correspondeABusca =
         professor.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
         professor.habilidades.some((habilidade) =>

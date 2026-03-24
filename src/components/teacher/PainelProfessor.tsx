@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { User, DollarSign } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { DadosCarteira } from "@/types/teacher";
@@ -12,13 +12,11 @@ import { WalletOverview } from "./WalletOverview";
 import { TransactionHistory } from "./TransactionHistory";
 import { WithdrawalModal } from "./WithdrawalModal";
 import { ProfilePreviewModal } from "./ProfilePreviewModal";
-import { uploadAvatar } from "@/lib/service/avatar/avatar.service";
 
 export default function PainelProfessor() {
   const [abaAtiva, setAbaAtiva] = useState<"perfil" | "carteira">("perfil");
   const [mostrarModalSaque, setMostrarModalSaque] = useState(false);
   const [mostrarModalPreview, setMostrarModalPreview] = useState(false);
-  const [horariosRemovidos, setHorariosRemovidos] = useState<string[]>([]);
  
   const {
     perfil,

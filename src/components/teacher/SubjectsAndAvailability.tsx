@@ -10,7 +10,6 @@ interface SubjectsAndAvailabilityProps {
   editando: boolean;
   todasHabilidades: Habilidade[];
   setHorariosRemovidos: React.Dispatch<React.SetStateAction<string[]>>;
-
 }
 const formatarHorario = (hora: string) => {
   if (hora.length === 5) return `${hora}:00`; 
@@ -21,7 +20,6 @@ export function SubjectsAndAvailability({
   setPerfil,
   editando,
   todasHabilidades,
-  setHorariosRemovidos
 }: SubjectsAndAvailabilityProps) {
   const [filtroHabilidade, setFiltroHabilidade] = useState("");
   const [habilidadesFiltradas, setHabilidadesFiltradas] = useState<Habilidade[]>([]);
@@ -200,7 +198,7 @@ const getHorariosPorDia = (dia: string): HorarioDisponivel[] => {
               ) : (
                 <div className="text-center py-8">
                   <p className="text-gray-500 text-sm">
-                    Nenhuma matéria encontrada para "{filtroHabilidade}"
+                    Nenhuma matéria encontrada para &quot;{filtroHabilidade}&quot;
                   </p>
                 </div>
               )}

@@ -14,7 +14,6 @@ export default function ChatWindow({
   onSendMessage,
 }: ChatWindowProps) {
   const [newMessage, setNewMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -89,7 +88,7 @@ export default function ChatWindow({
           </div>
         ))}
 
-        {isTyping && (
+        {false && (
           <div className="flex justify-start">
             <div className="bg-white text-gray-900 px-4 py-2 rounded-2xl border border-gray-200">
               <div className="flex space-x-1">

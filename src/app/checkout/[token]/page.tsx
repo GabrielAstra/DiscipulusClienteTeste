@@ -36,8 +36,9 @@ export default function PaginaCheckout() {
           return;
         }
         setDados(json.data);
-      } catch (err: any) {
-        setErro(err.message || "Erro ao carregar checkout.");
+      } catch (err: unknown) {
+        const error = err as { message?: string };
+        setErro(error.message || "Erro ao carregar checkout.");
       } finally {
         setCarregando(false);
       }

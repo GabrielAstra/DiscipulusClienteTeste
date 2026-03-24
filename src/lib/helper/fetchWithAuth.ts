@@ -7,7 +7,7 @@ export async function fetchWithAuth(
 ): Promise<Response> {
 
     const cookieStore = await cookies();
-    let token = cookieStore.get("token")?.value;
+    const token = cookieStore.get("token")?.value;
     const refreshToken = cookieStore.get("refreshToken")?.value;
 
     if (requireAuth && !token) {
