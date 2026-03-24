@@ -8,7 +8,7 @@ export async function listarAgenda() {
     return res.json();
 }
 
-export async function salvarAgenda(dados: Record<string, unknown>) {
+export async function salvarAgenda(dados: unknown) {
     const res = await fetch(BASE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

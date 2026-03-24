@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Professor } from "../types/professor";
+import { DisponibilidadeHorario, Professor } from "../types/professor";
 import { Check, X, ChevronLeft, ChevronRight, Clock, MessageSquare } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { DadosAgendamento } from "../types/agendamento";
@@ -113,9 +113,9 @@ export default function ModalAgendamento({
     const slots: SlotHorario[] = [];
     const horarios = diaDisp.horarios?.$values || [];
 
-    horarios.forEach((h: { id?: string; idAgenda?: string; horaInicial?: string; horaFinal?: string }) => {
-      const [hIni, mIni] = (h.horaInicial || "").split(":").map(Number);
-      const [hFim, mFim] = (h.horaFinal || "").split(":").map(Number);
+    horarios.forEach((h: DisponibilidadeHorario) => {
+      const [hIni, mIni] = (h.horaInicial ?? "").split(":").map(Number);
+      const [hFim, mFim] = (h.horaFinal ?? "").split(":").map(Number);
       if (isNaN(hIni) || isNaN(hFim)) return;
 
       const iniMin = hIni * 60 + mIni;

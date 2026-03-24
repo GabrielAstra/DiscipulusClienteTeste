@@ -4,9 +4,10 @@ import { LogOut, User, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Plus_Jakarta_Sans } from 'next/font/google';
+import type { Usuario } from '@/types/usuario';
 
 interface PropriedadesCabecalho {
-  usuario: unknown;
+  usuario: Usuario | null;
   aoFazerLogout: () => void;
 }
 const plusJakartaSpans = Plus_Jakarta_Sans({

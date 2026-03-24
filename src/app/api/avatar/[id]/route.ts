@@ -3,10 +3,11 @@ import { NextResponse } from "next/server";
 const API_URL = process.env.NEXT_PUBLIC_DISCIPULUS_API_URL;
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const res = await fetch(`${API_URL}/Arquivo/avatar/${params.id}`, {
+  const { id } = await params;
+  const res = await fetch(`${API_URL}/Arquivo/avatar/${id}`, {
     method: "GET",
   });
 

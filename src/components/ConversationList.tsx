@@ -28,9 +28,9 @@ export default function ConversationList({
 
   const getConversationTitle = (conv: Conversation) => {
     if (currentUserRole === 'teacher') {
-      return conv.userRole === 'student' ? 'Aluno' : 'Professor';
+      return conv.userRole === 'Aluno' ? 'Aluno' : 'Professor';
     }
-    return conv.userRole === 'teacher' ? 'Professor' : 'Aluno';
+    return conv.userRole === 'Professor' ? 'Professor' : 'Aluno';
   };
 
   return (

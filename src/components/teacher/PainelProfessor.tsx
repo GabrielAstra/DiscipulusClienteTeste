@@ -31,6 +31,7 @@ export default function PainelProfessor() {
     handleRemoverFormacao,
     handleRemoverExperiencia,
     avatarUrl,
+    setHorariosRemovidos,
   } = useProfile();
 
  
