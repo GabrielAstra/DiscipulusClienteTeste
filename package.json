@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@iconscout/unicons": "^4.2.0",
     "@microsoft/signalr": "^10.0.0",
     "@phosphor-icons/react": "^2.1.10",
     "class-variance-authority": "^0.7.1",
@@ -19,7 +18,7 @@
     "framer-motion": "^12.34.3",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.525.0",
-    "next": "15.3.5",
+    "next": "^15.3.8",
     "radix-ui": "^1.4.3",
     "react": "^19.0.0",
     "react-day-picker": "^9.13.2",
